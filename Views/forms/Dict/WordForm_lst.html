@@ -1,0 +1,16 @@
+<h2>Word List: </h2>
+<table>
+{% for item in WordList %}
+    <tr>
+        <td>
+            {{item}}
+        </td>
+        <td><a href='{%url WordController %}?op=shw&key={{item.key}}'>Detail</a></td>
+        <td> <a href='{%url WordController %}?op=del&key={{item.key}}'>Delete</a></td>
+    </tr>
+{% endfor %}
+</table>
+
+{%ifnotequal count 0 %}<a href='{%url WordController %}?op=lst&index={{index}}&&count=-{{count}}'>Previous</a>{%endifnotequal%}
+{%if WordList%}<a href='{%url WordController %}?op=lst&index={{index}}&&count={{count}}'>Next</a> |{%endif%}
+<h3><a href='{%url WordController %}?op=shw'>New</a><h3>

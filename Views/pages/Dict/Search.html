@@ -1,0 +1,18 @@
+{% extends base %}
+{% block scripts %}
+{{block.super}}
+{% endblock %}
+
+{% block content %}
+{%include SearchForm_search %}
+{% if results %}
+<table>
+{%for r in results%}
+<tr>
+    <td>{{r.Value}}</td>
+    <td>{{r.Translation}}</td>
+</tr>
+{%endfor%}
+</table>
+{%endif%}
+{% endblock %}

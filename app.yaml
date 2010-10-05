@@ -1,0 +1,25 @@
+application: dict
+version: 1
+runtime: python
+api_version: 1
+
+handlers:
+- url: /styles
+  static_dir: StaticData/styles
+  
+- url: /styles/images
+  static_dir: StaticData/styles/images
+
+- url: /images
+  static_dir: StaticData/images
+  
+- url: /jscripts
+  static_dir: StaticData/jscripts
+  
+- url: /remote_api
+  script: $PYTHON_LIB/google/appengine/ext/remote_api/handler.py
+  login: admin
+  
+- url: /.*
+  script: handlerMap.py
+

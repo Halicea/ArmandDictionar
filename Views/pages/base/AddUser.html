@@ -1,0 +1,21 @@
+{% extends base %}
+{% block title %}Enter Personal Data( Register) {% endblock %}
+{% block content %}
+	<form action="{% url AddUserController %}" method="post">
+		<div class="ui-widget" style="margin-left:auto; width:270; margin-right: auto;">
+			<div class="ui-widget-header ui-corner-top" style="text-align: center;"> <h2>New User</h2> </div>
+			<div class="ui-widget-content ui-corner-bottom" style="text-align:right; border-collapse: collapse; padding-right: 10px">
+				<p>UserName:<input type="text" name="UserName"></input> </p>
+				<p>Name:<input type="text" name="Name"></input> </p>
+				<p>Surname:<input type="text" name="Surname"></input></p>
+				<p>Password:<input type="password" name="Password"></input></p>
+				<p><label style="color: red;" visible="false">*</label><b>Email:</b> <input type="text" name="Email"></input></p>
+				<p>Notify me On Events:<input type="checkbox" name="Notify" checked="True"/></p>
+				<p>Keep email private:<input type="checkbox" name="Public" checked="True"/></p>
+				<p><input type="submit" name="Submit" value="Register" class="title" style="height: 31px; color: white; font: bold;"/></p>	
+			</div>
+		</div>	
+		
+	</form>
+	
+{%endblock%}

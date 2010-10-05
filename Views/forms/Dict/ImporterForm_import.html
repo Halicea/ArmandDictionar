@@ -1,0 +1,6 @@
+<h2>Importer: </h2>
+<form method='post' action='{% url ImporterController %}'>
+    <input type='hidden' name='op' value={{op}}>
+    <textarea rows="10" cols="10" name='Html'></textarea>
+<input type='submit' value="Import"></input>
+</form>

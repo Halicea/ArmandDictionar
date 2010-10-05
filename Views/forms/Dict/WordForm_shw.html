@@ -1,0 +1,21 @@
+<h2>Word: </h2>
+<form method='post' action='{% url WordController %}'>
+    <input type='hidden' name='op' value={{op}}>
+    <input type='hidden' name='key' value={{WordForm.instance.key}}></input>
+<table>
+{% for field in WordForm %}
+    <tr>
+        <td style="text-align:right;">
+            {{ field.label_tag }}:
+        </td>
+        <td>
+            {{ field }}
+        </td>
+        <td style='color: red;'>
+            {{ field.errors }}
+        </td>
+    <tr>
+{% endfor %}
+</table>
+<input type='submit' value={%if WordForm.instance.key%} 'Update' {% else %} 'Create' {%endif%}></input>
+</form>

@@ -1,0 +1,8 @@
+{{os}} extends base {{cs}}
+{{os}} block scripts {{cs}}
+{{ob}}block.super{{cb}}
+{{os}} endblock {{cs}}
+
+{{os}} block content {{cs}}
+{{os}}include {{formTemplate}} {{cs}}
+{{os}} endblock {{cs}}
