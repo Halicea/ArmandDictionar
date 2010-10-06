@@ -12,7 +12,7 @@ class Word(db.Model):
     DateAdded= db.DateProperty(auto_now_add=True)
 
     @classmethod
-    def CreateNew(cls ,value,translation,dateadded , _isAutoInsert=False):
+    def CreateNew(cls ,value,translation,dateadded=date.today() , _isAutoInsert=False):
         result = cls(
                      Value=value,
                      Translation=translation,
@@ -44,13 +44,13 @@ class Importer(db.Model):
         return result
     def parseWord(self, wrd, save=False):
         try:
-            value =self.unescape(wrd.getText())
+            value =unicode(self.unescape(wrd.getText()))
             translation =''
             tmpNode = wrd.nextSibling 
             while tmpNode:
-                translation+=str(tmpNode)
+                translation+=unicode(str(tmpNode))
                 tmpNode = tmpNode.nextSibling
-            translation = self.unescape(translation)
+            translation = unicode(self.unescape(translation))
             result = Word.CreateNew(value, translation, date.today(), save)
             return result
         except Exception, ex:

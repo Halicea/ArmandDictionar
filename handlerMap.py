@@ -31,6 +31,7 @@ application = webapp.WSGIApplication(
  #{%endblock%}
  
  #{%block staticControllers%}
+ ('/About', staticControllers.AboutController),
  ('/Links', staticControllers.LinksController),
  ('/NotAuthorized', staticControllers.NotAuthorizedController),
  #{%endblock%}

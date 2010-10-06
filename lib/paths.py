@@ -44,12 +44,13 @@ __basesDict__={
         }
 
 __menusDict__={
-       "mnTopMenu":         "../../menus/top_menu.inc.html",
+       "mnTopMenu":         "../../blocks/top_menu.inc.html",
        }
 
 __blocksDict__={
         "blLogin":          "../../blocks/login_menu.inc.html",
         "blLanguages":      "../../blocks/dict_Languages.inc.html",
+        'blDictMenu':       "../../blocks/menu.bl.html",
         ### Menu Blocks
         "blAdminMenu":      "../../blocks/menu_links/admin.inc.html",
         "blLogedUserMenu":  "../../blocks/menu_links/loged_user.inc.html",

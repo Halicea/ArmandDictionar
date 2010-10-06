@@ -1,13 +1,11 @@
-<h2>Search: </h2>
+
 <form method='post' action='{% url SearchController %}'>
     <input type='hidden' name='op' value={{op}}>
     <input type='hidden' name='key' value={{SearchForm.instance.key}}></input>
 <table>
 {% for field in SearchForm %}
     <tr>
-        <td style="text-align:right;">
-            {{ field.label_tag }}:
-        </td>
+        <td>Збор:</td>
         <td>
             {{ field }}
         </td>
@@ -17,5 +15,5 @@
     <tr>
 {% endfor %}
 </table>
-<input type='submit' value={%if SearchForm.instance.key%} 'Update' {% else %} 'Search' {%endif%}></input>
+<input type='submit' value='Cafta/Барај'></input>
 </form>

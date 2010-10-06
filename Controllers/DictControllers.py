@@ -5,6 +5,7 @@ from google.appengine.ext import db
 ##################################################
 from Models.DictModels import Word, WordForm 
 import os
+import sys
 class WordController(hrh):
     def SetOperations(self):
         self.operations = settings.DEFAULT_OPERATIONS
@@ -48,14 +49,14 @@ class WordController(hrh):
             index = int(self.params.index)
             count = int(self.params.count)
             if count<0:
-                index -= count
-            count = abs(count)
+                index += count
         except:
             pass
-        result = {'WordList': Word.all().fetch(limit=count, offset=index), 'index':index, 'count':count }
-        result.update(locals())
+        r= Word.all().fetch(limit=abs(count), offset=index)
+        index+=count
+        result = {'WordList':r, 'index':index, 'count':abs(count) }
         self.respond(result)
-    @AdminOnly
+    @AdminOnly()
     def insert(self, *args):
         instance = None
         if self.params.key:
@@ -74,6 +75,7 @@ class WordController(hrh):
             result = {'op':'upd', 'WordForm': form}
             self.respond(result)
 from Models.DictModels import Importer, ImporterForm 
+import pickle
 class ImporterController(hrh):
     def SetOperations(self):
         #self.operations = settings.DEFAULT_OPERATIONS
@@ -81,7 +83,8 @@ class ImporterController(hrh):
         #self.operations.update({'xml':{'method':'xmlCV'}})
         self.operations['import']={'method':'importHtml'}
         self.operations['default'] = {'method':'importHtml'}
-    @AdminOnly()
+        self.operations['importPickle'] = {'method':'importPickle'}
+    #@AdminOnly()
     def importHtml(self,*args):
         self.SetTemplate(templateName ='Importer_import.html')
         if self.method == 'GET':
@@ -93,31 +96,28 @@ class ImporterController(hrh):
             WordList = imp.importHtml(self.params.Html)
             d = {'Importer':imp, 'WordList':WordList, 'check':True}
             self.respond(d)
-
+    def importPickle(self, *args):
+        a = pickle.loads(self.params.pck)
+        cnt = 0
+        err= 0
+        for t in a:
+            try:
+                word = Word.CreateNew(value=t.Value, translation=t.Translation, _isAutoInsert=True)
+                cnt+=1
+            except:
+                err+=1
+                pass
+        self.response.out.write(str(cnt)+'---'+err.message)
 from Models.DictModels import Search, SearchForm
 class SearchController(hrh):
     def SetOperations(self):
         self.operations['default']={'method':'search'}
     def search(self, *args):
         offset = self.params.offset and int(self.params.offset) or 0 
-        sf = SearchForm()
+        sf = SearchForm(self.request.POST)
         results =[]
         if self.params.text:
-            results = Search.gql('WHERE Value= :v', v=self.params.text).fetch(limit=100, offset=offset)
+            results = Word.gql('WHERE Value= :v', v=self.params.text).fetch(limit=100, offset=offset)
         self.respond({'SearchForm':sf,'results':results, 'offset':offset+100})
-        
-if __name__=='__main__':
-    import pickle
-    rootDir = 'DictFiles'
-    f = open(sys.argv[1])
-    txt=f.read()
-    im= Importer()
-    res = im.importHtml(txt)
-    counter = 0
-    for t in range(0, len(res)):
-        f = open(os.path.join(rootDir, counter), 'w')
-        pickle.Pickler(f)
-    errorsFile = 'errors.log'
-    countFile = 'count.log'
-    f = open(errorsFile,'w')
+
         

@@ -7,7 +7,10 @@ class LinksController( hrh ):
 class WelcomeController(hrh):
 	def get(self):
 		self.respond()
-
+class AboutController(hrh):
+	def get(self):
+		self.respond()
+		
 class NotExistsController( hrh ):
 	def get( self, page_address ):
 		if self.request.get('ajax'):
