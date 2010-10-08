@@ -2,7 +2,7 @@ import os
 
 DEBUG = True
 TEMPLATE_DEBUG = True
-APPENGINE_PATH = 'C:\\DevApps\\google_appengine'
+APPENGINE_PATH = '/home/costa/DevApps/google_appengine'
 #APPENGINE_PATH = '/home/costa/DevApps/google_appengine/'
 TEMPLATE_DIRS = (os.path.abspath('Views'), 
                  os.path.abspath('Templates'),)
