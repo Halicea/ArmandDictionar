@@ -1,0 +1,17 @@
+<h2>Host List: </h2>
+<table>
+{% for item in HostList %}
+    <tr>
+        <td>
+            {{item}}
+        </td>
+        <td><a href='{%url HostController %}?op=shw&key={{item.key}}'>Detail</a></td>
+        <td> <a href='{%url HostController %}?op=del&key={{item.key}}'>Delete</a></td>
+    </tr>
+{% endfor %}
+</table>
+<ul>
+    <li>Vkupno domakjini:<b>{{TotalHosts}}</b></li>
+    <li>Vkupno kapacitet:<b>{{TotalPlaces}}</b></li>
+</ul>
+<h3><a href='{%url HostController %}?op=shw'>New</a><h3>

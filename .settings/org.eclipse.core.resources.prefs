@@ -1,4 +1,10 @@
-#Wed Oct 06 18:04:29 CEST 2010
+#Fri Oct 08 13:42:04 CEST 2010
 eclipse.preferences.version=1
-encoding//Controllers/DictControllers.py=UTF-8
+encoding//Controllers/DictControllers.py=utf-8
+encoding//Controllers/TournamentHostControllers.py=utf-8
+encoding//Models/DictModels.py=utf-8
+encoding//Models/TournamentHostModels.py=utf-8
+encoding//Views/blocks/menu.bl.html=UTF-8
 encoding//Views/forms/Dict/SearchForm_search.html=UTF-8
+encoding//Views/forms/TournamentHost/GuestForm_shw.html=UTF-8
+encoding//Views/forms/TournamentHost/HostForm_shw.html=UTF-8

@@ -6,7 +6,7 @@ APPENGINE_PATH = 'C:\\DevApps\\google_appengine'
 #APPENGINE_PATH = '/home/costa/DevApps/google_appengine/'
 TEMPLATE_DIRS = (os.path.abspath('Views'), 
                  os.path.abspath('Templates'),)
-
+DEFAULT_CHARSET ='UTF-8'
 #Directory Structure
 MODELS_DIR = os.path.abspath('Models')
 VIEWS_DIR = os.path.abspath('Views')

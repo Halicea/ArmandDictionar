@@ -10,6 +10,7 @@ import datetime as dt
 
 class Person(db.Model):
     '''A Person with UserName, Name, Surname Phone Email e.t.c'''
+
     UserName = db.StringProperty(required=True)
     Password = db.StringProperty(required=True)
     Name = db.StringProperty(required=True)

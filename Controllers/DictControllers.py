@@ -1,11 +1,21 @@
+# -*- coding: utf-8 -*-
 import settings
 from lib.HalRequestHandler import HalRequestHandler as hrh
 from lib.decorators import *
 from google.appengine.ext import db
+from google.appengine.runtime import apiproxy_errors
+import logging
+if settings.DEBUG:
+    import sys, pdb
+    for attr in ('stdin', 'stdout', 'stderr'):
+        setattr(sys, attr, getattr(sys, '__%s__' % attr))
+
+
 ##################################################
-from Models.DictModels import Word, WordForm 
+from Models.DictModels import Word, WordForm , HtmlImport
 import os
 import sys
+from google.appengine.api.datastore_errors import TransactionFailedError
 class WordController(hrh):
     def SetOperations(self):
         self.operations = settings.DEFAULT_OPERATIONS
@@ -74,40 +84,7 @@ class WordController(hrh):
             self.status = 'Form is not Valid'
             result = {'op':'upd', 'WordForm': form}
             self.respond(result)
-from Models.DictModels import Importer, ImporterForm 
-import pickle
-class ImporterController(hrh):
-    def SetOperations(self):
-        #self.operations = settings.DEFAULT_OPERATIONS
-        ##make new handlers and attach them
-        #self.operations.update({'xml':{'method':'xmlCV'}})
-        self.operations['import']={'method':'importHtml'}
-        self.operations['default'] = {'method':'importHtml'}
-        self.operations['importPickle'] = {'method':'importPickle'}
-    #@AdminOnly()
-    def importHtml(self,*args):
-        self.SetTemplate(templateName ='Importer_import.html')
-        if self.method == 'GET':
-            imp = Importer()
-            self.respond({'Importer':imp,})
-        elif self.method=='POST' and self.params.Html:
-            imp = Importer()
-            imp.Html = self.params.Html
-            WordList = imp.importHtml(self.params.Html)
-            d = {'Importer':imp, 'WordList':WordList, 'check':True}
-            self.respond(d)
-    def importPickle(self, *args):
-        a = pickle.loads(self.params.pck)
-        cnt = 0
-        err= 0
-        for t in a:
-            try:
-                word = Word.CreateNew(value=t.Value, translation=t.Translation, _isAutoInsert=True)
-                cnt+=1
-            except:
-                err+=1
-                pass
-        self.response.out.write(str(cnt)+'---'+err.message)
+
 from Models.DictModels import Search, SearchForm
 class SearchController(hrh):
     def SetOperations(self):
@@ -120,4 +97,63 @@ class SearchController(hrh):
             results = Word.gql('WHERE Value= :v', v=self.params.text).fetch(limit=100, offset=offset)
         self.respond({'SearchForm':sf,'results':results, 'offset':offset+100})
 
-        
+from Models.DictModels import Importer, ImporterForm 
+import pickle
+import time
+class ImporterController(hrh):
+    def SetOperations(self):
+        #self.operations = settings.DEFAULT_OPERATIONS
+        ##make new handlers and attach them
+        #self.operations.update({'xml':{'method':'xmlCV'}})
+        self.operations['import']={'method':'importHtml'}
+        self.operations['default'] = {'method':'importHtml'}
+        self.operations['importPickle'] = {'method':'importPickle'}
+        self.operations['bulkDelete']={'method':'bulkDelete'}
+    #@AdminOnly()
+    def bulkDelete(self, *args):
+        try:
+            f=int(self.params.From)
+            items = Word.all().fetch(limit=100, offset=0)
+            if len(items)>0:
+                db.delete(items)
+                self.response.out.write(str(f+100))
+            else:
+                self.response.out.write('-1')
+            time.sleep(0.5)
+        except TransactionFailedError, msg:
+            logging.error(msg)
+            self.response.out.write('-1')
+        except Exception, msg:
+            logging.error(msg)
+            self.response.out.write('-1')
+    def importHtml(self,*args):
+        if True:
+            self.SetTemplate(templateName ='Importer_import.html')
+            if self.method=='POST' and self.params.Html:
+                imp = HtmlImport()
+                imp.Html = self.params.Html
+#                pdb.set_trace()
+                WordList = imp.importHtml(self.params.Html)
+                #d = {'Importer':imp, 'WordList':WordList, 'check':True}
+                self.response.out.write(len(WordList))
+#        except apiproxy_errors.RequestTooLargeError, msg:
+#            #logging.error(msg)
+#            #self.response.out.write(msg)
+#        except apiproxy_errors.OverQuotaError, msg:
+#            #logging.error(msg)
+#            #self.response.out.write(msg)
+#        except Exception, msg:
+#            #logging.error(msg)
+#            #self.response.out.write(msg)
+    def importPickle(self, *args):
+        a = pickle.loads(self.params.pck)
+        cnt = 0
+        err= 0
+        for t in a:
+            try:
+                word = Word.CreateNew(value=t.Value, translation=t.Translation, _isAutoInsert=True)
+                cnt+=1
+            except:
+                err+=1
+                pass
+        self.response.out.write(str(cnt)+'---'+err.message)

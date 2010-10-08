@@ -6,8 +6,7 @@ from lib.gaesessions import SessionMiddleware
 from Controllers import baseControllers
 from Controllers import staticControllers
 from Controllers import DictControllers
-from Controllers import DictControllers
-from Controllers import DictControllers
+from Controllers import TournamentHostControllers
 # {% endblock %}
 
 #"""Load custom Django template filters"""
@@ -17,11 +16,13 @@ debug=True
 application = webapp.WSGIApplication(
 [
  ##########
- ('/', staticControllers.WelcomeController),
+('/', DictControllers.SearchController),
  #{% block ApplicationControllers %}
 ('/Dict/Word', DictControllers.WordController),
 ('/Dict/Importer', DictControllers.ImporterController),
-('/Dict/Search', DictControllers.SearchController),
+
+('/TournamentHost/Host', TournamentHostControllers.HostController),
+('/TournamentHost/Guest', TournamentHostControllers.GuestController),
  #{% endblock %}
  #{% block baseControllers %}
  ('/Login', baseControllers.LoginController),
