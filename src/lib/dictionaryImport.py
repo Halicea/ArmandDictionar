@@ -126,4 +126,5 @@ if __name__ == '__main__':
         elif sys.argv[1] == 'import':
             bulkImport(1, 1386, url)
         else:
+            bulkDelete(url)
             print 'no argument passed'
