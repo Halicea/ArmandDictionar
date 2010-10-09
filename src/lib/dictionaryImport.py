@@ -7,6 +7,8 @@ import pickle
 import os
 import codecs
 import urllib
+from BeautifulSoup import BeautifulSoup as bs
+import sys
 error_log = open(os.path.join('Errors', 'errors.log'), 'w')
 error_counter = 0
 sourcesDir = 'DictFiles2'
@@ -73,10 +75,55 @@ def bulkImport(frm, to, url):
         except Exception, ex:
             error_counter+=1
             error_log.write('\n'+str(error_counter)+'.'+ex.message)
-#    urllib
+templ = """<html>
+<head></head>
+<body>{{repl}}</body>
+</html>"""
+items = []
+chunkNum =30
+dumpDir = 'C:\\MyProjects\\dictImport\\src\\DictFiles2'
+resourceFile ='C:\\Users\\kmihajlov\\Desktop\\MakGood.htm'
+def chunkHtml():
+    f = open(resourceFile, 'r')
+    txt =f.read()
+    f.close()
+    soup  = bs(txt)
+    items = soup.findAll('b')
+    counter = 1
+    if not os.path.exists(dumpDir):
+        os.makedirs(dumpDir)
+    for t in range(0, len(items), chunkNum):
+        to = len(items)>t+chunkNum and t+chunkNum or len(items)-t
+        print t, to, len(items)
+        c = items[t:to]
+        result= ''
+        for ut in c:
+            res = str(ut)
+            tmpNode = ut.nextSibling
+            while tmpNode:
+                res+=str(tmpNode)
+                tmpNode = tmpNode.nextSibling
+            final = '\n<div>'+res+'</div>\n'
+            result+=final
+        result = templ.replace('{{repl}}', result)
+        f = open(os.path.join(dumpDir, str(counter)), 'w')
+        f.write(result)
+        f.close()
+        counter+=1
 #    urlopen('http://localhost:8080/Dict/Importer')
 if __name__ == '__main__':
     urlLive = 'http://armandict.appspot.com/Dict/Importer'
     urlLocal = 'http://localhost:8080/Dict/Importer'
-    bulkDelete(urlLocal)
-    bulkImport(1, 1386, urlLocal)
+    url= urlLocal
+    if len(sys.argv)>2:
+        if sys.argv[2]=='live':
+            url = urlLive
+    if len(sys.argv) > 1:
+        if sys.argv[1] == 'chunk':
+            chunkHtml()
+        elif sys.argv[1] =='del':
+            bulkDelete(url)
+        elif sys.argv[1] == 'import':
+            bulkImport(1, 1386, url)
+        else:
+            print 'no argument passed'
