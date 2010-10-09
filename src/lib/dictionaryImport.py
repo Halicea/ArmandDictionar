@@ -3,14 +3,13 @@ Created on Oct 6, 2010
 
 @author: KMihajlov
 '''
+import pdb
 import pickle
 import os
 import codecs
 import urllib
 from BeautifulSoup import BeautifulSoup as bs
 import sys
-error_log = open(os.path.join('Errors', 'errors.log'), 'w')
-error_counter = 0
 sourcesDir = 'DictFiles2'
 import time
 retryTimes = 1
@@ -51,7 +50,10 @@ def bulkDelete(url):
             print k, old, negatives
             print msg
 def bulkImport(frm, to, url):
+    error_log = open('errors.log','w')
+    error_counter = 0
     for t in range(frm, to):
+	
         try:
             if os.path.exists(os.path.join(sourcesDir, str(t))):
                 f = open(os.path.join(sourcesDir, str(t)), 'r')
@@ -81,8 +83,8 @@ templ = """<html>
 </html>"""
 items = []
 chunkNum =30
-dumpDir = 'C:\\MyProjects\\dictImport\\src\\DictFiles2'
-resourceFile ='C:\\Users\\kmihajlov\\Desktop\\MakGood.htm'
+dumpDir = '../../Docs/ResultFiles2'
+resourceFile ='../../Docs/MakGood.htm'
 def chunkHtml():
     f = open(resourceFile, 'r')
     txt =f.read()
@@ -107,11 +109,14 @@ def chunkHtml():
             result+=final
         result = templ.replace('{{repl}}', result)
         f = open(os.path.join(dumpDir, str(counter)), 'w')
-        f.write(result)
+	f.write(result)
         f.close()
+	print 'saved '+str(counter)+' to '+dumpDir
         counter+=1
+	    
 #    urlopen('http://localhost:8080/Dict/Importer')
 if __name__ == '__main__':
+#    pdb.set_trace()
     urlLive = 'http://armandict.appspot.com/Dict/Importer'
     urlLocal = 'http://localhost:8080/Dict/Importer'
     url= urlLocal
