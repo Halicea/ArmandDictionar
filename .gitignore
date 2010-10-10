@@ -1,3 +1,4 @@
+*.htmldict
 .project
 .pydevproject
 .settings
