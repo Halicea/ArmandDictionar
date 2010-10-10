@@ -1,8 +1,3 @@
-'''
-Created on Oct 6, 2010
-
-@author: KMihajlov
-'''
 import pdb
 import pickle
 import os
@@ -53,7 +48,7 @@ def bulkImport(frm, to, url):
     error_log = open('errors.log','w')
     error_counter = 0
     for t in range(frm, to):
-	
+
         try:
             if os.path.exists(os.path.join(sourcesDir, str(t))):
                 f = open(os.path.join(sourcesDir, str(t)), 'r')
@@ -109,11 +104,11 @@ def chunkHtml():
             result+=final
         result = templ.replace('{{repl}}', result)
         f = open(os.path.join(dumpDir, str(counter)), 'w')
-	f.write(result)
+        f.write(result)
         f.close()
-	print 'saved '+str(counter)+' to '+dumpDir
+        print 'saved '+str(counter)+' to '+dumpDir
         counter+=1
-	    
+
 #    urlopen('http://localhost:8080/Dict/Importer')
 if __name__ == '__main__':
 #    pdb.set_trace()
@@ -133,6 +128,3 @@ if __name__ == '__main__':
         else:
             bulkDelete(url)
             print 'no argument passed'
-
-
-

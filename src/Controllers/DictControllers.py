@@ -5,10 +5,6 @@ from lib.decorators import *
 from google.appengine.ext import db
 from google.appengine.runtime import apiproxy_errors
 import logging
-if settings.DEBUG:
-    import sys, pdb
-    for attr in ('stdin', 'stdout', 'stderr'):
-        setattr(sys, attr, getattr(sys, '__%s__' % attr))
 
 
 ##################################################
