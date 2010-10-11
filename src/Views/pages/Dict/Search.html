@@ -6,13 +6,22 @@
 {% block content %}
 {%include SearchForm_search %}
 {% if results %}
+<hr/>
 <table style="">
 {%for r in results%}
 <tr>
-    <td>{{r.Value}}</td>
-    <td>{{r.Translation}}</td>
+    <td valign="top"><b>{{r.Value}}</b></td>
+    <td style="padding-left: 10px" valign="top">
+        <div>
+     {{r.Translation}}
+        </div>
+    </td>
 </tr>
 {%endfor%}
 </table>
+{%else%}
+ {%if showMessage %}
+    <div class='ui-state-error'>Пребарувањето не врати резултати!</div>
+ {%endif%}
 {%endif%}
 {% endblock %}

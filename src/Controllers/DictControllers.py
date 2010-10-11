@@ -1,13 +1,16 @@
 # -*- coding: utf-8 -*-
+#{% block imports %}
 import settings
 from lib.HalRequestHandler import HalRequestHandler as hrh
 from lib.decorators import *
 from google.appengine.ext import db
 from google.appengine.runtime import apiproxy_errors
+
+from lib.ascii2cyrillic import asciiToCyrillic as a2c
+from lib.ascii2cyrillic import multiAsciiToCyrillic as ma2c 
 import logging
+#{% endblock}
 
-
-##################################################
 from Models.DictModels import Word, WordForm , HtmlImport
 import os
 import sys
@@ -89,9 +92,16 @@ class SearchController(hrh):
         offset = self.params.offset and int(self.params.offset) or 0 
         sf = SearchForm(self.request.POST)
         results =[]
+        showMessage=False
         if self.params.text:
-            results = Word.gql('WHERE Value= :v', v=self.params.text).fetch(limit=100, offset=offset)
-        self.respond({'SearchForm':sf,'results':results, 'offset':offset+100})
+            showMessage=True
+            val = self.params.text
+            for k, v in ma2c.iteritems():
+                val = val.replace(k, v)
+            for k, v in a2c.iteritems():
+                val = val.replace(k, v)
+            results = Word.gql('WHERE Value= :v', v=val).fetch(limit=100, offset=offset)
+        self.respond({'SearchForm':sf,'results':results, 'offset':offset+100, 'showMessage':showMessage})
 
 from Models.DictModels import Importer, ImporterForm 
 import pickle
@@ -123,7 +133,7 @@ class ImporterController(hrh):
             logging.error(msg)
             self.response.out.write('-1')
     def importHtml(self,*args):
-        if True:
+        try:
             self.SetTemplate(templateName ='Importer_import.html')
             if self.method=='POST' and self.params.Html:
                 imp = HtmlImport()
@@ -132,15 +142,8 @@ class ImporterController(hrh):
                 WordList = imp.importHtml(self.params.Html)
                 #d = {'Importer':imp, 'WordList':WordList, 'check':True}
                 self.response.out.write(len(WordList))
-#        except apiproxy_errors.RequestTooLargeError, msg:
-#            #logging.error(msg)
-#            #self.response.out.write(msg)
-#        except apiproxy_errors.OverQuotaError, msg:
-#            #logging.error(msg)
-#            #self.response.out.write(msg)
-#        except Exception, msg:
-#            #logging.error(msg)
-#            #self.response.out.write(msg)
+        except Exception, ex:
+            logging.error(ex, ex.args)
     def importPickle(self, *args):
         a = pickle.loads(self.params.pck)
         cnt = 0

@@ -5,15 +5,25 @@ import codecs
 import urllib
 from BeautifulSoup import BeautifulSoup as bs
 import sys
-sourcesDir = 'DictFiles2'
+sourcesDir = '../../Docs/DictFiles2'
 import time
 retryTimes = 1
 chunkSize = 100
+
+templ = """<html>
+<head></head>
+<body>{{repl}}</body>
+</html>"""
+items = []
+chunkNum =30
+dumpDir = '../../Docs/ResultFiles2'
+resourceFile ='../../Docs/MakGood.htmldict'
+resultsDir ='../../Docs/Responds'
 def bulkDelete(url):
     old = 100
     negatives =0
-    k = 0
-    for t in range(0, 25000):
+    k = 100
+    while True:
         try:
             prs = urllib.urlencode({'op':'bulkDelete','From':str(k)})
             respond = urllib.urlopen(url, prs)    
@@ -39,7 +49,7 @@ def bulkDelete(url):
             except Exception, msg:
                 print msg
                 negatives+=1
-                k = old+100
+                k = old
             respond.close()
         except Exception, msg:
             print k, old, negatives
@@ -47,11 +57,12 @@ def bulkDelete(url):
 def bulkImport(frm, to, url):
     error_log = open('errors.log','w')
     error_counter = 0
+    if not os.path.exists(resultsDir):
+        os.makedirs(resultsDir)
     for t in range(frm, to):
-
         try:
-            if os.path.exists(os.path.join(sourcesDir, str(t))):
-                f = open(os.path.join(sourcesDir, str(t)), 'r')
+            if os.path.exists(os.path.join(dumpDir, str(t))):
+                f = open(os.path.join(dumpDir, str(t)), 'r')
                 txt = f.read()
                 f.close()
                 #url ='http://localhost:8080/Dict/Importer'
@@ -59,7 +70,7 @@ def bulkImport(frm, to, url):
                 prs = urllib.urlencode({'op':'importHtml','Html':txt})
                 respond = urllib.urlopen(url, prs)
                 try:
-                    stat = open(os.path.join('ErrorsPublish', str(t)+'.html'), 'w')
+                    stat = open(os.path.join(resultsDir, str(t)+'.html'), 'w')
                     response = respond.read()
                     print response
                     stat.write(response)
@@ -72,14 +83,9 @@ def bulkImport(frm, to, url):
         except Exception, ex:
             error_counter+=1
             error_log.write('\n'+str(error_counter)+'.'+ex.message)
-templ = """<html>
-<head></head>
-<body>{{repl}}</body>
-</html>"""
-items = []
-chunkNum =30
-dumpDir = '../../Docs/ResultFiles2'
-resourceFile ='../../Docs/MakGood.htm'
+        finally:
+            error_log.close()
+
 def chunkHtml():
     f = open(resourceFile, 'r')
     txt =f.read()

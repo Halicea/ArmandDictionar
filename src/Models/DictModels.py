@@ -47,36 +47,27 @@ class HtmlImport(db.Model):
     def parseWord(self, wrd, save=True):
         try:
             value =unicode(self.unescape(wrd.getText()))
-#            value.encode('utf-8')
             translation =u''
             tmpNode = wrd.nextSibling 
             while tmpNode:
-                translation+=str(tmpNode)
+                translation+=tmpNode.__unicode__()
                 tmpNode = tmpNode.nextSibling
-            try:
-                for k, v in rpl.iteritems():
-                    translation = translation.replace(k, v)
-#                translation.encode('utf-8')
-#                translation=unicode(translation)
-                #translation = translation.encode('utf-8')
-                
-                translation = self.unescape(translation)
-                if not value:
-                    self.writeError('Cannot Find value in'+str(wrd))
-                    return None
-                if not translation:
-                    self.writeError('Cannot Find translation for '+value+ ' in '+str(wrd))
-                    return None
-            except Exception, ex:
-                raise ex
+            for k, v in rpl.iteritems():
+                translation = translation.replace(k, v)
+            translation = self.unescape(translation)
+            if not value:
+                self.writeError(u'Cannot Find value in'+wrd.__unicode__())
+                return None
+            if not translation:
+                self.writeError(u'Cannot Find translation for '+value+ ' in '+wrd.__unicode__())
+                return None
             result = Word.CreateNew(value, translation , self, date.today(), save)
             #self.put()
             return result
         except Exception, ex:
-            #logging.error(ex)
-            self.writeError(' Error:'+ str(ex)+'\nValue='+(value or 'Null')+', Translation:'+(translation or 'Null'))
+            logging.error(ex, ex.args)
+            self.writeError(u' Error:'+ str(ex)+ex.args.__str__()+'\nValue='+(value or 'Null')+', Translation:'+(translation or 'Null'))
             return None
-            #self.put()
             #raise ex
     def writeError(self, message):
         if not self.Errors:
@@ -121,6 +112,7 @@ class Word(db.Model):
         
     @classmethod
     def CreateNew(cls, value, translation,wordimport,dateadded=date.today() , _isAutoInsert=False):
+        value =value.replace('\r\n',' ').replace('\n', ' ')
         result = cls(
                      Value=value,
                      Translation=translation,
@@ -138,8 +130,6 @@ class WordForm(ModelForm):
         #exclude
 ## End Word
 ##**************************
-
-
 
 class Search(db.Model):
     """TODO: Describe Search"""
@@ -160,3 +150,4 @@ class SearchForm(ModelForm):
         #exclude
 ## End Search
 ##**************************
+

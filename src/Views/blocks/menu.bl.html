@@ -20,17 +20,7 @@ $(document).ready(function() {
 {% endcomment %}
 <div id="menu" style="padding-left: 15px; margin-top: -5px;position: relative;" >
     <ul class="sf-menu">
-        <li><a href="{% url GuestController %}">Apply as Guest</a>
-            {% if current_user.IsAdmin %}
-            <ul><li><a href="{% url GuestController %}?op=lst">Листа Пријавени</a></li></ul>
-            {% endif %}
-        </li>
-        <li><a href="{% url HostController %}">Пријави се за Домаќин-Arman</img></a>
-            {% if current_user.IsAdmin %}
-            <ul><li><a href="{% url HostController %}?op=lst">Листа Пријавени</a></li></ul>
-            {% endif %}
-        </li>
-        <li><a href='{% url SearchController %}'>Dictsionar</a></li>
+        <li><a href='{% url SearchController %}'>Dictsionar</a>
         {% if current_user %}
             {% if current_user.IsAdmin %}
                 <ul>
@@ -38,6 +28,18 @@ $(document).ready(function() {
                 </ul>
             {% endif %}
         {% endif %}
+        </li>
+        <li><a href="{% url GuestController %}">Apply as Guest</a>
+            {% if current_user.IsAdmin %}
+            <ul><li><a href="{% url GuestController %}?op=lst">Листај Гости</a></li></ul>
+            {% endif %}
+        </li>
+        <li><a href="{% url HostController %}">Пријави се за домаќин-Arman</img></a>
+            {% if current_user.IsAdmin %}
+            <ul><li><a href="{% url HostController %}?op=lst">Листај домаќини</a></li></ul>
+            {% endif %}
+        </li>
+        
         <li><a href="{% url AboutController %}">About</a></li>
     </ul>
 </div>
