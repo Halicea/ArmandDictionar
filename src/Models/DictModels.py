@@ -6,7 +6,8 @@ from datetime import date
 import re, htmlentitydefs
 import logging
 from BaseModels import Person
-
+from django.newforms.fields import ChoiceField, EmailField, Field
+from django.newforms.widgets import RadioSelect, Textarea
 va =u'ã'
 rpl ={u'â':va, u'Ã£':va, u'ã':va}
 ##################################################
@@ -32,7 +33,7 @@ class HtmlImport(db.Model):
     DateCreated = db.DateTimeProperty(auto_now_add=True)
     def __str__(self):
         #TODO: Change the method to represent something meaningful
-        return 'Change __str__ method'
+        return self.Owner.Code+'('+str(self.DateCreated.year)+'-'+str(self.DateCreated.month)+'-'+str(self.DateCreated.day)+')'
     def importHtml(self, html):
         self.Html = html
         self.Owner =  Importer.gql('WHERE Code= :c',c=batchImporterCode).get() or Importer.CreateNew(code=batchImporterCode, _isAutoInsert=True)
@@ -125,8 +126,11 @@ class Word(db.Model):
         #TODO: Change the method to represent something meaningful
         return (self.Value or 'Nu-ari Zboru')+'( '+(self.Translation or 'Nu-ari Tradutseari')+' )'
 class WordForm(ModelForm):
+    Value = Field(required=True)
+    Translation= Field(required=True, widget=Textarea)
     class Meta():
         model=Word
+        exclude = ['Import']
         #exclude
 ## End Word
 ##**************************

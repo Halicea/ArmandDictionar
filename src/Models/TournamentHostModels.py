@@ -3,7 +3,7 @@ import settings
 from google.appengine.ext.db.djangoforms import ModelForm
 from google.appengine.ext.db import djangoforms as df 
 from google.appengine.ext import db
-from django.newforms.fields import ChoiceField, EmailField, Field 
+from django.newforms.fields import ChoiceField, EmailField, Field
 from django.newforms.widgets import RadioSelect, Textarea
 ##################################################
 

@@ -5,6 +5,9 @@ from lib.decorators import *
 from google.appengine.ext import db
 ##################################################
 from Models.TournamentHostModels import Host, HostForm , Guest, GuestForm
+class TournamentInfoController(hrh):
+    def get(self):
+        self.respond()
 class HostController(hrh):
     def SetOperations(self):
         self.operations = settings.DEFAULT_OPERATIONS

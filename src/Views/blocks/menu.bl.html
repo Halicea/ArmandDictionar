@@ -24,22 +24,28 @@ $(document).ready(function() {
         {% if current_user %}
             {% if current_user.IsAdmin %}
                 <ul>
-                <li><a href='{% url WordController %}'>Dictsionar</a></li>
+                    <li><a href='{% url WordController %}?op=shw'>New Word</a></li>
+                    <li><a href='{% url WordController %}?op=lst'>List Words</a></li>
                 </ul>
             {% endif %}
         {% endif %}
         </li>
-        <li><a href="{% url GuestController %}">Apply as Guest</a>
-            {% if current_user.IsAdmin %}
-            <ul><li><a href="{% url GuestController %}?op=lst">Листај Гости</a></li></ul>
-            {% endif %}
+        <li><a href="#">Tournament</a>
+            <ul>
+	            <li><a href='{% url TournamentInfoController %}'>Info</a>
+	            <li><a href="{% url GuestController %}">Apply as Guest</a>
+	            {% if current_user.IsAdmin %}
+	            <ul><li><a href="{% url GuestController %}?op=lst">Листај Гости</a></li></ul>
+	            {% endif %}
+	            </li>
+		        <li><a href="{% url HostController %}">Пријави се за домаќин-Arman</img></a>
+		            {% if current_user.IsAdmin %}
+		            <ul><li><a href="{% url HostController %}?op=lst">Листај домаќини</a></li></ul>
+		            {% endif %}
+		        </li>
+	        </ul>
         </li>
-        <li><a href="{% url HostController %}">Пријави се за домаќин-Arman</img></a>
-            {% if current_user.IsAdmin %}
-            <ul><li><a href="{% url HostController %}?op=lst">Листај домаќини</a></li></ul>
-            {% endif %}
-        </li>
-        
         <li><a href="{% url AboutController %}">About</a></li>
+        <li><a href="{% url ContactController %}">Contact</a></li>
     </ul>
 </div>

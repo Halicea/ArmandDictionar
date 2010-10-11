@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 #{% block imports %}
 import settings
+import random
 from lib.HalRequestHandler import HalRequestHandler as hrh
 from lib.decorators import *
 from google.appengine.ext import db
@@ -101,7 +102,20 @@ class SearchController(hrh):
             for k, v in a2c.iteritems():
                 val = val.replace(k, v)
             results = Word.gql('WHERE Value= :v', v=val).fetch(limit=100, offset=offset)
-        self.respond({'SearchForm':sf,'results':results, 'offset':offset+100, 'showMessage':showMessage})
+        randomResults = self.randomSample(30, 38500, 5)
+        self.respond({'SearchForm':sf,'results':results, 
+                      'offset':offset+100, 'showMessage':showMessage,
+                      'randomResults':randomResults})
+        
+    def randomSample(self, fr, to, cnt):
+        offset = random.randint(fr, to)
+        if offset+cnt>to:
+            offset=to-cnt
+        randomResults = Word.all().fetch(limit=cnt, offset=offset)
+        result = randomResults
+#        for t in range(0,cnt):
+#            result.append(randomResults[random.randint(0,len(randomResults))])
+        return result
 
 from Models.DictModels import Importer, ImporterForm 
 import pickle

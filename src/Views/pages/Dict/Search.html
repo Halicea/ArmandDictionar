@@ -4,24 +4,53 @@
 {% endblock %}
 
 {% block content %}
+<h3>Македонско-Влашки речник</h3>
 {%include SearchForm_search %}
+<div style="margin-bottom: 20px; min-height: 100px">
 {% if results %}
+<div>
 <hr/>
-<table style="">
-{%for r in results%}
-<tr>
-    <td valign="top"><b>{{r.Value}}</b></td>
-    <td style="padding-left: 10px" valign="top">
-        <div>
-     {{r.Translation}}
-        </div>
-    </td>
-</tr>
-{%endfor%}
-</table>
+	<table style="">
+	{%for r in results%}
+	<tr>
+	    <td valign="top"><b>{{r.Value}}</b></td>
+	    <td style="padding-left: 10px" valign="top">
+	     {{r.Translation}}
+	    </td>
+	    {% if current_user.IsAdmin %}
+	     <td><a href='{%url WordController %}?op=shw&key={{r.key}}'>Прегледај/Измени</a></td>
+	     <td> <a href='{%url WordController %}?op=del&key={{r.key}}'>Избриши</a></td>
+	    {% endif %}
+	</tr>
+	{%endfor%}
+	</table>
+</div>
 {%else%}
  {%if showMessage %}
     <div class='ui-state-error'>Пребарувањето не врати резултати!</div>
  {%endif%}
+{%endif%}
+</div>
+
+{% if randomResults %}
+<div style="margin-top: 20px">
+    <div class=ui-widget-header>5 Случајни зборови</div>
+	<div class="ui-widget-content">
+	<table style="">
+	{%for r in randomResults%}
+		<tr>
+		    <td valign="top"><b>{{r.Value}}</b></td>
+		    <td style="padding-left: 10px" valign="top">
+		     {{r.Translation}}
+		    </td>
+		    {% if current_user.IsAdmin %}
+		     <td><a href='{%url WordController %}?op=shw&key={{r.key}}'>Прегледај/Измени</a></td>
+		     <td> <a href='{%url WordController %}?op=del&key={{r.key}}'>Избриши</a></td>
+		    {% endif %}
+		</tr>
+	{%endfor%}
+	</table>
+	</div>
+</div>
 {%endif%}
 {% endblock %}

@@ -10,7 +10,9 @@ class WelcomeController(hrh):
 class AboutController(hrh):
 	def get(self):
 		self.respond()
-		
+class ContactController(hrh):
+	def get(self):
+		self.respond()
 class NotExistsController( hrh ):
 	def get( self, page_address ):
 		if self.request.get('ajax'):

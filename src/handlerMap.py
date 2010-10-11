@@ -21,6 +21,7 @@ application = webapp.WSGIApplication(
 ('/Dict/Word', DictControllers.WordController),
 ('/Dict/Importer', DictControllers.ImporterController),
 
+('/Tournament/Info', TournamentHostControllers.TournamentInfoController),
 ('/TournamentHost/Host', TournamentHostControllers.HostController),
 ('/TournamentHost/Guest', TournamentHostControllers.GuestController),
  #{% endblock %}
@@ -32,6 +33,7 @@ application = webapp.WSGIApplication(
  #{%endblock%}
  
  #{%block staticControllers%}
+ ('/Contact', staticControllers.ContactController),
  ('/About', staticControllers.AboutController),
  ('/Links', staticControllers.LinksController),
  ('/NotAuthorized', staticControllers.NotAuthorizedController),

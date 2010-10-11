@@ -1,4 +1,0 @@
-indexes:
-- kind: Word
-  properties:
-  - name : Value
