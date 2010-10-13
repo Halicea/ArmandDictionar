@@ -1,7 +1,9 @@
 
-<form method='post' action='{% url SearchController %}'>
-    <input type='hidden' name='op' value={{op}}>
-    <input type='hidden' name='key' value={{SearchForm.instance.key}}></input>
+<form id='SearchForm_search' method='post' action='{% url SearchController %}'>
+    <input type='hidden' name='op' value={{op}}/>
+    <input type='hidden' name='key' value={{SearchForm.instance.key}}/>
+    <input type='hidden' name='langFrom' value='mk'/>
+    <input type='hidden' name='langTo' value='arm'/>
 <table>
 {% for field in SearchForm %}
     <tr>
@@ -10,7 +12,7 @@
             {{ field }}
         </td>
         <td>
-            <input type='submit' value='Cafta/Барај'></input>
+            <input type='submit' value='Cafta/Барај'/>
         </td>
         <td style='color: red;'>
             {{ field.errors }}

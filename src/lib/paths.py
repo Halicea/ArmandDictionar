@@ -6,6 +6,7 @@ Created on 04.1.2010
 import os
 import os.path as p
 import settings
+
 def GetTemplateDir(template_type):
     # @type template_type:str 
     return p.join(settings.PAGE_VIEWS_DIR, template_type)

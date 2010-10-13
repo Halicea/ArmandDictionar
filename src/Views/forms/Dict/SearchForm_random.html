@@ -1,0 +1,14 @@
+<table style="">
+{%for r in randomResults%}
+    <tr>
+        <td valign="top"><b>{{r.Value}}</b></td>
+        <td style="padding-left: 10px" valign="top">
+         {{r.Translation}}
+        </td>
+        {% if current_user.IsAdmin %}
+         <td><a href='{%url WordController %}?op=shw&key={{r.key}}'>Прегледај/Измени</a></td>
+         <td> <a href='{%url WordController %}?op=del&key={{r.key}}'>Избриши</a></td>
+        {% endif %}
+    </tr>
+{%endfor%}
+</table>

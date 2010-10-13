@@ -5,8 +5,8 @@
         <td>
             {{ob}}item{{cb}}
         </td>
-        <td><a href='{{os}}url {{m.Name}}Controller {{cs}}?op=shw&key={{ob}}item.key{{cb}}'>Detail</a></td>
-        <td> <a href='{{os}}url {{m.Name}}Controller {{cs}}?op=del&key={{ob}}item.key{{cb}}'>Delete</a></td>
+        <td><a class='detail' href='{{os}}url {{m.Name}}Controller {{cs}}?op=shw&key={{ob}}item.key{{cb}}'>Detail</a></td>
+        <td> <a class='delete' href='{{os}}url {{m.Name}}Controller {{cs}}?op=del&key={{ob}}item.key{{cb}}'>Delete</a></td>
     </tr>
 {{os}} endfor {{cs}}
 </table>

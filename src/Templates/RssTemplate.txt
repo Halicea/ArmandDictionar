@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<rss version="2.0">
+<channel>
+    <title>{{m.Title}}</title>
+    <description>{{m.Description}}</description>
+    <link>{{m.PageUrl}}</link>
+    <lastBuildDate>{{m.TimeUpdated}}</lastBuildDate>
+    <pubDate>{{m.TimeUpdated}}</pubDate>
+    {% for entry in m.Entries %} 
+    <item>
+        <title>{{entry.Title}}</title>
+        <description>{{entry.Summary}}</description>
+        <link>{{entry.Link}}</link>
+        <guid>{{entry.Guid}}</guid>
+        <pubDate>{{entry.TimeUpdated}}</pubDate>
+    </item>
+    {%endfor%}
+</channel>
+</rss>

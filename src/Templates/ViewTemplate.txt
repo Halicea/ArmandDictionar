@@ -4,5 +4,7 @@
 {{os}} endblock {{cs}}
 
 {{os}} block content {{cs}}
+<div id='{{formTemplate}}'>
 {{os}}include {{formTemplate}} {{cs}}
+</div>
 {{os}} endblock {{cs}}

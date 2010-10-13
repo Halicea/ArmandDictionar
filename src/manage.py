@@ -49,18 +49,20 @@ libDir = 'lib'
 inherits_from = 'db.Model'
 
 class Model(object):
-    Package = ''
-    Name = ''
-    References = []
-    Properties = []
-    InheritsFrom = ''
+    def __init__(self):
+        self.Package = ''
+        self.Name = ''
+        self.References = []
+        self.Properties = []
+        self.InheritsFrom = ''
 
 class Property(object):
-    Name = ''
-    Type = ''
-    Options = None
-    Required = 'False'
-    Default = None
+    def __init__(self):
+        self.Name = ''
+        self.Type = ''
+        self.Options = None
+        self.Required = 'False'
+        self.Default = None
     
 
 def appendInBlocks(filePath, blockValuesDict):
@@ -139,7 +141,7 @@ def makeMvc(arg):
     if save.lower()=='y':
         if 'm' in arg:
             # Model setup
-            modelFile = pjoin(settings.MODELS_DIR, m.Package+'Models.py')
+            modelFile = pjoin(settings.MODELS_DIR, m.Package+settings.MODEL_MODULE_SUFIX+'.py')
             if not os.path.exists(modelFile):
                 f = open(modelFile, 'w')
                 f.write('import settings\n')
@@ -171,7 +173,7 @@ def makeMvc(arg):
             #End Form Setup
         if 'c' in arg:
             #Controller Setup
-            controllerFile = pjoin(settings.CONTROLLERS_DIR, m.Package+'Controllers.py')
+            controllerFile = pjoin(settings.CONTROLLERS_DIR, m.Package+settings.CONTROLLER_MODULE_SUFIX+'.py')
             if not os.path.exists(controllerFile):
                 f = open(controllerFile, 'w')
                 f.write('import settings\n')
@@ -187,11 +189,12 @@ def makeMvc(arg):
             #Edit HandlerMap
             f = open(settings.HANDLER_MAP_FILE, 'r'); 
             blocks={'ApplicationControllers':
-                           ['(\'/'+m.Package.replace('.','/')+'/'+m.Name+'\', '+m.Package+'Controllers.'+m.Name+'Controller),',],
+                           ['(\'/'+m.Package.replace('.','/')+'/'+m.Name+'\', '+m.Package+settings.CONTROLLER_MODULE_SUFIX+'.'+m.Name+'Controller),',],
                     'imports':
-                        ['from '+basename(settings.CONTROLLERS_DIR)+' import '+m.Package+'Controllers',]
+                        ['from '+basename(settings.CONTROLLERS_DIR)+' import '+m.Package+settings.CONTROLLER_MODULE_SUFIX,]
                    }
             appendInBlocks(settings.HANDLER_MAP_FILE, blocks)
+    m=None
 
 def render(model, templatePath, additionalVars={}):
     

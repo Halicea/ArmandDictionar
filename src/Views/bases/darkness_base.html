@@ -19,8 +19,6 @@
 {% block scripts %}
 
 {%endblock%}
-
-</head>
 {% block analitics %}
 <script type="text/javascript">
 var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
@@ -33,7 +31,8 @@ var pageTracker = _gat._getTracker("UA-5724164-2");
 pageTracker._trackPageview();
 } catch(err) {}</script>
 {%endblock%}
-<body style="background-color: #B6D2F1">
+</head>
+<body style="background-image:url('/images/lime-background-skinny-1.jpg'); background-repeat:no-repeat; background-position: center top;">
 <div style="width: 100%;">
 <div style="height: 1120px; width: 1000px; margin-left: auto; margin-right: auto;" class="">
 	<div id="top_content" style="padding-bottom: 10px">
@@ -61,7 +60,7 @@ pageTracker._trackPageview();
 			</div>
 		</div> 
 	</div>
-	<div id="middle_content" style="min-height: 500px;" class="ui-widget">
+	<div id="middle_content" style="min-height: 603px;" class="ui-widget">
 		 <!-- 
 		 <div id="left_panel_container" style="float: left; width: 120px; height:100% padding: 0px; background-color: blue;">
 			{% block left_pane %}
@@ -69,7 +68,7 @@ pageTracker._trackPageview();
 			{% endblock %}
 		</div>
 		 -->
-		<div id="main_container" style="float: left;width: 810px; padding: 0px;">
+		<div id="main_container" style="float: left;width: 810px; padding: 0px;min-height: 603px;" class="ui-corner-all">
 			{% block status %}
 				Status 
 			{% endblock %}
@@ -101,10 +100,13 @@ pageTracker._trackPageview();
 		</div>
 	</div>
 	<div style="clear: both;"></div>
-	<div id="bottom_container" style="text-align: center; width:100%">
+	<div id="bottom_container" style="text-align: center; width:100%;font-size: 13px">
 		{% block footer %}
-	<p><img src="http://code.google.com/appengine/images/appengine-silver-120x30.gif" 
-alt="Powered by Google App Engine" /> halicea.com (c)2009. Created By Kosta Mihajlov Halicea. </p>
+	<table><tr>
+	    <td><img src="http://code.google.com/appengine/images/appengine-silver-120x30.gif" alt="Powered by Google App Engine" height="25px" /> </td>
+	    <td>
+	    halicea.com&#169; 2010. | Dictionary Provided by <a href='http://roa-rup.wikipedia.org/wiki/Dina_Cuvata' target='_blank'>Dina Cuvata(Димо Димчев)</a> | Created By Kosta Mihajlov Halicea. |</td> 
+	</tr></table>
 		{% endblock %}
 	</div>
 </div>

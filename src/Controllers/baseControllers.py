@@ -43,7 +43,7 @@ class AddUserController( hrh ):
 		self.respond()
 		
 	def post( self ):
-		self.SetTemplate(None, 'Thanks.html')
+		self.SetTemplate(templateName='Thanks.html')
 		try:
 			user = base.Person( 
 						   UserName = self.g('UserName'),

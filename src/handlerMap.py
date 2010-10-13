@@ -24,6 +24,8 @@ application = webapp.WSGIApplication(
 ('/Tournament/Info', TournamentHostControllers.TournamentInfoController),
 ('/TournamentHost/Host', TournamentHostControllers.HostController),
 ('/TournamentHost/Guest', TournamentHostControllers.GuestController),
+('/Dict/Language', DictControllers.LanguageController),
+('/Dict/Dictionary', DictControllers.DictionaryController),
  #{% endblock %}
  #{% block baseControllers %}
  ('/Login', baseControllers.LoginController),
@@ -38,7 +40,7 @@ application = webapp.WSGIApplication(
  ('/Links', staticControllers.LinksController),
  ('/NotAuthorized', staticControllers.NotAuthorizedController),
  #{%endblock%}
- ('/(.*)', staticControllers.NotExistsController),
+ #('/(.*)', staticControllers.NotExistsController),
 ], debug=debug)
 def webapp_add_wsgi_middleware(app):
     app = SessionMiddleware(app)

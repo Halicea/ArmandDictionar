@@ -62,6 +62,8 @@ class Person(db.Model):
         else:
             u = cls.gql('WHERE Password= :passwd AND UserName= :uname', uname=uname, passwd=password).get()
         return u
+    def __str__(self):
+        return self.Name+' '+self.Surname
 #TODO; Implement this class
 #TODO: Associate privileges class(need to make that as well
 class Role(db.Model):

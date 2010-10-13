@@ -4,6 +4,7 @@ Created on Aug 6, 2009
 '''
 
 from google.appengine.ext import webapp
+from google.appengine.ext import db
 from Models.BaseModels import Person
 #from lib.appengine_utilities import sessions
 from lib.gaesessions import get_current_session
@@ -13,6 +14,7 @@ import settings
 from os import path
 import os
 from google.appengine.ext.webapp import template
+from lib.NewsFeed import NewsFeed
 
 __mode__ = 'Debug'
 
@@ -37,10 +39,19 @@ class HalRequestHandler( webapp.RequestHandler ):
     __template__ =""
     def getTemplate(self):
         if not self.__templateIsSet__:
-            self.SetTemplate(None, None)
+            self.SetTemplate(None, None, None)
         return self.__template__
 
-    def SetTemplate(self, templateType=None, templateName=None):
+    def SetTemplate(self,templateGroup=None, templateType=None, templateName=None):
+        if not templateGroup:
+            self.TemplateDir =settings.PAGE_VIEWS_DIR
+        else:
+            c = templateGroup
+            if c=='form': self.TemplateDir = settings.FORM_VIEWS_DIR
+            elif c=='page': self.TemplateDir = settings.PAGE_VIEWS_DIR
+            elif c=='block': self.TemplateDir =settings.BLOCK_VIEWS_DIR
+            else: raise Exception('Template Group does not exists')
+            
         if not templateType:
             self.TemplateType = self.__class__.__module__[self.__class__.__module__.index('.')+1:]
             self.TemplateType = self.TemplateType[:self.TemplateType.rindex('Controllers')]
@@ -85,8 +96,7 @@ class HalRequestHandler( webapp.RequestHandler ):
     #request =None
     # end Properties
     def SetOperations(self):
-        pass
-    
+        self.operations = settings.DEFAULT_OPERATIONS
     # Constructors   
     def initialize( self, request, response ):
         """Initializes this request handler with the given Request and Response."""
@@ -142,10 +152,24 @@ class HalRequestHandler( webapp.RequestHandler ):
         result.update(paths.GetBlocksDict())
         result.update(paths.getViewsDict(path.join(settings.FORM_VIEWS_DIR, self.TemplateType)))        ##end
         return result
-    def respond( self, dict={} ):
+    def respond( self, item={}, *args ):
         #self.response.out.write(self.Template+'<br/>'+ dict)
-        self.response.out.write( template.render( self.Template, self.render_dict( dict ), 
+        if isinstance(item,str):
+            self.response.out.write(item)
+        elif isinstance(item,dict):
+            self.response.out.write( template.render( self.Template, self.render_dict( item ), 
                                                   debug = settings.TEMPLATE_DEBUG ) )
+        elif isinstance(item,list):
+            self.response.out.write('<ul>'+'\n'.join(['<li>'+str(x)+'</li>' for x in item])+'</ul>')
+        elif isinstance(item,db.Model):
+            self.response.out.write(item.to_xml())
+        elif isinstance(item, NewsFeed):
+            import manage
+            self.response.headers["Content-Type"] = "application/xml; charset=utf-8"
+            template.render(os.path.join(manage.TMPL_DIR, 'RssTemplate.txt'), 
+                            {'m':item}, debug=settings.DEBUG)
+        else:
+            self.response.out.write(str(item))
     def redirect_login( self ):
         self.redirect( '/Login' )
     def respond_static(self, text):

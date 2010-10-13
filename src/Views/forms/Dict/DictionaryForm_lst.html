@@ -1,0 +1,13 @@
+<h2>Dictionary List: </h2>
+<table>
+{% for item in DictionaryList %}
+    <tr>
+        <td>
+            {{item}}
+        </td>
+        <td><a href='{%url DictionaryController %}?op=shw&key={{item.key}}'>Detail</a></td>
+        <td> <a href='{%url DictionaryController %}?op=del&key={{item.key}}'>Delete</a></td>
+    </tr>
+{% endfor %}
+</table>
+<h3><a href='{%url DictionaryController %}?op=shw'>New</a><h3>

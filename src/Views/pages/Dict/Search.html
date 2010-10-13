@@ -1,56 +1,61 @@
 {% extends base %}
 {% block scripts %}
 {{block.super}}
+<script type="text/javascript" src='/jscripts/jquery.form.js'></script>
+<script type="text/javascript">
+$(function(){
+	$('#SearchForm_search').ajaxForm({target: '#SearchForm_results', beforeSubmit:showSearchLoader, afterSubmit:rebindLinks});
+	$('#RefreshRandom').ajaxForm({target: '#SearchForm_random'});
+    $('#RefreshRandomSubmit').click(function(){
+    	$('#SearchForm_random').empty().html("<img src='/images/ajax-loader.gif' />");
+    	$('#RefreshRandom').submit();
+    	return false;
+     });
+    $('.delete').click(deleteEvent);
+});
+function deleteEvent(){
+    var item = $(this).parrent().parrent();
+    var url = $(this).attr('href');
+    $.ajax({type:'POST', url:url, cache:false,
+        success: function(){
+           item.slideUp('slow', function() {$(this).remove();});
+        }
+    });
+    return false;
+}
+function rebindLinks(){
+	$('#SearchForm_results .delete').click(deleteEvent);
+}
+function showSearchLoader(){
+	$('#SearchForm_results').visible=true;
+	$('#SearchForm_results').empty().html("<img src='/images/ajax-loader.gif' />");
+}
+</script>
 {% endblock %}
 
 {% block content %}
 <h3>Македонско-Влашки речник</h3>
+<div> 
 {%include SearchForm_search %}
-<div style="margin-bottom: 20px; min-height: 100px">
-{% if results %}
-<div>
-<hr/>
-	<table style="">
-	{%for r in results%}
-	<tr>
-	    <td valign="top"><b>{{r.Value}}</b></td>
-	    <td style="padding-left: 10px" valign="top">
-	     {{r.Translation}}
-	    </td>
-	    {% if current_user.IsAdmin %}
-	     <td><a href='{%url WordController %}?op=shw&key={{r.key}}'>Прегледај/Измени</a></td>
-	     <td> <a href='{%url WordController %}?op=del&key={{r.key}}'>Избриши</a></td>
-	    {% endif %}
-	</tr>
-	{%endfor%}
-	</table>
 </div>
-{%else%}
- {%if showMessage %}
-    <div class='ui-state-error'>Пребарувањето не врати резултати!</div>
- {%endif%}
-{%endif%}
+<div id="SearchForm_results" style="margin-bottom: 20px; min-height:280px">
+{% include SearchForm_results %}
 </div>
-
-{% if randomResults %}
-<div style="margin-top: 20px">
-    <div class=ui-widget-header>5 Случајни зборови</div>
-	<div class="ui-widget-content">
-	<table style="">
-	{%for r in randomResults%}
-		<tr>
-		    <td valign="top"><b>{{r.Value}}</b></td>
-		    <td style="padding-left: 10px" valign="top">
-		     {{r.Translation}}
+<div style="margin-top: 20px; {%if randomResults %} {%else%}visibility:hidden;{%endif%}">
+    <div class="ui-widget-header" style="padding-left:10px ">
+        <table><tr>
+		    <td>Зборови по случаен избор</td>
+		    <td> 
+			    <form id='RefreshRandom' action="">
+			     <input type="hidden" name="op" value="random" />
+			     <a href="#" id="RefreshRandomSubmit" title="Нови случајни зборови"><img src='/images/refresh.png' width="30px" /></a>
+			    </form>
 		    </td>
-		    {% if current_user.IsAdmin %}
-		     <td><a href='{%url WordController %}?op=shw&key={{r.key}}'>Прегледај/Измени</a></td>
-		     <td> <a href='{%url WordController %}?op=del&key={{r.key}}'>Избриши</a></td>
-		    {% endif %}
-		</tr>
-	{%endfor%}
-	</table>
+        </tr></table>
+    </div>
+    
+	<div id="SearchForm_random" class="ui-widget-content ui-corner-bottom" style="padding:10px; opacity:0.7" >
+	{%include SearchForm_random %}
 	</div>
 </div>
-{%endif%}
 {% endblock %}

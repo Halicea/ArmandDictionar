@@ -85,7 +85,6 @@ def bulkImport(frm, to, url):
             error_log.write('\n'+str(error_counter)+'.'+ex.message)
         finally:
             error_log.close()
-
 def chunkHtml():
     f = open(resourceFile, 'r')
     txt =f.read()

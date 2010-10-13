@@ -38,7 +38,7 @@ $(document).ready(function() {
 	            <ul><li><a href="{% url GuestController %}?op=lst">Листај Гости</a></li></ul>
 	            {% endif %}
 	            </li>
-		        <li><a href="{% url HostController %}">Пријави се за домаќин-Arman</img></a>
+		        <li><a href="{% url HostController %}">Пријави се за домаќин-Arman</a>
 		            {% if current_user.IsAdmin %}
 		            <ul><li><a href="{% url HostController %}?op=lst">Листај домаќини</a></li></ul>
 		            {% endif %}

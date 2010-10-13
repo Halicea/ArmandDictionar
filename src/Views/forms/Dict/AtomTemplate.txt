@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+    <title>{{m.Title}}</title>
+    <subtitle>{{m.Subtitle}}</subtitle>
+    <link href="{{m.FeedUrl}}" rel="self" />
+    <link href="{{m.PageUrl}}" />
+    <id>urn:uuid:{{m.Guid}}</id>
+    <updated>{{m.TimeUpdated}}</updated>
+    <author>
+        <name>m.Author.Name</name>
+        <email>m.Author.Email</email>
+    </author>
+    {% for entry in m.Entries %} 
+    <entry>
+        <title>{{entry.Title}}</title>
+        <link href="{{entry.Link}}" />
+        <link rel="edit" href="{{entry.Link}}?op=shw"/>
+        <id>urn:uuid:{{entry.Guid}}</id>
+        <updated>{{entry.TimeUpdated}}</updated>
+        <summary>{{entry.Summary}}</summary>
+    </entry>
+    {% endfor %}
+</feed>

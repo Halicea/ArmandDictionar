@@ -5,8 +5,8 @@
         <td>
             {{item}}
         </td>
-        <td><a href='{%url WordController %}?op=shw&key={{item.key}}'>Detail</a></td>
-        <td> <a href='{%url WordController %}?op=del&key={{item.key}}'>Delete</a></td>
+        <td><a class='detail'  href='{%url WordController %}?op=shw&key={{item.key}}'>Detail</a></td>
+        <td> <a class='delete' href='{%url WordController %}?op=del&key={{item.key}}'>Delete</a></td>
     </tr>
 {% endfor %}
 </table>

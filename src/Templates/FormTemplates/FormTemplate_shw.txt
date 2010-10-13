@@ -1,5 +1,5 @@
 <h2>{{m.Name}}: </h2>
-<form method='post' action='{{os}} url {{m.Name}}Controller {{cs}}'>
+<form id='{{m.Name}}Form' method='post' action='{{os}} url {{m.Name}}Controller {{cs}}'>
     <input type='hidden' name='op' value={{ob}}op{{cb}}>
     <input type='hidden' name='key' value={{ob}}{{m.Name}}Form.instance.key{{cb}}></input>
 <table>

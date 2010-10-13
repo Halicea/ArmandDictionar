@@ -7,11 +7,74 @@ import re, htmlentitydefs
 import logging
 from BaseModels import Person
 from django.newforms.fields import ChoiceField, EmailField, Field
-from django.newforms.widgets import RadioSelect, Textarea
+from django.newforms.widgets import RadioSelect, Textarea, TextInput
+import BaseModels
 va =u'ã'
 rpl ={u'â':va, u'Ã£':va, u'ã':va}
 ##################################################
+
 batchImporterCode = 'Batch'
+class Language(db.Model):
+    """TODO: Describe Language"""
+    Name= db.StringProperty(required=True, )
+    DateAdded= db.DateProperty(auto_now_add=True, )
+    AddedBy= db.ReferenceProperty(BaseModels.Person, collection_name='addedby_languages', )
+    TotalWordCount= db.IntegerProperty(default=0, )
+    
+    @classmethod
+    def CreateNew(cls ,name,dateadded,addedby,totalwordcount , _isAutoInsert=False):
+        result = cls(
+                     Name=name,
+                     DateAdded=dateadded,
+                     AddedBy=addedby,
+                     TotalWordCount=totalwordcount,)
+        if _isAutoInsert: result.put()
+        return result
+    def __str__(self):
+        #TODO: Change the method to represent something meaningful
+        return self.Name 
+class LanguageForm(ModelForm):
+    class Meta():
+        model=Language
+        #exclude
+## End Language
+##**************************
+
+class Dictionary(db.Model):
+    """TODO: Describe Dictionary"""
+    Name= db.StringProperty()
+    AddedBy= db.ReferenceProperty(BaseModels.Person, collection_name='addedby_dictionarys', required=True, )
+    DateAdded= db.DateProperty(auto_now_add=True, )
+    Language1= db.ReferenceProperty(Language, collection_name='language1_dictionarys', required=True, )
+    Language2= db.ReferenceProperty(Language, collection_name='language2_dictionarys', required=True, )
+    WordCount= db.IntegerProperty(default=0, )
+    
+    @classmethod
+    def CreateNew(cls ,name,addedby,dateadded,language1,language2,wordcount , _isAutoInsert=False):
+        result = cls(
+                     Name=name,
+                     AddedBy=addedby,
+                     DateAdded=dateadded,
+                     Language1=language1,
+                     Language2=language2,
+                     WordCount=wordcount,)
+        if _isAutoInsert: result.put()
+        return result
+    
+    def GetTranslations(self, word):
+        return self.dictionary_words.limit('Value=', word).fetch(limit=100)
+    def __str__(self):
+        #TODO: Change the method to represent something meaningful
+        return self.Name+'('+self.Language1.Name+'-'+(self.Language2==None and 'None' or self.Language2.Name)+')'
+
+class DictionaryForm(ModelForm):
+    DateAdded= Field(widget=TextInput(attrs={'class':'date'}))
+    class Meta():
+        model=Dictionary
+        #exclude
+## End Dictionary
+##**************************
+
 class Importer(db.Model):
     Code = db.StringProperty(required=True)
     Person = db.ReferenceProperty(Person)
@@ -31,9 +94,12 @@ class HtmlImport(db.Model):
     Html= db.TextProperty()
     Errors = db.TextProperty()
     DateCreated = db.DateTimeProperty(auto_now_add=True)
+    Dictionary = db.ReferenceProperty(Dictionary, collection_name='dictionary_html_imports')
     def __str__(self):
-        #TODO: Change the method to represent something meaningful
         return self.Owner.Code+'('+str(self.DateCreated.year)+'-'+str(self.DateCreated.month)+'-'+str(self.DateCreated.day)+')'
+    def importWord(self, word):
+        word.Import = self
+        word.put() 
     def importHtml(self, html):
         self.Html = html
         self.Owner =  Importer.gql('WHERE Code= :c',c=batchImporterCode).get() or Importer.CreateNew(code=batchImporterCode, _isAutoInsert=True)
@@ -110,7 +176,7 @@ class Word(db.Model):
     Translation= db.TextProperty()
     Import = db.ReferenceProperty(reference_class=HtmlImport, collection_name='import_words')
     DateAdded= db.DateProperty(auto_now_add=True)
-        
+    Dictionary = db.ReferenceProperty(reference_class=Dictionary, collection_name='dinctionary_words')
     @classmethod
     def CreateNew(cls, value, translation,wordimport,dateadded=date.today() , _isAutoInsert=False):
         value =value.replace('\r\n',' ').replace('\n', ' ')
@@ -122,6 +188,14 @@ class Word(db.Model):
                      )
         if _isAutoInsert: result.put()
         return result
+    def put(self):
+        if not self.is_saved():
+#           increment the Counters for each saved word
+            self.Dictionary.WordCount+=1
+            self.Dictionary.Language1.TotalWordCount+=1
+            self.Dictionary.put()
+            self.Dictionary.Language1.put()
+            self.put()
     def __str__(self):
         #TODO: Change the method to represent something meaningful
         return (self.Value or 'Nu-ari Zboru')+'( '+(self.Translation or 'Nu-ari Tradutseari')+' )'
@@ -154,4 +228,5 @@ class SearchForm(ModelForm):
         #exclude
 ## End Search
 ##**************************
+
 
