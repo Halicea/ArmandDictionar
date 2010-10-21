@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+                                    #!/usr/bin/env python
 import sys
 import os
 import shutil
@@ -49,22 +49,40 @@ libDir = 'lib'
 inherits_from = 'db.Model'
 
 class Model(object):
-    def __init__(self):
-        self.Package = ''
-        self.Name = ''
-        self.References = []
-        self.Properties = []
-        self.InheritsFrom = ''
+    Package = ''
+    Name = ''
+    References = []
+    Properties = []
+    InheritsFrom = ''
 
 class Property(object):
-    def __init__(self):
-        self.Name = ''
-        self.Type = ''
-        self.Options = None
-        self.Required = 'False'
-        self.Default = None
-    
+    Name = ''
+    Type = ''
+    Options = None
+    Required = 'False'
+    Default = None
 
+def copy_directory(source, target, ignoreDirs=[], ignoreFiles=[]):
+    ignoreDirsSet =set(ignoreDirs)
+    ignoreFilesSet =set(ignoreFiles) 
+    if not os.path.exists(target):
+        os.mkdir(target)
+    for root, dirs, files in os.walk(source): 
+        ignoreCurrentDirs = list(ignoreDirsSet.intersection(set(dirs)))
+        
+        for t in ignoreCurrentDirs:
+            print 'Ignoring', t
+            dirs.remove(t)  # don't visit .svn directories           
+        for file in files:
+            if os.path.splitext(file)[-1] in ignoreFiles:
+                print 'skipped', file
+                continue
+            from_ = os.path.join(root, file)           
+            to_ = from_.replace(source, target, 1)
+            to_directory = os.path.split(to_)[0]
+            if not os.path.exists(to_directory):
+                os.makedirs(to_directory)
+            shutil.copyfile(from_, to_)
 def appendInBlocks(filePath, blockValuesDict):
     curBlockName = ''
     f = open(filePath, 'r'); 
@@ -254,7 +272,7 @@ def newProject(toPath):
     if doCopy:
         # print fromPath,'=>', toPath
         # raw_input()
-        shutil.copytree(installPath, toPath)
+        copy_directory(installPath, toPath, ['.git',], ['.gitignore','.pyc',])
         str = open(pjoin(toPath, 'app.yaml'), 'r').read()
         str = str.replace('{{appname}}', basename(toPath).lower())
         str = str.replace('{{handler}}', settings.HANDLER_MAP_FILE)
@@ -379,6 +397,25 @@ Usage haliceamvc.py [projectPath]
 Options: [create]
 """
 def main(args):
+    # can do this in install on local mode    
+    if args[0]=='new' and len(args)>2:
+        if args[1]=='template':
+            templ = getTextFromPath(args[2])
+            input=len(args)>3 and extractAgrs(args[3:]) or {}
+            txt = convertToTemplate(templ, input)
+            print txt; print 
+            saveTextToFile(txt)
+            return
+        elif args[1] =='real':
+            templ = getTextFromPath(args[2])
+            input=len(args)>3 and extractAgrs(args[3:]) or {}
+            txt = convertToReal(templ, input)
+            print txt; print
+            saveTextToFile(txt)
+            return
+        else:
+            print 'Not valid type for new'
+            return
     isInInstall = os.path.exists(pjoin(installPath, '.InRoot'))
 #    isInInstall=True
     if isInInstall:
@@ -409,23 +446,6 @@ def main(args):
         else:
             print 'Not Valid Command [mvc, run, console]'
         return
-    # can do this in install on local mode    
-    if args[0]=='new' and len(args)>2:
-        if args[1]=='template':
-            templ = getTextFromPath(args[2])
-            input=len(args)>3 and extractAgrs(args[3:]) or {}
-            txt = convertToTemplate(templ, input)
-            print txt; print 
-            saveTextToFile(txt)
-        elif args[1] =='real':
-            templ = getTextFromPath(args[2])
-            input=len(args)>3 and extractAgrs(args[3:]) or {}
-            txt = convertToReal(templ, input)
-            print txt; print
-            saveTextToFile(txt)
-        else:
-            print 'Not valid type for new'
-    #        os.system(os.path.join(settings.APPENGINE_PATH, 'dev_appserver.py')+' '+os.pardir(os.path.abspath(__file__))+' --port 8080')
 if __name__ == '__main__':
     try:
         if len(sys.argv)>1:

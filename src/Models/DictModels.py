@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import settings
-from google.appengine.ext.db.djangoforms import ModelForm
+from google.appengine.ext.db.djangoforms import ModelForm, ModelChoiceField
 from google.appengine.ext import db
 from datetime import date
 import re, htmlentitydefs
@@ -8,14 +8,17 @@ import logging
 from BaseModels import Person
 from django.newforms.fields import ChoiceField, EmailField, Field
 from django.newforms.widgets import RadioSelect, Textarea, TextInput
+from django.newforms import widgets, fields, extras
 import BaseModels
+from lib.HalRequestHandler import HalRequestHandler
+from django import forms
 va =u'ã'
 rpl ={u'â':va, u'Ã£':va, u'ã':va}
-##################################################
 
 batchImporterCode = 'Batch'
 class Language(db.Model):
     """TODO: Describe Language"""
+    Code = db.StringProperty(required=True, )
     Name= db.StringProperty(required=True, )
     DateAdded= db.DateProperty(auto_now_add=True, )
     AddedBy= db.ReferenceProperty(BaseModels.Person, collection_name='addedby_languages', )
@@ -30,9 +33,15 @@ class Language(db.Model):
                      TotalWordCount=totalwordcount,)
         if _isAutoInsert: result.put()
         return result
+    @classmethod
+    def GetByCode(cls, code):
+        return Language.gql('WHERE Code= :c', c=code).get()
+    @classmethod
+    def GetByName(cls, name):
+        return Language.gql('WHERE Name= :n', n=name).get()
     def __str__(self):
         #TODO: Change the method to represent something meaningful
-        return self.Name 
+        return self.Name
 class LanguageForm(ModelForm):
     class Meta():
         model=Language
@@ -176,7 +185,7 @@ class Word(db.Model):
     Translation= db.TextProperty()
     Import = db.ReferenceProperty(reference_class=HtmlImport, collection_name='import_words')
     DateAdded= db.DateProperty(auto_now_add=True)
-    Dictionary = db.ReferenceProperty(reference_class=Dictionary, collection_name='dinctionary_words')
+    Dictionary = db.ReferenceProperty(reference_class=Dictionary, collection_name='dictionary_words')
     @classmethod
     def CreateNew(cls, value, translation,wordimport,dateadded=date.today() , _isAutoInsert=False):
         value =value.replace('\r\n',' ').replace('\n', ' ')
@@ -202,31 +211,64 @@ class Word(db.Model):
 class WordForm(ModelForm):
     Value = Field(required=True)
     Translation= Field(required=True, widget=Textarea)
+    res= (HalRequestHandler.GetUser()==None and [[]] or [HalRequestHandler.GetUser().addedby_dictionarys])[0]
+#    Dictionary = Field(required=True, widget=widgets.Select(choices=((str(x.key), str(x)) for x in res)))
     class Meta():
         model=Word
-        exclude = ['Import']
+        exclude = ['Import', 'Dictionary']
         #exclude
 ## End Word
 ##**************************
 
 class Search(db.Model):
     """TODO: Describe Search"""
-    text= db.StringProperty()
-    
+    Text= db.StringProperty()
+    Language1 = db.ReferenceProperty(Language, collection_name='language1_searches')
+    Language2 = db.ReferenceProperty(Language, collection_name='language2_searches')
     @classmethod
-    def CreateNew(cls ,text , _isAutoInsert=False):
+    def CreateNew(cls ,text ,language1, language2, _isAutoInsert=False):
         result = cls(
-                     text=text,)
+                     Text=text,
+                     Language1=language1,
+                     Language2=language2,
+                     )
         if _isAutoInsert: result.put()
         return result
     def __str__(self):
         #TODO: Change the method to represent something meaningful
-        return 'Change __str__ method' 
+        return self.Text+'-'+self.Language 
 class SearchForm(ModelForm):
+    Text = Field(widget=widgets.TextInput, label='Збор')
+    Language1 = ModelChoiceField(Language, label="", widget= fields.HiddenInput,)
+    Language2 = ModelChoiceField(Language, label="", widget= fields.HiddenInput,)
     class Meta():
         model=Search
         #exclude
 ## End Search
 ##**************************
 
-
+class WordSugestion(db.Model):
+    """TODO: Describe WordSugestion"""
+    Word= db.ReferenceProperty(Word, collection_name='word_wordsugestions', required=True, )
+    Sugestion= db.TextProperty()
+    SugestedBy= db.ReferenceProperty(Person, collection_name='sugestedby_wordsugestions', required=True, )
+    DateCreated= db.DateProperty()
+    
+    @classmethod
+    def CreateNew(cls ,word,sugestion,sugestedby , _isAutoInsert=False):
+        result = cls(
+                     Word=word,
+                     Sugestion=sugestion,
+                     SugestedBy=sugestedby,
+                     DateCreated=date.to,)
+        if _isAutoInsert: result.put()
+        return result
+    def __str__(self):
+        #TODO: Change the method to represent something meaningful
+        return 'Change __str__ method'
+class WordSugestionForm(ModelForm):
+    class Meta():
+        model=WordSugestion
+        #exclude
+## End WordSugestion
+##**************************

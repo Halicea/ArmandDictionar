@@ -34,37 +34,50 @@ def deprecated(func):
     new_func.__dict__.update(func.__dict__)
     return new_func
 
-class LogInRequired():
+class LogInRequired(object):
     def __init__(self, redirect_url='/Login', message= messages.must_be_loged):
         self.redirect_url = redirect_url
         self.message = message
         self.handler = None
 
     def __call__(self, f):
-        def new_f(request, *args):
+        def new_f(request, *args, **kwargs):
             if request.User:
-                f(request, args)
+                f(request, *args, **kwargs)
             else:
                 request.status= self.message
                 request.redirect(self.redirect_url)
         return new_f
 
-class AdminOnly():
+class AdminOnly(object):
     def __init__(self, redirect_url='/Login', message= messages.must_be_admin):
         self.redirect_url = redirect_url
         self.message = message
         self.handler = None
 
     def __call__(self, f):
-        def new_f(request, *args):
+        def new_f(request, *args, **kwargs):
             if request.User and request.User.IsAdmin:
-                f(request, args)
+                f(request, *args, **kwargs)
             else:
                 request.status= self.message
                 request.redirect(self.redirect_url)
         return new_f
+class InRole(object):
+    def __init__(self, role='Admin',redirect_url='/Login', message= messages.must_be_in_role):
+        self.redirect_url = redirect_url
+        self.message = message
+        self.handler = None
 
-class ErrorSafe():
+    def __call__(self, f):
+        def new_f(request, *args, **kwargs):
+            if request.User and request.User.IsAdmin:
+                f(request, *args, **kwargs)
+            else:
+                request.status= self.message
+                request.redirect(self.redirect_url)
+        return new_f
+class ErrorSafe(object):
     def __init__(self,
                  redirectUrl = '/',
                  message= messages.error_happened,
@@ -75,9 +88,9 @@ class ErrorSafe():
         self.Exception = Exception
         self.showStackTrace = showStackTrace
     def __call__(self, f):
-        def new_f(request, *args):
+        def new_f(request, *args, **kwargs):
             try:
-                f(request, args)
+                f(request, *args, **kwargs)
             except self.Exception, ex:
                 if request.status == None:
                     request.status = self.message or ''

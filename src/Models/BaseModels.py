@@ -1,10 +1,8 @@
-'''
-Created on Jul 21, 2009
-
-@author: Kosta
-'''
-###########
+# -*- coding: utf-8 -*-
+import settings
+from google.appengine.ext.db.djangoforms import ModelForm
 from google.appengine.ext import db
+from django.newforms import widgets, fields, extras
 import datetime as dt
 ###########
 
@@ -64,21 +62,11 @@ class Person(db.Model):
         return u
     def __str__(self):
         return self.Name+' '+self.Surname
-#TODO; Implement this class
-#TODO: Associate privileges class(need to make that as well
-class Role(db.Model):
-    RoleName = db.StringProperty(required=True)
-    RoleDescription = db.TextProperty(required=True)
-
-class RoleAssciation(db.Model):
-    Role = db.ReferenceProperty(Role, collection_name='role_role_associations')
-    Person = db.ReferenceProperty(Person,collection_name='person_person_associations')
-    
-    @classmethod
-    def CreateNew(cls, person, role, _isAutoInsert=False):
-        result = cls(Person=person, Role=role)
-        if _isAutoInsert: result.put()
-        return result 
+class PersonForm(ModelForm):
+    class Meta():
+        model = Person
+## End Person
+##**************************
 
 class WishList(db.Model):
     '''Whishes for the page look&feel and functionality '''
@@ -94,3 +82,51 @@ class WishList(db.Model):
     @classmethod
     def GetAll(cls, limit=1000, offset=0):
         return cls.all().fetch(limit=limit, offset=offset)
+class WishListForm(ModelForm):
+    class Meta():
+        model=WishList
+## End WishList
+##**************************
+
+class Role(db.Model):
+    """TODO: Describe Role"""
+    RoleName= db.StringProperty(required=True, )
+    RoleDescription= db.TextProperty(required=True, )
+    
+    @classmethod
+    def CreateNew(cls ,rolename,roledescription , _isAutoInsert=False):
+        result = cls(
+                     RoleName=rolename,
+                     RoleDescription=roledescription,)
+        if _isAutoInsert: result.put()
+        return result
+    def __str__(self):
+        return self.RoleName 
+class RoleForm(ModelForm):
+    class Meta():
+        model=Role
+## End Role
+##**************************
+
+class RoleAssociation(db.Model):
+    """Association Class between Users and Roles"""
+    Role= db.ReferenceProperty(Role, collection_name='role_roleassociations', )
+    Person= db.ReferenceProperty(Person, collection_name='person_roleassociations', )
+
+    @classmethod
+    def CreateNew(cls ,rolename,roledescription,role,person , _isAutoInsert=False):
+        result = cls(
+                     Role=role,
+                     Person=person,)
+        if _isAutoInsert: result.put()
+        return result
+    def __str__(self):
+        return self.Role.RoleName #+'-'+self.Person and self.Person.Name or 'None'+' '+self.Person and self.Person.Surname or 'None'
+class RoleAssociationForm(ModelForm):
+    def __init__(self, *args, **kwargs):
+        super(RoleAssociationForm, self).__init__(*args, **kwargs)
+        self.fields['Person'].queryset = Person.all().fetch(limit=100)
+    class Meta():
+        model=RoleAssociation
+## End RoleAssociation
+##**************************
