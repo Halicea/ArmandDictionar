@@ -1,5 +1,5 @@
 
-<form id='SearchForm_search' method='post' action='{% url SearchController %}'>
+<form class="SearchForm_search" method='post' action='{% url SearchController %}'>
     <input type='hidden' name='op' value={{op}}/>
    {% for field in SearchForm %}
    {%if field.is_hidden %}

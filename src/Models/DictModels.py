@@ -210,12 +210,12 @@ class Word(db.Model):
         return (self.Value or 'Nu-ari Zboru')+'( '+(self.Translation or 'Nu-ari Tradutseari')+' )'
 class WordForm(ModelForm):
     Value = Field(required=True)
-    Translation= Field(required=True, widget=Textarea)
-    res= (HalRequestHandler.GetUser()==None and [[]] or [HalRequestHandler.GetUser().addedby_dictionarys])[0]
-    Dictionary = ModelChoiceField(Dictionary, required=True, widget=widgets.Select)
+#    Translation= Field(required=True, widget=Textarea)
+#    res= (HalRequestHandler.GetUser()==None and [[]] or [HalRequestHandler.GetUser().addedby_dictionarys])[0]
+#    Dictionary = ModelChoiceField(Dictionary, required=True, widget=widgets.Select)
     class Meta():
         model=Word
-        exclude = ['Import', 'Dictionary']
+        exclude = ['Import']
         #exclude
 ## End Word
 ##**************************

@@ -25,7 +25,7 @@ class WordController(hrh):
         ##make new handlers and attach them
         #self.operations.update({'xml':{'method':'xmlCV'}})
         self.operations['default'] = {'method':'list'}
-    
+
     def show(self, *args):
         self.SetTemplate(templateName='Word_shw.html')
         if self.params.key:
@@ -105,17 +105,17 @@ class SearchController(hrh):
             self.search_ajax()
         else:
             results = []
-            languages = Language.all().fetch(limit=100)
-            transAvailable = set()
+#            languages = Language.all().fetch(limit=100)
+            transAvailable = []
             dictionaries = Dictionary.all().fetch(limit=1000)
             for dict in dictionaries:
-                transAvailable = transAvailable.union(((dict.Language1, dict.Language2),))
+                if not ([dict.Language1, dict.Language2] in transAvailable):  
+                    transAvailable.append([dict.Language1, dict.Language2])
             searches = []
             for langPair in transAvailable:
                 searches.append(
-                                SearchForm({'Language1':langPair[0], 'Language2':langPair[1]})
+                                SearchForm(instance = Search.CreateNew('', langPair[0], langPair[1]))
                                 )
-
             showMessage=False
             
             if self.params.text:

@@ -162,9 +162,8 @@ class RoleController(hrh):
             self.respond(result)
 
 class RoleAssociationController(hrh):
-    @AdminOnly()
     def SetOperations(self):
-        self.operations = settings.DEFAULT_OPERATIONS
+        self.operations = settings.DEFAULT_OPERATIONS.copy()
         ##make new handlers and attach them
         #self.operations.update({'xml':{'method':'xmlCV'}})
         self.operations['default'] = {'method':'list'}

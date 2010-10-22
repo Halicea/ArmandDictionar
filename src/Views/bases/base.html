@@ -3,17 +3,13 @@
 {{block.super}}
 <link href="/styles/ui-blackgreen/jquery-ui-1.7.2.custom.css" rel="stylesheet" type="text/css" media="screen" />
 <link href="/styles/mbContainer/css/mbContainer.css" rel="stylesheet" type="text/css" media="screen" />
-<!--<link href="/styles/resultGrid.css" rel="stylesheet" type="text/css" media="screen" /> -->
 {% endblock %}
 
 {% block scripts %}
 {{block.super}}
 <script type="text/javascript" src="/jscripts/jquery-1.4.min.js"></script>
 <script type="text/javascript" src="/jscripts/jquery-ui-1.7.2.custom.min.js"></script>
-
 <script type="text/javascript" src="/jscripts/jquery.layout.js"></script>
-<script type="text/javascript" src="/jscripts/mbContainer.js"></script>
-<script type="text/javascript" src="/jscripts/jquery.panelgallery.js"></script>
 <script type="text/javascript" src="/jscripts/jquery.form.js"></script>
 <script type="text/javascript">
 $(function(){
@@ -23,18 +19,8 @@ $(function(){
 		elementsPath:"elements/"
 	});
 	*/
-
-	$('#LogoContainer').panelGallery({
-		sections:5,
-		imageTransitionDelay :3000,
-		startDelay:5000,
-		sectionTransitionDelay : 700,
-		repeat:false,
-		direction:"lr"
-	});
-	
 	$('.date').datepicker()
-
+	
 	$('.my-collapsible').click(function(){
 		 var o = $(this);
 		 o.next('div').toggle('fast');
