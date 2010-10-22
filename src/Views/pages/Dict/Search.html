@@ -34,7 +34,8 @@ function showSearchLoader(){
 {% endblock %}
 
 {% block content %}
-<h3>Македонско-Влашки речник</h3>
+{% for SearchForm in SearchForms %}
+<h3>{{SearchForm.instance.Language1}}-{{SearchForm.instance.Language2}}</h3>
 <div> 
 {%include SearchForm_search %}
 </div>
@@ -58,4 +59,5 @@ function showSearchLoader(){
 	{%include SearchForm_random %}
 	</div>
 </div>
+{%endfor%}
 {% endblock %}

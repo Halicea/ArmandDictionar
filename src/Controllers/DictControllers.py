@@ -10,6 +10,8 @@ from lib import NewsFeed as nf
 from lib.ascii2cyrillic import asciiToCyrillic as a2c
 from lib.ascii2cyrillic import multiAsciiToCyrillic as ma2c 
 import logging
+
+
 #{% endblock}
 #DICT_SIZE = 38932
 DICT_SIZE = 200
@@ -102,22 +104,27 @@ class SearchController(hrh):
         if self.isAjax:
             self.search_ajax()
         else:
-            offset = self.params.offset and int(self.params.offset) or 0
-            sf = None
-            if self.params.Text:
-                src = Search.CreateNew(self.params.Text, Language.GetByCode(self.params.Language1), Language.GetByCode(self.params.Language2)) 
-                sf = SearchForm(data = self.request.POST, instance=src)
-            else:
-                sf = SearchForm({'Language1':str(Language.GetByCode('mkd').key()), 'Language2':str(Language.GetByCode('arm').key())})
-            results =[]
+            results = []
+            languages = Language.all().fetch(limit=100)
+            transAvailable = set()
+            dictionaries = Dictionary.all().fetch(limit=1000)
+            for dict in dictionaries:
+                transAvailable = transAvailable.union(((dict.Language1, dict.Language2),))
+            searches = []
+            for langPair in transAvailable:
+                searches.append(
+                                SearchForm({'Language1':langPair[0], 'Language2':langPair[1]})
+                                )
+
             showMessage=False
+            
             if self.params.text:
                 showMessage=True
                 val = self.replaceWithCyrillic(self.params.Text)
-                results = Word.gql('WHERE Value= :v', v=val).fetch(limit=100, offset=offset)
+                results = Word.gql('WHERE Value= :v', v=val).fetch(limit=100)
             randomResults = self.randomSample(30, DICT_SIZE, 5)
-            self.respond({'SearchForm':sf,'results':results, 
-                          'offset':offset+100, 'showMessage':showMessage,
+            self.respond({'SearchForms':searches,'results':results, 
+                          'showMessage':showMessage,
                           'randomResults':randomResults})
     def search_ajax(self, *args):
         self.SetTemplate(templateGroup='form', templateName='SearchForm_results.html')

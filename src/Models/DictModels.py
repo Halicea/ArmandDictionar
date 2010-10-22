@@ -77,7 +77,7 @@ class Dictionary(db.Model):
         return self.Name+'('+self.Language1.Name+'-'+(self.Language2==None and 'None' or self.Language2.Name)+')'
 
 class DictionaryForm(ModelForm):
-    DateAdded= Field(widget=TextInput(attrs={'class':'date'}))
+    DateAdded= fields.DateField(widget=TextInput(attrs={'class':'date'}))
     class Meta():
         model=Dictionary
         #exclude
@@ -212,7 +212,7 @@ class WordForm(ModelForm):
     Value = Field(required=True)
     Translation= Field(required=True, widget=Textarea)
     res= (HalRequestHandler.GetUser()==None and [[]] or [HalRequestHandler.GetUser().addedby_dictionarys])[0]
-#    Dictionary = Field(required=True, widget=widgets.Select(choices=((str(x.key), str(x)) for x in res)))
+    Dictionary = ModelChoiceField(Dictionary, required=True, widget=widgets.Select)
     class Meta():
         model=Word
         exclude = ['Import', 'Dictionary']
