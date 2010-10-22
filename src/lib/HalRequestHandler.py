@@ -54,7 +54,7 @@ class HalRequestHandler( webapp.RequestHandler ):
             
         if not templateType:
             self.TemplateType = self.__class__.__module__[self.__class__.__module__.index('.')+1:]
-            self.TemplateType = self.TemplateType[:self.TemplateType.rindex('Controllers')]
+            self.TemplateType = self.TemplateType[:self.TemplateType.rindex(settings.CONTROLLER_MODULE_SUFIX)]
         else:
             self.TemplateType = templateType.replace('.', path.sep)
             
@@ -74,7 +74,7 @@ class HalRequestHandler( webapp.RequestHandler ):
     @classmethod
     def GetUser(cls):
         s = get_current_session()
-        if s.is_active():
+        if s and s.is_active():
             return s.get('user', default=None)
         else:
             return None
@@ -150,7 +150,7 @@ class HalRequestHandler( webapp.RequestHandler ):
         result.update(paths.GetBasesDict())
         result.update(paths.GetMenusDict())
         result.update(paths.GetBlocksDict())
-        result.update(paths.getViewsDict(path.join(settings.FORM_VIEWS_DIR, self.TemplateType)))        ##end
+        result.update(paths.getViewsDict(path.join(settings.FORM_VIEWS_DIR, self.TemplateType))) ##end
         return result
     def respond( self, item={}, *args ):
         #self.response.out.write(self.Template+'<br/>'+ dict)
@@ -158,7 +158,7 @@ class HalRequestHandler( webapp.RequestHandler ):
             self.response.out.write(item)
         elif isinstance(item,dict):
             self.response.out.write( template.render( self.Template, self.render_dict( item ), 
-                                                  debug = settings.TEMPLATE_DEBUG ) )
+                                                  debug = settings.TEMPLATE_DEBUG ))
         elif isinstance(item,list):
             self.response.out.write('<ul>'+'\n'.join(['<li>'+str(x)+'</li>' for x in item])+'</ul>')
         elif isinstance(item,db.Model):

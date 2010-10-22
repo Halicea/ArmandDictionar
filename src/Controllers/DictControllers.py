@@ -102,13 +102,18 @@ class SearchController(hrh):
         if self.isAjax:
             self.search_ajax()
         else:
-            offset = self.params.offset and int(self.params.offset) or 0 
-            sf = SearchForm(self.request.POST)
+            offset = self.params.offset and int(self.params.offset) or 0
+            sf = None
+            if self.params.Text:
+                src = Search.CreateNew(self.params.Text, Language.GetByCode(self.params.Language1), Language.GetByCode(self.params.Language2)) 
+                sf = SearchForm(data = self.request.POST, instance=src)
+            else:
+                sf = SearchForm({'Language1':str(Language.GetByCode('mkd').key()), 'Language2':str(Language.GetByCode('arm').key())})
             results =[]
             showMessage=False
             if self.params.text:
                 showMessage=True
-                val = self.replaceWithCyrillic(self.params.text)
+                val = self.replaceWithCyrillic(self.params.Text)
                 results = Word.gql('WHERE Value= :v', v=val).fetch(limit=100, offset=offset)
             randomResults = self.randomSample(30, DICT_SIZE, 5)
             self.respond({'SearchForm':sf,'results':results, 
@@ -119,11 +124,15 @@ class SearchController(hrh):
         offset = self.params.offset and int(self.params.offset) or 0 
         results =[]
         showMessage=False
-        if self.params.text:
+        sf = SearchForm(self.request.POST)
+        if sf.is_valid():
             showMessage = True
-            val = self.replaceWithCyrillic(self.params.text)
-            results = Word.gql('WHERE Value= :v', v=val).fetch(limit=100, offset=offset)
-        self.respond({'results':results, 'showMessage':showMessage})
+            search = sf.save(commit=False)
+            search.Text = self.replaceWithCyrillic(search.Text)
+            results = Word.gql('WHERE Value= :v', v=search.Text).fetch(limit=100, offset=offset)
+            self.respond({'results':results, 'showMessage':showMessage})
+        else:
+            self.respond('')
     def random(self, *args):
         if self.isAjax:
             self.random_ajax(*args)
@@ -312,9 +321,15 @@ class DictionaryController(hrh):
 
     def insert(self):
         instance = None
+        form = None
         if self.params.key:
             instance = Dictionary.get(self.params.key)
-        form=DictionaryForm(data=self.request.POST, instance=instance)
+            if instance:
+                form=DictionaryForm(data=self.request.POST, instance=instance)
+            else:
+                form = DictionaryForm(self.request.POST)
+        else:
+            form = DictionaryForm(self.request.POST)
         if form.is_valid():
             result=form.save(commit=False)
             result.put()
@@ -324,4 +339,86 @@ class DictionaryController(hrh):
             self.SetTemplate(templateName = 'Dictionary_shw.html')
             self.status = 'Form is not Valid'
             result = {'op':'upd', 'DictionaryForm': form}
+            self.respond(result)
+
+from Models.DictModels import WordSugestion, WordSugestionForm 
+class WordSugestionController(hrh):
+    def SetOperations(self):
+        self.operations = settings.DEFAULT_OPERATIONS
+        ##make new handlers and attach them
+        #self.operations.update({'xml':{'method':'xmlCV'}})
+        self.operations['default'] = {'method':'sugest'}
+    @LogInRequired()
+    def sugest(self, *args):
+        if self.isAjax:
+            self.sugest_ajax()
+        else:
+            #TODO: Not Implemented yet
+            pass
+    @LogInRequired()
+    def sugest_ajax(self, *args):
+        if self.params.Wordkey and self.params.Sugestion:
+            word = Word.get(self.params.Wordkey)
+            sugestion = self.params.Sugestion
+            sug = WordSugestion.CreateNew(word, sugestion, self.User, _isAutoInsert=True)
+            self.respond("Suggestion is saved. Thanks for helping!")
+        else:
+            self.respond("Cannot Add the Suggestion!")
+    @AdminOnly()
+    def show(self, *args):
+        self.SetTemplate(templateName='WordSugestion_shw.html')
+        if self.params.key:
+            item = WordSugestion.get(self.params.key)
+            if item:
+                result = {'op':'upd', 'WordSugestionForm': WordSugestionForm(instance=item)}
+                self.respond(result)
+            else:
+                self.status = 'WordSugestion does not exists'
+                self.redirect(WordSugestionController.get_url())
+        else:
+            self.status = 'Key not provided'
+            self.respond({'op':'ins' ,'WordSugestionForm':WordSugestionForm()})
+
+    @AdminOnly()
+    def delete(self):
+        if self.params.key:
+            item = WordSugestion.get(self.params.key)
+            if item:
+                item.delete()
+                self.status ='WordSugestion is deleted!'
+            else:
+                self.status='WordSugestion does not exist'
+        else:
+            self.status = 'Key was not Provided!'
+        self.redirect(WordSugestionController.get_url())
+
+
+    def list(self):
+        self.SetTemplate(templateName='WordSugestion_lst.html')
+        results =None
+        index = 0; count=1000
+        try:
+            index = int(self.params.index)
+            count = int(self.params.count)
+        except:
+            pass
+        result = {'WordSugestionList': WordSugestion.all().fetch(limit=count, offset=index)}
+        result.update(locals())
+        self.respond(result)
+
+
+    def insert(self):
+        instance = None
+        if self.params.key:
+            instance = WordSugestion.get(self.params.key)
+        form=WordSugestionForm(data=self.request.POST, instance=instance)
+        if form.is_valid():
+            result=form.save(commit=False)
+            result.put()
+            self.status = 'WordSugestion is saved'
+            self.redirect(WordSugestionController.get_url())
+        else:
+            self.SetTemplate(templateName = 'WordSugestion_shw.html')
+            self.status = 'Form is not Valid'
+            result = {'op':'upd', 'WordSugestionForm': form}
             self.respond(result)

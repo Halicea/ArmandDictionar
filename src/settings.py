@@ -10,7 +10,9 @@ TEMPLATE_DIRS = (abspath('Views'),
 
 #Directory Structure
 MODEL_MODULE_SUFIX = 'Models'
-CONTROLLER_MODULE_SUFIX = 'Controlers'
+MODEL_CLASS_SUFIX = ''
+CONTROLLER_MODULE_SUFIX = 'Controllers'
+CONTROLLER_CLASS_SUFIX = 'Controller'
 
 MODELS_DIR = abspath('Models')
 VIEWS_DIR = abspath('Views')

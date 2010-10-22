@@ -4,91 +4,222 @@ from lib.HalRequestHandler import HalRequestHandler as hrh
 from google.appengine.api import memcache
 from lib import messages
 from lib.decorators import *
+import settings
+from Models.BaseModels import RoleAssociation, RoleAssociationForm 
+from Models.BaseModels import Role, RoleForm 
+from Models.BaseModels import Person, WishList
 
 class LoginController( hrh ):
-	@ErrorSafe()
-	def get( self, *args ):
-		if not self.User:
-			if self.g('redirect_url'):
-				self.respond({'redirect_url':self.g('redirect_url')})
-			else:
-				self.respond()
-		else:
-			self.redirect( '/' )
-			
-	def post( self ):
-		uname = self.request.get( 'Email' )
-		passwd = self.request.get( 'Password' )
-		if (uname and passwd):
-			if(self.login_user(uname, passwd)):
-				if self.request.get( 'redirect_url' ):
-					self.redirect( self.request.get( 'redirect_url' ) )
-				else:
-					self.redirect( '/' )
-			else:
-				self.status = 'Email Or Password are not correct!!'
-				self.respond()
-		else:
-			self.status = 'Email Or Password are not correct!'
-			self.respond()
+    @ErrorSafe()
+    def get( self, *args ):
+        if not self.User:
+            if self.g('redirect_url'):
+                self.respond({'redirect_url':self.g('redirect_url')})
+            else:
+                self.respond()
+        else:
+            self.redirect( '/' )
+            
+    def post( self ):
+        uname = self.request.get( 'Email' )
+        passwd = self.request.get( 'Password' )
+        if (uname and passwd):
+            if(self.login_user(uname, passwd)):
+                if self.request.get( 'redirect_url' ):
+                    self.redirect( self.request.get( 'redirect_url' ) )
+                else:
+                    self.redirect( '/' )
+            else:
+                self.status = 'Email Or Password are not correct!!'
+                self.respond()
+        else:
+            self.status = 'Email Or Password are not correct!'
+            self.respond()
 
 class LogoutController( hrh ):
-	@LogInRequired(message = '')
-	def get( self, *args ):
-		self.logout_user()
-		self.redirect( LoginController.get_url() )
+    @LogInRequired(message = '')
+    def get( self, *args ):
+        self.logout_user()
+        self.redirect( LoginController.get_url() )
 
 class AddUserController( hrh ):
-	def get( self ):
-		self.respond()
-		
-	def post( self ):
-		self.SetTemplate(templateName='Thanks.html')
-		try:
-			user = base.Person( 
-						   UserName = self.g('UserName'),
-						   Email=self.g( 'Email' ),
-						   Name=self.g( 'Name' ),
-						   Surname=self.g( 'Surname' ),
-						   Password=self.g( 'Password' ),
-						   Public=self.g( 'Public' ) == 'on' and True or False,
-						   Notify=self.g( 'Notify' ) == 'on' and  True or False
-						   )
+    def get( self ):
+        self.respond()
+        
+    def post( self ):
+        self.SetTemplate(templateName='Thanks.html')
+        try:
+            user = Person( 
+                           UserName = self.g('UserName'),
+                           Email=self.g( 'Email' ),
+                           Name=self.g( 'Name' ),
+                           Surname=self.g( 'Surname' ),
+                           Password=self.g( 'Password' ),
+                           Public=self.g( 'Public' ) == 'on' and True or False,
+                           Notify=self.g( 'Notify' ) == 'on' and  True or False
+                           )
 
-			if ( self.request.get( 'Notify' ) == None and self.request.get( 'Notify' ) == 'on' ):
-				user.Notify = True
-			else:
-				user.Notify = False
+            if ( self.request.get( 'Notify' ) == None and self.request.get( 'Notify' ) == 'on' ):
+                user.Notify = True
+            else:
+                user.Notify = False
 
-			if ( self.request.get( 'Public' ) == None and self.request.get( 'Public' ) == 'on' ):
-				user.Public = True
-			else:
-				user.Public = False
-			user.put()
-			self.respond( locals() )
-		except Exception, ex:
-			self.status = ex
-			self.redirect(AddUserController.get_url())
+            if ( self.request.get( 'Public' ) == None and self.request.get( 'Public' ) == 'on' ):
+                user.Public = True
+            else:
+                user.Public = False
+            user.put()
+            self.respond( locals() )
+        except Exception, ex:
+            self.status = ex
+            self.redirect(AddUserController.get_url())
 
 class WishListController(hrh):
-	def get(self):
-		if self.g('op')=='del' and self.g('key'):
-			self.deleteWish(self.g('key'))
-		self.respond({'wishlist' : base.WishList.GetAll()})
-		#self.respond()
-	@AdminOnly('/WishList')
-	def deleteWish(self, wishKey):
-		k = base.WishList.get(wishKey)
-		if k:
-			k.delete()
-			self.status ='Wish deleted!'
-		else:
-			self.status='Wish does not exist'
+    def get(self):
+        if self.g('op')=='del' and self.g('key'):
+            self.deleteWish(self.g('key'))
+        self.respond({'wishlist' : base.WishList.GetAll()})
+        #self.respond()
+    @AdminOnly('/WishList')
+    def deleteWish(self, wishKey):
+        k = WishList.get(wishKey)
+        if k:
+            k.delete()
+            self.status ='Wish deleted!'
+        else:
+            self.status='Wish does not exist'
 
-	def post(self):
-		if self.g('op')=='add':
-			base.WishList.CreateNew(self.User, self.g('wish'), _isAutoInsert=True)
-			if self.isAjax:
-				self.resonse.out.write('success')
-			else:
-				self.redirect(WishListController.get_url()+'?op=lst')
+    def post(self):
+        if self.g('op')=='add':
+            WishList.CreateNew(self.User, self.g('wish'), _isAutoInsert=True)
+            if self.isAjax:
+                self.resonse.out.write('success')
+            else:
+                self.redirect(WishListController.get_url()+'?op=lst')
+
+class RoleController(hrh):
+    def SetOperations(self):
+        self.operations = settings.DEFAULT_OPERATIONS
+        ##make new handlers and attach them
+        #self.operations.update({'xml':{'method':'xmlCV'}})
+        self.operations['default'] = {'method':'list'}
+    
+    def show(self):
+        self.SetTemplate(templateName='Role_shw.html')
+        if self.params.key:
+            item = Role.get(self.params.key)
+            if item:
+                result = {'op':'upd', 'RoleForm': RoleForm(instance=item)}
+                self.respond(result)
+            else:
+                self.status = 'Role does not exists'
+                self.redirect(RoleController.get_url())
+        else:
+            self.status = 'Key not provided'
+            self.respond({'op':'ins' ,'RoleForm':RoleForm()})
+
+
+    def delete(self):
+        if self.params.key:
+            item = Role.get(self.params.key)
+            if item:
+                item.delete()
+                self.status ='Role is deleted!'
+            else:
+                self.status='Role does not exist'
+        else:
+            self.status = 'Key was not Provided!'
+        self.redirect(RoleController.get_url())
+
+
+    def list(self):
+        self.SetTemplate(templateName='Role_lst.html')
+        results =None
+        index = 0; count=1000
+        try:
+            index = int(self.params.index)
+            count = int(self.params.count)
+        except:
+            pass
+        result = {'RoleList': Role.all().fetch(limit=count, offset=index)}
+        result.update(locals())
+        self.respond(result)
+
+    def insert(self):
+        instance = None
+        if self.params.key:
+            instance = Role.get(self.params.key)
+        form=RoleForm(data=self.request.POST, instance=instance)
+        if form.is_valid():
+            result=form.save(commit=False)
+            result.put()
+            self.status = 'Role is saved'
+            self.redirect(RoleController.get_url())
+        else:
+            self.SetTemplate(templateName = 'Role_shw.html')
+            self.status = 'Form is not Valid'
+            result = {'op':'upd', 'RoleForm': form}
+            self.respond(result)
+
+class RoleAssociationController(hrh):
+    @AdminOnly()
+    def SetOperations(self):
+        self.operations = settings.DEFAULT_OPERATIONS
+        ##make new handlers and attach them
+        #self.operations.update({'xml':{'method':'xmlCV'}})
+        self.operations['default'] = {'method':'list'}
+
+    def show(self, *args):
+        self.SetTemplate(templateName='RoleAssociation_shw.html')
+        if self.params.key:
+            item = RoleAssociation.get(self.params.key)
+            if item:
+                result = {'op':'upd', 'RoleAssociationForm': RoleAssociationForm(instance=item)}
+                self.respond(result)
+            else:
+                self.status = 'RoleAssociation does not exists'
+                self.redirect(RoleAssociationController.get_url())
+        else:
+            self.status = 'Key not provided'
+            self.respond({'op':'ins' ,'RoleAssociationForm':RoleAssociationForm()})
+
+    def delete(self, *args):
+        if self.params.key:
+            item = RoleAssociation.get(self.params.key)
+            if item:
+                item.delete()
+                self.status ='RoleAssociation is deleted!'
+            else:
+                self.status='RoleAssociation does not exist'
+        else:
+            self.status = 'Key was not Provided!'
+        self.redirect(RoleAssociationController.get_url())
+
+    def list(self, *args):
+        self.SetTemplate(templateName='RoleAssociation_lst.html')
+        results =None
+        index = 0; count=1000
+        try:
+            index = int(self.params.index)
+            count = int(self.params.count)
+        except:
+            pass
+        result = {'RoleAssociationList': RoleAssociation.all().fetch(limit=count, offset=index)}
+        result.update(locals())
+        self.respond(result)
+
+    def insert(self, *args):
+        instance = None
+        if self.params.key:
+            instance = RoleAssociation.get(self.params.key)
+        form=RoleAssociationForm(data=self.request.POST, instance=instance)
+        if form.is_valid():
+            result=form.save(commit=False)
+            result.put()
+            self.status = 'RoleAssociation is saved'
+            self.redirect(RoleAssociationController.get_url())
+        else:
+            self.SetTemplate(templateName = 'RoleAssociation_shw.html')
+            self.status = 'Form is not Valid'
+            result = {'op':'upd', 'RoleAssociationForm': form}
+            self.respond(result)
