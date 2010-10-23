@@ -146,7 +146,7 @@ class RoleAssociationController(hrh):
         #self.operations.update({'xml':{'method':'xmlCV'}})
         self.operations['default'] = {'method':'list'}
 
-    def show(self, *args):
+    def show(self, *args):   
         self.SetTemplate(templateName='RoleAssociation_shw.html')
         if self.params.key:
             item = RoleAssociation.get(self.params.key)
