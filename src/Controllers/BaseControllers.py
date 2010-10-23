@@ -74,28 +74,6 @@ class AddUserController( hrh ):
             self.status = ex
             self.redirect(AddUserController.get_url())
 
-class WishListController(hrh):
-    def get(self):
-        if self.g('op')=='del' and self.g('key'):
-            self.deleteWish(self.g('key'))
-        self.respond({'wishlist' : base.WishList.GetAll()})
-        #self.respond()
-    @AdminOnly('/WishList')
-    def deleteWish(self, wishKey):
-        k = WishList.get(wishKey)
-        if k:
-            k.delete()
-            self.status ='Wish deleted!'
-        else:
-            self.status='Wish does not exist'
-
-    def post(self):
-        if self.g('op')=='add':
-            WishList.CreateNew(self.User, self.g('wish'), _isAutoInsert=True)
-            if self.isAjax:
-                self.resonse.out.write('success')
-            else:
-                self.redirect(WishListController.get_url()+'?op=lst')
 
 class RoleController(hrh):
     def SetOperations(self):
@@ -222,3 +200,73 @@ class RoleAssociationController(hrh):
             self.status = 'Form is not Valid'
             result = {'op':'upd', 'RoleAssociationForm': form}
             self.respond(result)
+
+from Models.BaseModels import WishList, WishListForm 
+class WishListController(hrh):
+    def SetOperations(self):
+        self.operations = settings.DEFAULT_OPERATIONS
+        ##make new handlers and attach them
+        #self.operations.update({'xml':{'method':'xmlCV'}})
+        self.operations['default'] = {'method':'list'}
+    
+    def list(self):
+        self.SetTemplate(templateName='WishList_lst.html')
+        results =None
+        index = 0; count=1000
+        try:
+            index = int(self.params.index)
+            count = int(self.params.count)
+        except:
+            pass
+        result = {'WishListList': WishList.all().fetch(limit=count, offset=index)}
+        result.update(locals())
+        self.respond(result)
+
+
+    def show(self):
+        self.SetTemplate(templateName='WishList_shw.html')
+        if self.params.key:
+            item = WishList.get(self.params.key)
+            if item:
+                result = {'op':'upd', 'WishListForm': WishListForm(instance=item)}
+                self.respond(result)
+            else:
+                self.status = 'WishList does not exists'
+                self.redirect(WishListController.get_url())
+        else:
+            if self.method == 'POST':
+                self.status = 'Key not provided'
+            self.respond({'op':'ins' ,'WishListForm':WishListForm()})
+
+
+    def insert(self):
+        form = None
+        if self.params.key:
+            instance = WishList.get(self.params.key)
+            form = WishListForm(instance=instance) 
+        else:
+            form = WishListForm(data=self.request.POST)
+        if form.is_valid():
+            result=form.save(commit=False)
+            result.Owner = self.User
+            result.put()
+            self.status = 'WishList is saved'
+            self.redirect(WishListController.get_url())
+        else:
+            self.SetTemplate(templateName = 'WishList_shw.html')
+            self.status = 'Form is not Valid'
+            result = {'op':'upd', 'WishListForm': form}
+            self.respond(result)
+
+    def delete(self):
+        if self.params.key:
+            item = WishList.get(self.params.key)
+            if item:
+                item.delete()
+                self.status ='WishList is deleted!'
+            else:
+                self.status='WishList does not exist'
+        else:
+            self.status = 'Key was not Provided!'
+        self.redirect(WishListController.get_url())
+

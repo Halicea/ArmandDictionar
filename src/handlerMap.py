@@ -6,11 +6,12 @@ from google.appengine.ext.webapp.util import run_wsgi_app
 from lib.gaesessions import SessionMiddleware
 
 # {% block imports %}
-from Controllers import baseControllers
-from Controllers import staticControllers
+from Controllers import BaseControllers
+from Controllers import StaticControllers
 from Controllers import DictControllers
 #from Controllers import TournamentHostControllers
 
+from Controllers import BaseControllers
 # {% endblock %}
 
 #"""Load custom Django template filters"""
@@ -31,23 +32,25 @@ application = webapp.WSGIApplication(
 #('/Tournament/Info', TournamentHostControllers.TournamentInfoController),
 #('/TournamentHost/Host', TournamentHostControllers.HostController),
 #('/TournamentHost/Guest', TournamentHostControllers.GuestController),
-
-('/Base/Role', baseControllers.RoleController),
-('/Base/RoleAssociation', baseControllers.RoleAssociationController),
+('/Base/WishList', BaseControllers.WishListController),
  #{% endblock %}
- #{% block baseControllers %}
- ('/Login', baseControllers.LoginController),
- ('/Logout', baseControllers.LogoutController),
- ('/AddUser', baseControllers.AddUserController),
- ('/WishList', baseControllers.WishListController),
+ 
+ #{% block BaseControllers %}
+ ('/Login', BaseControllers.LoginController),
+ ('/Logout',BaseControllers.LogoutController),
+ ('/AddUser', BaseControllers.AddUserController),
+ ('/WishList', BaseControllers.WishListController),
+ ('/admin/Role', BaseControllers.RoleController),
+ ('/admin/RoleAssociation', BaseControllers.RoleAssociationController),
  #{%endblock%}
  
- #{%block staticControllers%}
- ('/Contact', staticControllers.ContactController),
- ('/About', staticControllers.AboutController),
- ('/Links', staticControllers.LinksController),
- ('/NotAuthorized', staticControllers.NotAuthorizedController),
+ #{%block StaticControllers%}
+ ('/Contact', StaticControllers.ContactController),
+ ('/About', StaticControllers.AboutController),
+ ('/Links', StaticControllers.LinksController),
+ ('/NotAuthorized', StaticControllers.NotAuthorizedController),
  #{%endblock%}
+ 
  #('/(.*)', staticControllers.NotExistsController),
 ], debug=debug)
 COOKIE_KEY = '''2zÆœ;¾±þ”¡j:ÁõkçŸÐ÷8{»Ën¿A—jÎžQAQqõ"bøó÷*%†™ù¹b¦$vš¡¾4ÇŸ^ñ5¦'''

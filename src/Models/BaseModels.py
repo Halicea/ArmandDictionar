@@ -83,8 +83,10 @@ class WishList(db.Model):
     def GetAll(cls, limit=1000, offset=0):
         return cls.all().fetch(limit=limit, offset=offset)
 class WishListForm(ModelForm):
+#    DateAdded = fields.DateField(widget=widgets.TextInput(attrs={'class':'date'}))
     class Meta():
         model=WishList
+        exclude = ['Owner']
 ## End WishList
 ##**************************
 
@@ -130,3 +132,4 @@ class RoleAssociationForm(ModelForm):
         model=RoleAssociation
 ## End RoleAssociation
 ##**************************
+
