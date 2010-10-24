@@ -1,4 +1,4 @@
-                                    #!/usr/bin/env python
+#!/usr/bin/env python
 import sys
 import os
 import shutil
@@ -23,6 +23,7 @@ CTPath = pjoin(TMPL_DIR, 'ControllerTemplate.txt')
 
 #Set django in pythonpath
 sys.path.append(settings.APPENGINE_PATH)
+sys.path.append(pjoin(settings.APPENGINE_PATH, 'lib'))
 sys.path.append(pjoin(settings.APPENGINE_PATH, 'lib', 'django' ))
 sys.path.append(pjoin(settings.APPENGINE_PATH, 'lib', 'webob' ))
 sys.path.append(pjoin(settings.APPENGINE_PATH, 'lib', 'yaml','lib' ))
@@ -83,34 +84,97 @@ def copy_directory(source, target, ignoreDirs=[], ignoreFiles=[]):
             if not os.path.exists(to_directory):
                 os.makedirs(to_directory)
             shutil.copyfile(from_, to_)
-def appendInBlocks(filePath, blockValuesDict):
-    curBlockName = ''
+def removeFromBlocks(filePath, blockValuesDict, superBlock=None):
+    superBlockList = superBlock and superBlock.split('.') or []
+    blockqueue = []
     f = open(filePath, 'r'); 
     lines=f.readlines(); 
     f.close()
     newlines = []
-    curBlockName = ''
     for line in lines:
         if '{%block' in line.strip() or '{% block' in line:
             mline = line.strip(); mline = mline.replace('{% block', '{%block')
             fromIndex=mline.index('{%block')+len('{%block')
             toIndex = fromIndex+mline[fromIndex:].index('%}')
-            curBlockName = mline[fromIndex:toIndex].strip()
-#           Append the lines if in the same block
+            blname=mline[fromIndex:toIndex].strip()
+            blockqueue.append(blname)
+        
+        lineMatched = False 
+        for k ,v in blockValuesDict.iteritems():
+            if len(blockqueue) and blockqueue[-1]==k and blockqueue[:-1][-len(superBlockList):]==superBlockList:
+                if v == '*':
+                    lineMatched =True
+                else:
+                    lineMatched = line.strip() in [x.strip() for x in v]
         if '{%endblock%}' in line.replace(' ',''):
-            if blockValuesDict.has_key(curBlockName):
-                for nline in blockValuesDict[curBlockName]:
-                    newlines.append(nline+'\n')
-            curBlockName = ''
+            blockqueue.pop()
+        if not lineMatched:
+            newlines.append(line)
+    f = open(filePath, 'w')
+    f.writelines(newlines)
+    f.close()
+def appendInBlocks(filePath, blockValuesDict, superBlock=None, 
+                   createBlockIfNotExists=True, skipIfExists=True):
+    superBlockList = superBlock and superBlock.split('.') or []
+    blockqueue = []
+    blocksFound = set()
+    f = open(filePath, 'r'); 
+    lines=f.readlines(); 
+    f.close()
+    newlines = []
+    currBlockLines = []
+    linecounter =0
+    for line in lines:
+        if '{%block' in line.strip() or '{% block' in line:
+            mline = line.strip(); mline = mline.replace('{% block', '{%block')
+            fromIndex=mline.index('{%block')+len('{%block')
+            toIndex = fromIndex+mline[fromIndex:].index('%}')
+            blname=mline[fromIndex:toIndex].strip()
+            blockqueue.append(blname)
+            currBlockLines = []
+            
+        if '{%endblock%}' in line.replace(' ',''): 
+            if blockValuesDict.has_key(blockqueue[-1]) and \
+            (not superBlockList or blockqueue[:-1][-len(superBlockList):] == superBlockList):
+                blocksFound.add(blockqueue[-1])
+                for nline in blockValuesDict[blockqueue[-1]]:
+                    if not (nline+'\n' in currBlockLines and skipIfExists):
+                        newlines.append(nline+'\n')
+            #if the superblock ends of file ends and insert if not exists is set to true
+            if createBlockIfNotExists and superBlockList and blockqueue[-len(superBlockList):]==superBlockList:
+                for k, v in blockValuesDict.iteritems():
+                    if not (k in blocksFound):
+                        newlines.append('\n#{%%block %s%%}\n'%k)
+                        for nline in v:
+                            newlines.append(nline+'\n')
+                        newlines.append('#{%endblock%}\n')
+            blockqueue.pop()
+            currBlockLines = []
+        if len(blockqueue):
+            currBlockLines.append(line)
         newlines.append(line)
+        linecounter+=1
+    #if there is no superblockspecified and 
+    #there are items that are not appended and 
+    #we need to create blocks for them... Let's check, create and populate the blockss
+    if createBlockIfNotExists and not superBlockList:
+        for k, v in blockValuesDict.iteritems():
+            if not (k in blocksFound):
+                newlines.append('\n#{%%block %s%%}\n'%k)
+                for nline in v:
+                    newlines.append(nline+'\n')
+                newlines.append('#{%endblock%}\n')
+
     f = open(filePath, 'w')
     f.writelines(newlines)
     f.close()
 
+#TODO: implement this properly. Some imports cannot be evaluated. to see where the problem is
+
 def importModel(package, name):
     sys.path.append(settings.MODELS_DIR)
-    exec 'import '+basename(settings.MODELS_DIR)
-    moduleName =  basename(settings.MODELS_DIR)+'.'+package+'.'+name
+    #exec 'import '+basename(settings.MODELS_DIR)
+    moduleName =  basename(settings.MODELS_DIR)+'.'+package+settings.MODEL_MODULE_SUFIX
     print moduleName
     mod = __import__(moduleName)
     components = name.split('.')
@@ -206,12 +270,15 @@ def makeMvc(arg):
             #End Controller Setup
             #Edit HandlerMap
             f = open(settings.HANDLER_MAP_FILE, 'r'); 
-            blocks={'ApplicationControllers':
+            controllersmap={m.Package+settings.CONTROLLER_MODULE_SUFIX:
                            ['(\'/'+m.Package.replace('.','/')+'/'+m.Name+'\', '+m.Package+settings.CONTROLLER_MODULE_SUFIX+'.'+m.Name+'Controller),',],
-                    'imports':
+                    }
+            imports={'imports':
                         ['from '+basename(settings.CONTROLLERS_DIR)+' import '+m.Package+settings.CONTROLLER_MODULE_SUFIX,]
                    }
-            appendInBlocks(settings.HANDLER_MAP_FILE, blocks)
+            appendInBlocks(settings.HANDLER_MAP_FILE, imports)
+            appendInBlocks(settings.HANDLER_MAP_FILE, controllersmap,superBlock='ApplicationControllers')
+
     m=None
 
 def render(model, templatePath, additionalVars={}):
@@ -356,7 +423,7 @@ def saveTextToFile(txt, skipAsk=False, skipOverwrite=False):
         else:
             f = open(p, 'w'); f.write(txt); f.close()
 
-
+#AutoCompletion
 values =['project', 'mvc','vc','mc', 'mv','m','v','c','run','deploy']
 modelsStructure ={}
 commandsDict={'*':{'new':{'template':{}, 'real':{}}, 'project':{}, 
@@ -427,10 +494,95 @@ def main(args):
     else:
         if set(args[0]).issubset(set('mvc')):
             makeMvc(args[0])
+        elif args[0]=='del' and len(args)>=2:
+            if args[1]=='package':
+                pname = ''
+                if len(args)==2:
+                    pname = raw_input('Enter Package Name: ')
+                else:
+                    pname=args[2]
+                pnparts = pname.find('.')>0 and pname.split('.') or [pname]
+                bsn = os.path.sep.join(pnparts)
+                pmfile = pjoin(settings.MODELS_DIR, bsn+settings.MODEL_MODULE_SUFIX+'.py')
+                pcfile = pjoin(settings.CONTROLLERS_DIR, bsn+settings.CONTROLLER_MODULE_SUFIX+'.py')
+                pvdir = pjoin(settings.PAGE_VIEWS_DIR, bsn)
+                pfdir =pjoin(settings.FORM_VIEWS_DIR, bsn)
+                handlermapblock = pnparts[-1]+settings.CONTROLLER_MODULE_SUFIX
+                handlermapsuperBlock = '.'.join(pnparts[:-1]+['ApplicationControllers'])
+                handlermapimport = 'from '+basename(settings.CONTROLLERS_DIR)+' import '+pname+settings.CONTROLLER_MODULE_SUFIX
+                
+                print 'This paths will be permanently deleted'
+                pprint.pprint({'Models Module':pmfile, 
+                               'Controllers Module': pcfile,
+                               'Views in %s'%pvdir:os.path.exists(pvdir) and os.listdir(pvdir) or 'None', 
+                               'Form Views in %s'%pfdir:os.path.exists(pfdir) and  os.listdir(pfdir) or 'None',
+                            })
+                
+                ask = raw_input('Are you sure you want to delete the Package %s?(y/n):'%pname)
+                if ask[0].lower()=='y':
+                    for item in [pmfile, pcfile, pvdir, pfdir]:
+                        if os.path.exists(item):
+                            if os.path.isdir(item):
+                                print 'removing %s directory'%item
+                                shutil.rmtree(item)
+                            else:
+                                print 'removing %s file'%item
+                                os.remove(item)
+                        else:
+                            print 'Path %s does not exist'%item
+                    print handlermapblock, handlermapsuperBlock
+                    removeFromBlocks(settings.HANDLER_MAP_FILE, {'imports':[handlermapimport]})
+                    removeFromBlocks(settings.HANDLER_MAP_FILE, {handlermapblock:'*'}, superBlock = handlermapsuperBlock)
+                    print 'Package %s was removed'%pname
+                
+                else:
+                    pass
+            elif set(args[1]).issubset(set('mvc')):
+                cname = ''
+                mname = ''
+                if len(args)==2:
+                    cname=raw_input('EnterTheModelClass :')
+                else:
+                    cname=args[2]
+                mname=cname[:cname.rindex('.')]
+                cname=cname[cname.rindex('.')+1:]
+                mname = mname.find('.')>0 and mname.split('.') or [mname]
+                bsn=os.path.sep.join(mname)
+                
+                cvfilesdir=pjoin(settings.PAGE_VIEWS_DIR, bsn)
+                cvfiles = []
+                if os.path.exists(cvfilesdir) and os.path.isdir(cvfilesdir):
+                    cvfiles = [pjoin(cvfilesdir, x) for x in os.listdir(cvfilesdir)
+                             if os.path.isfile(pjoin(cvfilesdir, x)) and 
+                             (x.startswith(cname+'_') 
+                             or x[:x.rindex('.')]==cname)]
+                cffilesdir=pjoin(settings.FORM_VIEWS_DIR, bsn)
+                cffiles = []
+                if os.path.exists(cffilesdir) and os.path.isdir(cffilesdir):
+                    cffiles = [pjoin(cffilesdir, x) for x in os.listdir(cffilesdir)
+                             if os.path.isfile(pjoin(cffilesdir, x)) and 
+                             ( x.startswith(cname+'Form_') 
+                             or x[:x.rindex('.')]==cname+'Form')]
+                #Do the class deletion here
+                #TODO: Finish Class Deletion
+#                exec ('from import %s'%)
+                print 'This Files will be removed:'
+                pprint.pprint([cvfiles, cffiles])
+                ask = raw_input('Are you sure you want to delete this files?(y/n):')
+                if ask[0].lower()=='y':
+                    for flist in [cvfiles, cffiles]:
+                        for file in flist:
+                            print 'removing %s file'%file
+                            os.remove(file)
+                #Clean the corresponding view and controller directories if empty
+                if not os.listdir(cvfilesdir):
+                    os.removedirs(cvfilesdir)
+                if not os.listdir(cffilesdir):
+                    os.removedirs(cffilesdir)
         elif args[0]=='run':
             options = ''
             if len(args)>1:
-                options = ' '.join(args[1:]) 
+                options = ' '.join(args[1:])
             command = pjoin(settings.APPENGINE_PATH, 'dev_appserver.py')+' '+os.path.abspath(os.path.dirname(__file__)+' '+options)
             # print command
             os.system(command)

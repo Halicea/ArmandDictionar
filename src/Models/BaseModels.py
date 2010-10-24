@@ -72,7 +72,7 @@ class WishList(db.Model):
     '''Whishes for the page look&feel and functionality '''
     Owner = db.ReferenceProperty(Person)
     Wish  = db.TextProperty()
-    DateAdded = db.DateTimeProperty()
+    DateAdded = db.DateTimeProperty(auto_now_add=True)
     @classmethod
     def CreateNew(cls, owner, wish, _isAutoInsert=False):
         result = cls(Owner=owner, Wish=wish, DateAdded = dt.datetime.now())
@@ -82,6 +82,9 @@ class WishList(db.Model):
     @classmethod
     def GetAll(cls, limit=1000, offset=0):
         return cls.all().fetch(limit=limit, offset=offset)
+    
+    def __str__(self):
+        return self.Wish+'-'+self.Owner.__str__()
 class WishListForm(ModelForm):
 #    DateAdded = fields.DateField(widget=widgets.TextInput(attrs={'class':'date'}))
     class Meta():
