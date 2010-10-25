@@ -1,0 +1,21 @@
+<h2>Boja: </h2>
+<form id='BojaForm' method='post' action='{% url BojaController %}'>
+    <input type='hidden' name='op' value={{op}}>
+    <input type='hidden' name='key' value={{BojaForm.instance.key}}></input>
+<table>
+{% for field in BojaForm %}
+    <tr>
+        <td style="text-align:right;">
+            {{ field.label_tag }}:
+        </td>
+        <td>
+            {{ field }}
+        </td>
+        <td style='color: red;'>
+            {{ field.errors }}
+        </td>
+    <tr>
+{% endfor %}
+</table>
+<input type='submit' value={%if BojaForm.instance.key%} 'Update' {% else %} 'Create' {%endif%}></input>
+</form>

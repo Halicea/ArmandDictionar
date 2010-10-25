@@ -229,6 +229,7 @@ def makeMvc(arg):
                 f.write('import settings\n')
                 f.write('from google.appengine.ext.db.djangoforms import ModelForm\n')
                 f.write('from google.appengine.ext import db\n')
+                f.wrote('from django.newforms import widgets, fields, extras\n')
                 f.write('#'*50+'\n')
                 f.close()
             f= open(modelFile, 'a')

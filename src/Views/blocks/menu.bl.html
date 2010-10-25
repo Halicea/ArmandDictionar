@@ -34,5 +34,17 @@ $(document).ready(function() {
         </li>
         <li><a href="{% url AboutController %}">About</a></li>
         <li><a href="{% url ContactController %}">Contact</a></li>
+        <li><a href="{% url BerbaController%}?op=shw">Berba</a>
+            <ul>
+              <li><a href="{% url BerbaController%}?op=lst">Lista Berbi</a>
+            </ul>
+        </li>
+        <li><a href="{% url ZashtitaController%}?op=lst">Zashtita</a>
+        </li>
+        <li><a href="{% url PreparatController%}?op=lst">Preparati</a>
+        </li>
+        <li><a href='{%url BojaController%}'>Tipovi Ruzi</a></li>
+        <li><a href='{%url KupecController%}'>Kupci</a></li>
+        <li><a href='{%url ProdazbaController%}'>Prodazba</a></li>
     </ul>
 </div>

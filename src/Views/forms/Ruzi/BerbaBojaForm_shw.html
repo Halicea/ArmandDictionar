@@ -1,0 +1,21 @@
+<h2>BerbaBoja: </h2>
+<form id='BerbaBojaForm' method='post' action='{% url BerbaBojaController %}'>
+    <input type='hidden' name='op' value={{op}}>
+    <input type='hidden' name='key' value={{BerbaBojaForm.instance.key}}></input>
+<table>
+{% for field in BerbaBojaForm %}
+    <tr>
+        <td style="text-align:right;">
+            {{ field.label_tag }}:
+        </td>
+        <td>
+            {{ field }}
+        </td>
+        <td style='color: red;'>
+            {{ field.errors }}
+        </td>
+    <tr>
+{% endfor %}
+</table>
+<input type='submit' value={%if BerbaBojaForm.instance.key%} 'Update' {% else %} 'Create' {%endif%}></input>
+</form>

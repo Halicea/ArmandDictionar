@@ -1,0 +1,22 @@
+{% extends base %}
+{% block scripts %}
+{{block.super}}
+{% endblock %}
+
+{% block content %}
+<div id='BerbaForm_shw'>
+{%include BerbaForm_shw %}
+</div>
+
+<hr/>
+<hr/>
+<div>
+  <form method='POST' action='{%url BerbaBojaController%}'>
+  {%include BerbaBojaForm_shw%}
+  </form>
+</div>
+<hr/>
+<div>
+  {%include BerbaBojaForm_lst%}
+</div>
+{% endblock %}

@@ -1,0 +1,13 @@
+<h2>BerbaBoja List: </h2>
+<table>
+{% for item in BerbaBojaList %}
+    <tr>
+        <td>
+            {{item}}
+        </td>
+        <td><a class='detail' href='{%url BerbaBojaController %}?op=shw&key={{item.key}}'>Detail</a></td>
+        <td> <a class='delete' href='{%url BerbaBojaController %}?op=del&key={{item.key}}'>Delete</a></td>
+    </tr>
+{% endfor %}
+</table>
+<h3><a href='{%url BerbaBojaController %}?op=shw'>New</a><h3>

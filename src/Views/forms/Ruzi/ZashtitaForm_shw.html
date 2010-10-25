@@ -1,0 +1,21 @@
+<h2>Zashtita: </h2>
+<form id='ZashtitaForm' method='post' action='{% url ZashtitaController %}'>
+    <input type='hidden' name='op' value={{op}}>
+    <input type='hidden' name='key' value={{ZashtitaForm.instance.key}}></input>
+<table>
+{% for field in ZashtitaForm %}
+    <tr>
+        <td style="text-align:right;">
+            {{ field.label_tag }}:
+        </td>
+        <td>
+            {{ field }}
+        </td>
+        <td style='color: red;'>
+            {{ field.errors }}
+        </td>
+    <tr>
+{% endfor %}
+</table>
+<input type='submit' value={%if ZashtitaForm.instance.key%} 'Update' {% else %} 'Create' {%endif%}></input>
+</form>

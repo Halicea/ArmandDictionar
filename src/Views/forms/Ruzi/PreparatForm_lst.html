@@ -1,0 +1,13 @@
+<h2>Preparat List: </h2>
+<table>
+{% for item in PreparatList %}
+    <tr>
+        <td>
+            {{item}}
+        </td>
+        <td><a class='detail' href='{%url PreparatController %}?op=shw&key={{item.key}}'>Detail</a></td>
+        <td> <a class='delete' href='{%url PreparatController %}?op=del&key={{item.key}}'>Delete</a></td>
+    </tr>
+{% endfor %}
+</table>
+<h3><a href='{%url PreparatController %}?op=shw'>New</a><h3>

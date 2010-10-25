@@ -10,6 +10,7 @@ from lib.gaesessions import SessionMiddleware
 from Controllers import BaseControllers
 from Controllers import StaticControllers
 from Controllers import DictControllers
+from Controllers import RuziControllers
 #{%endblock%}
 
 #Definition of the Controller Url mappings
@@ -41,6 +42,16 @@ application = webapp.WSGIApplication(
 ('/About', StaticControllers.AboutController),
 ('/Links', StaticControllers.LinksController),
 ('/NotAuthorized', StaticControllers.NotAuthorizedController),
+#{%endblock%}
+
+#{%block RuziControllers%}
+('/Ruzi/Boja', RuziControllers.BojaController),
+('/Ruzi/Berba', RuziControllers.BerbaController),
+('/Ruzi/BerbaBoja', RuziControllers.BerbaBojaController),
+('/Ruzi/Preparat', RuziControllers.PreparatController),
+('/Ruzi/Zashtita', RuziControllers.ZashtitaController),
+('/Ruzi/Kupec', RuziControllers.KupecController),
+('/Ruzi/Prodazba', RuziControllers.ProdazbaController),
 #{%endblock%}
 #{%endblock%}
 ('/(.*)', StaticControllers.NotExistsController),
