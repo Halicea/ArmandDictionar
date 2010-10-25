@@ -48,7 +48,17 @@ mvcPaths = {"modelsPath":basename(settings.MODELS_DIR),
             'controlersPath':basename(settings.CONTROLLERS_DIR)}
 libDir = 'lib'
 inherits_from = 'db.Model'
-
+def LocateControllerModule(packageName):
+    return pjoin(settings.CONTROLLERS_DIR, BasePathFromName(packageName)+settings.CONTROLLER_MODULE_SUFIX+'.py')
+def LocateModelModule(packageName):
+    return pjoin(settings.MODELS_DIR, BasePathFromName(packageName)+settings.MODEL_MODULE_SUFIX+'.py')
+def LocatePagesDir(packageName):
+    return pjoin(settings.PAGE_VIEWS_DIR, BasePathFromName(packageName))
+def LocateFormsDir(packageName):
+    return pjoin(settings.FORM_VIEWS_DIR, BasePathFromName(packageName))
+def BasePathFromName(packageName):
+    return os.path.join(packageName.split('.'))
+    
 class Model(object):
     Package = ''
     Name = ''
@@ -63,6 +73,23 @@ class Property(object):
     Required = 'False'
     Default = None
 
+class Package(object):
+    ModelModules =[]
+    Views = []
+    Forms = []
+    Styles =[]
+    ControllerModules = []
+    @staticmethod
+    def PathFromName(packageFullName):
+        return os.path.join(packageFullName.split('.'))
+    
+    def __init__(self, packageFullName):
+        pass
+    def packPackage(self, packageName, asName):
+        pass
+    def unpackPackage(self, packFile):
+        pass
+    
 def copy_directory(source, target, ignoreDirs=[], ignoreFiles=[]):
     ignoreDirsSet =set(ignoreDirs)
     ignoreFilesSet =set(ignoreFiles) 
@@ -113,6 +140,7 @@ def removeFromBlocks(filePath, blockValuesDict, superBlock=None):
     f = open(filePath, 'w')
     f.writelines(newlines)
     f.close()
+
 def appendInBlocks(filePath, blockValuesDict, superBlock=None, 
                    createBlockIfNotExists=True, skipIfExists=True):
     superBlockList = superBlock and superBlock.split('.') or []
@@ -223,7 +251,7 @@ def makeMvc(arg):
     if save.lower()=='y':
         if 'm' in arg:
             # Model setup
-            modelFile = pjoin(settings.MODELS_DIR, m.Package+settings.MODEL_MODULE_SUFIX+'.py')
+            modelFile = LocateModelModule(m.Package)
             if not os.path.exists(modelFile):
                 f = open(modelFile, 'w')
                 f.write('import settings\n')
@@ -238,7 +266,7 @@ def makeMvc(arg):
             # End Model Setup
         if 'v' in arg:
             #View Setup
-            viewFolder = pjoin(settings.PAGE_VIEWS_DIR, m.Package)
+            viewFolder = LocatePagesDir(m.Package)
             if not os.path.exists(viewFolder): os.makedirs(viewFolder)
             for k in operations:  
                 f = open(pjoin(viewFolder, m.Name+'_'+k+'.html'), 'w')
@@ -246,7 +274,7 @@ def makeMvc(arg):
                 f.close()
             #End Views Setup
             #Forms Setup
-            formsFolder = pjoin(settings.FORM_VIEWS_DIR, m.Package)
+            formsFolder = LocateFormsDir(m.Package)
             if not os.path.exists(formsFolder): os.makedirs(formsFolder)
             for k in operations:
                 f = open(pjoin(formsFolder, m.Name+'Form_'+k+'.html'), 'w')
@@ -256,7 +284,7 @@ def makeMvc(arg):
             #End Form Setup
         if 'c' in arg:
             #Controller Setup
-            controllerFile = pjoin(settings.CONTROLLERS_DIR, m.Package+settings.CONTROLLER_MODULE_SUFIX+'.py')
+            controllerFile = LocateControllerModule(m.Package)
             if not os.path.exists(controllerFile):
                 f = open(controllerFile, 'w')
                 f.write('import settings\n')
@@ -272,14 +300,13 @@ def makeMvc(arg):
             #Edit HandlerMap
             f = open(settings.HANDLER_MAP_FILE, 'r'); 
             controllersmap={m.Package+settings.CONTROLLER_MODULE_SUFIX:
-                           ['(\'/'+m.Package.replace('.','/')+'/'+m.Name+'\', '+m.Package+settings.CONTROLLER_MODULE_SUFIX+'.'+m.Name+'Controller),',],
+                           ['(\'/'+m.Package.replace('.','/')+'/'+m.Name+'\', '+m.Package+settings.CONTROLLER_MODULE_SUFIX+'.'+m.Name+settings.CONTROLLER_CLASS_SUFIX+'),',],
                     }
             imports={'imports':
                         ['from '+basename(settings.CONTROLLERS_DIR)+' import '+m.Package+settings.CONTROLLER_MODULE_SUFIX,]
                    }
             appendInBlocks(settings.HANDLER_MAP_FILE, imports)
             appendInBlocks(settings.HANDLER_MAP_FILE, controllersmap,superBlock='ApplicationControllers')
-
     m=None
 
 def render(model, templatePath, additionalVars={}):
@@ -502,14 +529,14 @@ def main(args):
                     pname = raw_input('Enter Package Name: ')
                 else:
                     pname=args[2]
-                pnparts = pname.find('.')>0 and pname.split('.') or [pname]
-                bsn = os.path.sep.join(pnparts)
-                pmfile = pjoin(settings.MODELS_DIR, bsn+settings.MODEL_MODULE_SUFIX+'.py')
-                pcfile = pjoin(settings.CONTROLLERS_DIR, bsn+settings.CONTROLLER_MODULE_SUFIX+'.py')
-                pvdir = pjoin(settings.PAGE_VIEWS_DIR, bsn)
-                pfdir =pjoin(settings.FORM_VIEWS_DIR, bsn)
-                handlermapblock = pnparts[-1]+settings.CONTROLLER_MODULE_SUFIX
-                handlermapsuperBlock = '.'.join(pnparts[:-1]+['ApplicationControllers'])
+                
+                
+                pmfile = LocateModelModule(pname)
+                pcfile = LocateControllerModule(pname)
+                pvdir = LocatePagesDir(pname)
+                pfdir =LocateFormsDir(pname)
+                handlermapblock = pname+settings.CONTROLLER_MODULE_SUFIX
+                handlermapsuperBlock = 'ApplicationControllers'
                 handlermapimport = 'from '+basename(settings.CONTROLLERS_DIR)+' import '+pname+settings.CONTROLLER_MODULE_SUFIX
                 
                 print 'This paths will be permanently deleted'
@@ -540,24 +567,23 @@ def main(args):
                     pass
             elif set(args[1]).issubset(set('mvc')):
                 cname = ''
-                mname = ''
+                pname = ''
                 if len(args)==2:
                     cname=raw_input('EnterTheModelClass :')
                 else:
                     cname=args[2]
-                mname=cname[:cname.rindex('.')]
+                pname=cname[:cname.rindex('.')]
                 cname=cname[cname.rindex('.')+1:]
-                mname = mname.find('.')>0 and mname.split('.') or [mname]
-                bsn=os.path.sep.join(mname)
                 
-                cvfilesdir=pjoin(settings.PAGE_VIEWS_DIR, bsn)
+                
+                cvfilesdir= LocatePagesDir(pname)
                 cvfiles = []
                 if os.path.exists(cvfilesdir) and os.path.isdir(cvfilesdir):
                     cvfiles = [pjoin(cvfilesdir, x) for x in os.listdir(cvfilesdir)
                              if os.path.isfile(pjoin(cvfilesdir, x)) and 
                              (x.startswith(cname+'_') 
                              or x[:x.rindex('.')]==cname)]
-                cffilesdir=pjoin(settings.FORM_VIEWS_DIR, bsn)
+                cffilesdir=LocateFormsDir(pname)
                 cffiles = []
                 if os.path.exists(cffilesdir) and os.path.isdir(cffilesdir):
                     cffiles = [pjoin(cffilesdir, x) for x in os.listdir(cffilesdir)
