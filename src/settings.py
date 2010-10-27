@@ -3,8 +3,10 @@ from os.path import join, basename, abspath
 DEBUG = True
 TEMPLATE_DEBUG = True
 DEFAULT_CHARSET ='UTF-8'
-#APPENGINE_PATH = '/home/costa/DevApps/google_appengine'
-APPENGINE_PATH = 'C:\\devApps\\google_appengine'
+APPENGINE_PATH = '/home/costa/DevApps/google_appengine'
+if os.name == 'nt':
+    #APPENGINE_PATH = '/home/costa/DevApps/google_appengine'
+    APPENGINE_PATH = 'C:\\devApps\\google_appengine'
 TEMPLATE_DIRS = (abspath('Views'), 
                  abspath('Templates'),)
 

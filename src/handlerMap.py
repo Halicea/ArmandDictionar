@@ -54,7 +54,6 @@ application = webapp.WSGIApplication(
 ('/Ruzi/Prodazba', RuziControllers.ProdazbaController),
 #{%endblock%}
 
-
 #{%endblock%}
 ('/(.*)', StaticControllers.NotExistsController),
 ], debug=settings.DEBUG)
