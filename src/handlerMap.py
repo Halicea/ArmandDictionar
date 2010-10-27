@@ -36,7 +36,7 @@ application = webapp.WSGIApplication(
 ('/admin/RoleAssociation', BaseControllers.RoleAssociationController),
 ('/Base/WishList', BaseControllers.WishListController),
 #{%endblock%}
- 
+
 #{%block StaticControllers%}
 ('/Contact', StaticControllers.ContactController),
 ('/About', StaticControllers.AboutController),
@@ -53,6 +53,8 @@ application = webapp.WSGIApplication(
 ('/Ruzi/Kupec', RuziControllers.KupecController),
 ('/Ruzi/Prodazba', RuziControllers.ProdazbaController),
 #{%endblock%}
+
+
 #{%endblock%}
 ('/(.*)', StaticControllers.NotExistsController),
 ], debug=settings.DEBUG)

@@ -27,6 +27,10 @@ PAGE_VIEW_SUFFIX = ''
 FORM_VIEWS_DIR = join(VIEWS_DIR, 'forms')
 FORM_VIEW_SUFFIX = 'Form'
 
+STATIC_DATA_DIR = abspath('StaticData')
+JSCRIPTS_DIR = join(STATIC_DATA_DIR, 'jscripts')
+IMAGES_DIR = join(STATIC_DATA_DIR, 'images')
+STYLES_DIR = join(STATIC_DATA_DIR, 'styles')
 #End Directory Structure
 #{Operation_ShortCut:{method:Controller_Method, view:Whether_it_Creates_View_or_No}}
 DEFAULT_OPERATIONS = {'lst':{'method':'list', 'view':True}, 
