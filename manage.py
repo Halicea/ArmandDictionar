@@ -2,18 +2,24 @@
 import sys
 import os
 import shutil
-import settings
+
 import pprint
 from os.path import join as pjoin
 from os.path import abspath
 from os.path import dirname
 from os.path import basename
+from halicea.config import proj_settings as settings
+from halicea import config
+from string import Template
+import subprocess
+import webbrowser
+
 if os.name!='nt':
     import readline
-from string import Template
+
 #Template Configuration
 installPath = dirname(abspath(__file__))
-TMPL_DIR = 'Templates'
+TMPL_DIR = pjoin(config.PROJ_LOC, 'Templates')
 FRMTMPL = pjoin(TMPL_DIR, 'FormTemplates')
 OPRTMPL = pjoin(TMPL_DIR, 'OperationTemplates')
 
@@ -22,14 +28,15 @@ VTPath = pjoin(TMPL_DIR, 'ViewTemplate.txt')
 CTPath = pjoin(TMPL_DIR, 'ControllerTemplate.txt')
 
 #Set django in pythonpath
-sys.path.append(settings.APPENGINE_PATH)
-sys.path.append(pjoin(settings.APPENGINE_PATH, 'lib'))
-sys.path.append(pjoin(settings.APPENGINE_PATH, 'lib', 'django' ))
-sys.path.append(pjoin(settings.APPENGINE_PATH, 'lib', 'webob' ))
-sys.path.append(pjoin(settings.APPENGINE_PATH, 'lib', 'yaml','lib' ))
+sys.path.append(config.APPENGINE_PATH)
+sys.path.append(pjoin(config.APPENGINE_PATH, 'lib'))
+sys.path.append(pjoin(config.APPENGINE_PATH, 'lib', 'django' ))
+sys.path.append(pjoin(config.APPENGINE_PATH, 'lib', 'webob' ))
+sys.path.append(pjoin(config.APPENGINE_PATH, 'lib', 'yaml','lib' ))
 ###
 os.environ['DJANGO_SETTINGS_MODULE']  = 'settings'
 from django import template
+from string import Template
 
 types ={'txt':'db.TextProperty',
         'str':'db.StringProperty',
@@ -128,10 +135,10 @@ def copy_directory(source, target, ignoreDirs=[], ignoreFiles=[]):
 def ask(message, validOptions={'y':True,'n':False}):
     yesno =''
     if isinstance(validOptions, str):
-        print validOptions
+        #print validOptions
         yesno = raw_input(message)
     else:
-        print validOptions.keys()
+        #print validOptions.keys()
         yesno = raw_input(message+'('+'/'.join(validOptions.keys())+'):')
     while True:
         if validOptions=='*':
@@ -450,10 +457,10 @@ def newProject(toPath):
             doCopy = False
     if doCopy:
         copy_directory(installPath, toPath, ['.git',], ['.gitignore','.pyc',])
-        str = open(pjoin(toPath, 'app.yaml'), 'r').read()
+        str = open(pjoin(toPath,'src', 'app.yaml'), 'r').read()
         str = str.replace('{{appname}}', basename(toPath).lower())
         str = str.replace('{{handler}}', settings.HANDLER_MAP_FILE)
-        f = open(os.path.join(toPath, 'app.yaml'), 'w')
+        f = open(os.path.join(toPath,'src', 'app.yaml'), 'w')
         f.write(str)
         f.close()
 
@@ -661,16 +668,24 @@ def main(args):
             options = ''
             if len(args)>1:
                 options = ' '.join(args[1:])
-            command = pjoin(settings.APPENGINE_PATH, 'dev_appserver.py')+' '+os.path.abspath(os.path.dirname(__file__)+' '+options)
+            command = Template('$appserver $proj $options').substitute(
+                                    appserver = pjoin(settings.APPENGINE_PATH, 'dev_appserver.py'),
+                                    proj=config.PROJ_LOC,
+                                    options = options)
+            
             # print command
-            os.system(command)
+            subprocess.Popen(command, shell=True)
+            webbrowser.open('http://localhost:8080')
         elif args[0]=='deploy':
             options = ''
             if len(args)>1:
-                options = ' '.join(args[1:]) 
-            command = pjoin(settings.APPENGINE_PATH, 'appcfg.py')+' update '+options+' '+os.path.abspath(os.path.dirname(__file__))
-            # print command
-            os.system(command)
+                options = ' '.join(args[1:])
+
+            command = Template('$appcfg update $options $proj').substitute(
+                                  appcfg = pjoin(settings.APPENGINE_PATH, 'appcfg.py'),
+                                  proj = config.PROJ_LOC,
+                                  options = options)
+            subprocess.Popen(command, Shell=True)
         elif args[0]=='console':
             pass
         else:

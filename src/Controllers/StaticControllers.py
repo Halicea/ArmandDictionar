@@ -3,7 +3,6 @@ from lib.HalRequestHandler import HalRequestHandler as hrh
 class LinksController( hrh ):
     def get( self ):
         self.respond()
-
 class WelcomeController(hrh):
     def get(self):
         self.respond()
