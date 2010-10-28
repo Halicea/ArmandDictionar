@@ -10,7 +10,6 @@ from lib.gaesessions import SessionMiddleware
 from Controllers import BaseControllers
 from Controllers import StaticControllers
 from Controllers import DictControllers
-from Controllers import TestControllers
 #{%endblock%}
 
 #Definition of the Controller Url mappings
@@ -45,9 +44,6 @@ application = webapp.WSGIApplication(
 #{%endblock%}
 
 
-#{%block TestControllers%}
-('/Test/Mdl', TestControllers.MdlController),
-#{%endblock%}
 #{%endblock%}
 ('/(.*)', StaticControllers.NotExistsController),
 ], debug=settings.DEBUG)
