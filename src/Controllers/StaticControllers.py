@@ -1,7 +1,6 @@
-from lib.HalRequestHandler import HalRequestHandler as hrh
-
-class LinksController( hrh ):
-    def get( self ):
+from lib.halicea.HalRequestHandler import HalRequestHandler as hrh
+class LinksController(hrh):
+    def get(self):
         self.respond()
 class WelcomeController(hrh):
     def get(self):
@@ -12,14 +11,13 @@ class AboutController(hrh):
 class ContactController(hrh):
     def get(self):
         self.respond()
-class NotExistsController( hrh ):
-    def get( self, page_address ):
+class NotExistsController(hrh):
+    def get(self, page_address):
         if self.request.get('ajax'):
             self.response.out.write("Ajax navigate to wrong address!")
         else:
             self.respond()
-
-class NotAuthorizedController( hrh ):
+class NotAuthorizedController(hrh):
     def get(self):
         self.response.out.write("""
         <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">

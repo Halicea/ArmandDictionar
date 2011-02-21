@@ -1,0 +1,16 @@
+
+    def save(self):
+        instance = None
+        if self.params.key:
+            instance = {{m.Name}}.get(self.params.key)
+        form={{m.Name}}Form(data=self.request.POST, instance=instance)
+        if form.is_valid():
+            result=form.save(commit=False)
+            result.put()
+            self.status = '{{m.Name}} is saved'
+            self.redirect({{m.Name}}Controller.get_url())
+        else:
+            self.SetTemplate(templateName = '{{m.Name}}_shw.html')
+            self.status = 'Form is not Valid'
+            result = {'op':'upd', '{{m.Name}}Form': form}
+            self.respond(result)

@@ -1,0 +1,15 @@
+class {{m.Name}}({{m.InheritsFrom}}):
+    """{%if m.Description%}{{m.Description}}{%else%}TODO: Describe {{m.Name}}{%endif%}"""
+    {% for p in m.Properties %}{{p.Name}}= {{p.Type}}({%for op in p.Options%}{{op}}{%ifequal forloop.last True %}{%else%}, {%endifequal%}{%endfor%})
+    {%endfor%}
+    @classmethod
+    def CreateNew(cls {%for p in m.Properties%},{{p.Name|lower}}{%endfor%} , _isAutoInsert=False):
+        result = cls({%for p in m.Properties%}
+                     {{p.Name}}={{p.Name|lower}},{%endfor%})
+        if _isAutoInsert: result.put()
+        return result
+    def __str__(self):
+        return {%if m.Repr%} {{m.Repr}} {%else%}'Change __str__ method'
+        #TODO: Change the method to represent something meaningful{%endif%}
+## End {{m.Name}}
+

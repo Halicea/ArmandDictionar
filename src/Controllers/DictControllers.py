@@ -2,8 +2,8 @@
 #{% block imports %}
 import settings
 import random
-from lib.HalRequestHandler import HalRequestHandler as hrh
-from lib.decorators import *
+from lib.halicea.HalRequestHandler import HalRequestHandler as hrh
+from lib.halicea.decorators import *
 from google.appengine.ext import db
 from google.appengine.runtime import apiproxy_errors
 from lib import NewsFeed as nf
@@ -20,25 +20,19 @@ import os
 import sys
 from google.appengine.api.datastore_errors import TransactionFailedError
 class WordController(hrh):
-    def SetOperations(self):
-        self.operations = settings.DEFAULT_OPERATIONS
-        ##make new handlers and attach them
-        #self.operations.update({'xml':{'method':'xmlCV'}})
-        self.operations['default'] = {'method':'list'}
-
     def show(self, *args):
         self.SetTemplate(templateName='Word_shw.html')
         if self.params.key:
             item = Word.get(self.params.key)
             if item:
                 result = {'op':'upd', 'WordForm': WordForm(instance=item)}
-                self.respond(result)
+                return result
             else:
                 self.status = 'Word does not exists'
                 self.redirect(WordController.get_url())
         else:
             self.status = 'Key not provided'
-            self.respond({'op':'ins' ,'WordForm':WordForm()})
+            return {'op':'ins' ,'WordForm':WordForm()}
 
     @AdminOnly()
     def delete(self, *args):
@@ -54,7 +48,7 @@ class WordController(hrh):
         self.redirect(WordController.get_url())
 
     @AdminOnly()
-    def list(self, *args):
+    def index(self, *args):
         self.SetTemplate(templateName='Word_lst.html')
         results =None
         index = 0; count=50
@@ -175,12 +169,10 @@ import pickle
 import time
 class ImporterController(hrh):
     def SetOperations(self):
-        #self.operations = settings.DEFAULT_OPERATIONS
-        ##make new handlers and attach them
-        #self.operations.update({'xml':{'method':'xmlCV'}})
-        self.operations['import']={'method':'importHtml'}
-        self.operations['default'] = {'method':'importHtml'}
-        self.operations['bulkDelete']={'method':'bulkDelete'}
+        self.operations = { 'default':{'method':self.importHtml},
+                            'import':{'method':self.importHtml},
+                            'bulkDelete':{'method':self.bulkDelete}
+                           }
     #@AdminOnly()
     def bulkDelete(self, *args):
         try:
@@ -213,13 +205,8 @@ class ImporterController(hrh):
 
 from Models.DictModels import Language, LanguageForm 
 class LanguageController(hrh):
-    def SetOperations(self):
-        self.operations = settings.DEFAULT_OPERATIONS
-        ##make new handlers and attach them
-        #self.operations.update({'xml':{'method':'xmlCV'}})
-        self.operations['default'] = {'method':'list'}
-    
-    def show(self):
+    @AdminOnly()
+    def show(self, *args):
         self.SetTemplate(templateName='Language_shw.html')
         if self.params.key:
             item = Language.get(self.params.key)
@@ -233,8 +220,8 @@ class LanguageController(hrh):
             self.status = 'Key not provided'
             self.respond({'op':'ins' ,'LanguageForm':LanguageForm()})
 
-
-    def delete(self):
+    @AdminOnly()
+    def delete(self, *args):
         if self.params.key:
             item = Language.get(self.params.key)
             if item:
@@ -246,8 +233,8 @@ class LanguageController(hrh):
             self.status = 'Key was not Provided!'
         self.redirect(LanguageController.get_url())
 
-
-    def list(self):
+    
+    def index(self, *args):
         self.SetTemplate(templateName='Language_lst.html')
         results =None
         index = 0; count=1000
@@ -260,8 +247,8 @@ class LanguageController(hrh):
         result.update(locals())
         self.respond(result)
 
-
-    def insert(self):
+    @AdminOnly()
+    def insert(self, *args):
         instance = None
         if self.params.key:
             instance = Language.get(self.params.key)
@@ -276,15 +263,11 @@ class LanguageController(hrh):
             self.status = 'Form is not Valid'
             result = {'op':'upd', 'LanguageForm': form}
             self.respond(result)
+
 from Models.DictModels import Dictionary, DictionaryForm 
 class DictionaryController(hrh):
-    def SetOperations(self):
-        self.operations = settings.DEFAULT_OPERATIONS
-        ##make new handlers and attach them
-        #self.operations.update({'xml':{'method':'xmlCV'}})
-        self.operations['default'] = {'method':'list'}
     
-    def show(self):
+    def show(self, *agrs):
         self.SetTemplate(templateName='Dictionary_shw.html')
         if self.params.key:
             item = Dictionary.get(self.params.key)
@@ -299,7 +282,7 @@ class DictionaryController(hrh):
             self.respond({'op':'ins' ,'DictionaryForm':DictionaryForm()})
 
 
-    def delete(self):
+    def delete(self, *args):
         if self.params.key:
             item = Dictionary.get(self.params.key)
             if item:
@@ -312,7 +295,7 @@ class DictionaryController(hrh):
         self.redirect(DictionaryController.get_url())
 
 
-    def list(self):
+    def index(self, *args):
         self.SetTemplate(templateName='Dictionary_lst.html')
         results =None
         index = 0; count=1000
@@ -326,7 +309,7 @@ class DictionaryController(hrh):
         self.respond(result)
 
 
-    def insert(self):
+    def insert(self, *args):
         instance = None
         form = None
         if self.params.key:
@@ -351,10 +334,7 @@ class DictionaryController(hrh):
 from Models.DictModels import WordSugestion, WordSugestionForm 
 class WordSugestionController(hrh):
     def SetOperations(self):
-        self.operations = settings.DEFAULT_OPERATIONS
-        ##make new handlers and attach them
-        #self.operations.update({'xml':{'method':'xmlCV'}})
-        self.operations['default'] = {'method':'sugest'}
+        self.operations['default'] = {'method':self.sugest}
     @LogInRequired()
     def sugest(self, *args):
         if self.isAjax:
@@ -387,7 +367,7 @@ class WordSugestionController(hrh):
             self.respond({'op':'ins' ,'WordSugestionForm':WordSugestionForm()})
 
     @AdminOnly()
-    def delete(self):
+    def delete(self, *args):
         if self.params.key:
             item = WordSugestion.get(self.params.key)
             if item:
@@ -400,7 +380,7 @@ class WordSugestionController(hrh):
         self.redirect(WordSugestionController.get_url())
 
 
-    def list(self):
+    def index(self, *args):
         self.SetTemplate(templateName='WordSugestion_lst.html')
         results =None
         index = 0; count=1000
@@ -414,7 +394,7 @@ class WordSugestionController(hrh):
         self.respond(result)
 
 
-    def insert(self):
+    def insert(self, *args):
         instance = None
         if self.params.key:
             instance = WordSugestion.get(self.params.key)

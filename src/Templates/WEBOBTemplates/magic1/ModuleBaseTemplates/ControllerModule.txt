@@ -1,0 +1,7 @@
+import settings
+from lib.HalRequestHandler import HalRequestHandler as hrh
+from lib.decorators import *
+from google.appengine.ext import db
+#{{os}}block imports{{cs}}
+#{{os}}endblock{{cs}}
+################################

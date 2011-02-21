@@ -1,0 +1,13 @@
+<h2>{{m.Name}} List: </h2>
+<table>
+{{os}} for item in {{m.Name}}List {{cs}}
+    <tr>
+        <td>
+            {{ob}}item{{cb}}
+        </td>
+        <td><a class='detail' href='{{os}}url {{m.Name}}Controller {{cs}}?op=shw&key={{ob}}item.key{{cb}}'>Detail</a></td>
+        <td> <a class='delete' href='{{os}}url {{m.Name}}Controller {{cs}}?op=del&key={{ob}}item.key{{cb}}'>Delete</a></td>
+    </tr>
+{{os}} endfor {{cs}}
+</table>
+<h3><a href='{{os}}url {{m.Name}}Controller {{cs}}?op=shw'>New</a><h3>

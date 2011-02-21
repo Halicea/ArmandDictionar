@@ -1,9 +1,9 @@
 
 import Models.BaseModels as base
-from lib.HalRequestHandler import HalRequestHandler as hrh
+from lib.halicea.HalRequestHandler import HalRequestHandler as hrh
+from lib.halicea.decorators import *
 from google.appengine.api import memcache
 from lib import messages
-from lib.decorators import *
 import settings
 from Models.BaseModels import RoleAssociation, RoleAssociationForm 
 from Models.BaseModels import Role, RoleForm 

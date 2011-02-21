@@ -1,0 +1,72 @@
+<h2>New Arman: </h2>
+<form method='post' action='{% url ArmanController %}'>
+    <input type='hidden' name='op' value={{op}}>
+    <input type='hidden' name='key' value={{ArmanForm.instance.key}}></input>
+    <table>
+        <tr>
+            <td style="text-align:right;">
+            {{ ArmanForm.Name.label_tag }}:
+            </td>
+            <td>
+            {{ ArmanForm.Name }}
+            </td>
+            <td style='color: red;'>
+            {{ ArmanForm.Name.errors }}
+            </td>
+        <tr>
+        <tr>
+            <td style="text-align:right;">
+            {{ ArmanForm.Surname.label_tag }}:
+            </td>
+            <td>
+            {{ ArmanForm.Surname }}
+            </td>
+            <td style='color: red;'>
+            {{ ArmanForm.Surname.errors }}
+            </td>
+        <tr>
+        <tr>
+            <td></td>
+            <td colspan="2">
+              <div style='color: red;'>
+                {{ PersonalAddressForm.message.errors }}
+              </div>
+              <table>
+                  {{ArmanForm.PersonalAddressForm.as_table}}
+              </table>
+            </td>
+        </tr>
+        <tr>ds
+          ovabujan e
+            <td style="text-align:right;" >{{ArmanForm.Email.label_tag}}</td>
+            <td>{{ArmanForm.Email}}</td>
+            <td style='color: red;'>{{ArmanForm.Email.errors}}</td>
+        </tr>
+        <tr>
+            <td  style="text-align:right;">{{ArmanForm.Facebook.label_tag}}</td>
+            <td>{{ArmanForm.Facebook}}</td>
+            <td style='color: red;'>{{ArmanForm.Facebook.errors}}</td>
+        </tr>
+        <tr>
+            <td  style="text-align:right;">{{ArmanForm.MobilePhone.label_tag}}</td>
+            <td>{{ArmanForm.MobilePhone}}</td>
+            <td style='color: red;'>{{ArmanForm.MobilePhone.errors}}</td>
+        </tr>
+        <tr>
+            <td  style="text-align:right;">{{ArmanForm.HomePhone.label_tag}}</td>
+            <td>{{ArmanForm.HomePhone}}</td>
+            <td style='color: red;'>{{ArmanForm.HomePhone.errors}}</td>
+        </tr>
+        <tr>
+            <td  style="text-align:right;">{{ArmanForm.IsSpeakingArman.label_tag}}</td>
+            <td>{{ArmanForm.IsSpeakingArman}}</td>
+            <td style='color: red;'>{{ArmanForm.IsSpeakingArman.errors}}</td>
+        </tr>
+        <tr>
+            <td  style="text-align:right;">{{ArmanForm.IsWriteingArman.label_tag}}</td>
+            <td>{{ArmanForm.IsWriteingArman}}</td>
+            <td style='color: red;'>{{ArmanForm.IsWriteingArman.errors}}</td>
+        </tr>
+    </table>
+    <input type='submit' value={%if ArmanForm.instance.key%} 'Update' {% else %} 'Create' {%endif%}></input>
+</form>

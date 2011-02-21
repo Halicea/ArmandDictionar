@@ -1,0 +1,12 @@
+
+    def delete(self):
+        if self.params.key:
+            item = {{m.Name}}.get(self.params.key)
+            if item:
+                item.delete()
+                self.status ='{{m.Name}} is deleted!'
+            else:
+                self.status='{{m.Name}} does not exist'
+        else:
+            self.status = 'Key was not Provided!'
+        self.redirect({{m.Name}}Controller.get_url())

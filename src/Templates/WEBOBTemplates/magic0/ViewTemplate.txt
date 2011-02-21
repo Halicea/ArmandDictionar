@@ -1,0 +1,10 @@
+{{os}} extends base {{cs}}
+{{os}} block scripts {{cs}}
+{{ob}}block.super{{cb}}
+{{os}} endblock {{cs}}
+
+{{os}} block content {{cs}}
+<div id='{{formTemplate}}'>
+{{os}}include {{formTemplate}} {{cs}}
+</div>
+{{os}} endblock {{cs}}

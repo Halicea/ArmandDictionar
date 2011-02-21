@@ -10,7 +10,6 @@ from django.newforms.fields import ChoiceField, EmailField, Field
 from django.newforms.widgets import RadioSelect, Textarea, TextInput
 from django.newforms import widgets, fields, extras
 import BaseModels
-from lib.HalRequestHandler import HalRequestHandler
 from django import forms
 va =u'ã'
 rpl ={u'â':va, u'Ã£':va, u'ã':va}

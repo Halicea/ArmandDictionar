@@ -6,16 +6,18 @@ from google.appengine.ext import webapp
 from google.appengine.ext.webapp.util import run_wsgi_app
 from lib.gaesessions import SessionMiddleware
 
-#{% block imports %}
+#{%block imports%}
 from Controllers import BaseControllers
 from Controllers import StaticControllers
 from Controllers import DictControllers
+from Controllers import ShellControllers
+from Controllers import ArmanListingControllers
 #{%endblock%}
 
 #Definition of the Controller Url mappings
 application = webapp.WSGIApplication(
 [
-#{% block ApplicationControllers %}
+#{%block ApplicationControllers %}
 
 #{% block DictControllers %}
 ('/', DictControllers.SearchController),
@@ -42,8 +44,13 @@ application = webapp.WSGIApplication(
 ('/Links', StaticControllers.LinksController),
 ('/NotAuthorized', StaticControllers.NotAuthorizedController),
 #{%endblock%}
-
-
+#{%block ArmanListingControllers %}
+('/Listing/Armans', ArmanListingControllers.ArmanController),
+#{%endblock%}
+#{%block ShellControllers%}
+('/admin/Shell', ShellControllers.FrontPageController),
+('/admin/stat.do', ShellControllers.StatementController),
+#{%endblock%}
 #{%endblock%}
 ('/(.*)', StaticControllers.NotExistsController),
 ], debug=settings.DEBUG)
@@ -53,7 +60,6 @@ def webapp_add_wsgi_middleware(app):
     app = SessionMiddleware(app, cookie_key=COOKIE_KEY)
     app = recording.appstats_wsgi_middleware(app)
     return app
-
 def main():
     run_wsgi_app(webapp_add_wsgi_middleware(application))
 

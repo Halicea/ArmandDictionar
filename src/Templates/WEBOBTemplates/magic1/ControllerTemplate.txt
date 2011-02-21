@@ -1,0 +1,2 @@
+class {{m.Name}}Controller(hrh):
+    pass

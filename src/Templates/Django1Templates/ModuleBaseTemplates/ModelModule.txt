@@ -1,0 +1,6 @@
+import settings
+from google.appengine.ext.db.djangoforms import ModelForm
+from google.appengine.ext import db
+#{{os}} block imports{{cs}}
+#{{os}}endblock{{cs}}
+################

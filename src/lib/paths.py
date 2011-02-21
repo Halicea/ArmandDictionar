@@ -30,28 +30,20 @@ def GetBlocksDict():
     result.update(__blocksDict__)
     return result
 
-def GetMenusDict():
-    return __menusDict__
+def GetFormsDict(dir):
+    result = getViewsDict(p.join(settings.FORM_VIEWS_DIR, dir))
+    return result
 
-def GetPluginsDict():
-    return __pluginsDict__
-
-def GetLinks():
-    pass
-    
 __basesDict__={
         "base":             "../../bases/base.html",
         "darkness_base":    "../../bases/darkness_base.html",
         }
 
-__menusDict__={
-       "mnTopMenu":         "../../blocks/top_menu.inc.html",
-       }
-
 __blocksDict__={
         "blLogin":          "../../blocks/login_menu.inc.html",
         "blLanguages":      "../../blocks/dict_Languages.inc.html",
-        'blDictMenu':       "../../blocks/menu.bl.html",
+        'blDictMenu':       "../../blocks/menu.bl.inc.html",
+        "mnTopMenu":         "../../blocks/top_menu.inc.html",
         ### Menu Blocks
         "blAdminMenu":      "../../blocks/menu_links/admin.inc.html",
         "blLogedUserMenu":  "../../blocks/menu_links/loged_user.inc.html",
