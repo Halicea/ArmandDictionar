@@ -1,5 +1,5 @@
 
-    def save(self):
+    def save(self, *args):
         instance = None
         if self.params.key:
             instance = {{m.Name}}.get(self.params.key)
@@ -12,5 +12,4 @@
         else:
             self.SetTemplate(templateName = '{{m.Name}}_shw.html')
             self.status = 'Form is not Valid'
-            result = {'op':'upd', '{{m.Name}}Form': form}
-            self.respond(result)
+            return {'op':'upd', '{{m.Name}}Form': form}

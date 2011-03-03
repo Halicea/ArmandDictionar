@@ -1,14 +1,15 @@
 
-    def show(self):
-        self.SetTemplate(templateName='{{m.Name}}_shw.html')
-        if self.params.key:
-            item = {{m.Name}}.get(self.params.key)
-            if item:
-                result = {'op':'upd', '{{m.Name}}Form': {{m.Name}}Form(instance=item)}
-                self.respond(result)
-            else:
-                self.status = '{{m.Name}} does not exists'
-                self.redirect({{m.Name}}Controller.get_url())
-        else:
-            self.status = 'Key not provided'
-            self.respond({'op':'ins' ,'{{m.Name}}Form':{{m.Name}}Form()})
+    def index(self, *args):
+        self.SetTemplate(templateName="{{m.Name}}_index.html")
+        results =None
+        index = 0; count=20
+        try:
+            index = int(self.params.index)
+            count = int(self.params.count)
+        except:
+            pass
+        nextIndex = index+count;
+        previousIndex = index<=0 and -1 or (index-count>0 and 0 or index-count) 
+        result = {'{{m.Name}}List': {{m.Name}}.all().fetch(limit=count, offset=index)}
+        result.update(locals())
+        return result

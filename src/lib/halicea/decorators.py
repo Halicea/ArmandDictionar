@@ -4,9 +4,8 @@ Created on 04.1.2010
 @author: KMihajlov
 '''
 #from lib import messages
-from lib import exceptions, messages
+from lib import messages
 #from Controllers.MyRequestHandler import MyRequestHandler as mrh
-import sys
 import warnings
 def property(function):
     keys = 'fget', 'fset', 'fdel'
@@ -103,3 +102,4 @@ class ErrorSafe(object):
                     request.status+= "  Details:<br/>"+ex.__str__()
                 request.redirect(self.redirectUrl)
         return new_f
+

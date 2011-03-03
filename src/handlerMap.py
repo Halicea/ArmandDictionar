@@ -12,6 +12,7 @@ from Controllers import StaticControllers
 from Controllers import DictControllers
 from Controllers import ShellControllers
 from Controllers import ArmanListingControllers
+from Controllers import ChatControllers
 #{%endblock%}
 
 #Definition of the Controller Url mappings
@@ -50,6 +51,13 @@ application = webapp.WSGIApplication(
 #{%block ShellControllers%}
 ('/admin/Shell', ShellControllers.FrontPageController),
 ('/admin/stat.do', ShellControllers.StatementController),
+#{%endblock%}
+
+#{%block ChatControllers%}
+('/Chat/User', ChatControllers.UserController),
+('/Chat/Room', ChatControllers.RoomController),
+('/Chat/UserInRoom', ChatControllers.UserInRoomController),
+('/Chat/Message', ChatControllers.MessageController),
 #{%endblock%}
 #{%endblock%}
 ('/(.*)', StaticControllers.NotExistsController),

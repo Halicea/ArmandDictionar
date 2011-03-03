@@ -17,6 +17,7 @@ class Person(db.Model):
     Public = db.BooleanProperty(default=True)
     Notify = db.BooleanProperty(default=False)
     DateAdded = db.DateTimeProperty()
+    AuthenticationType = db.StringProperty(default='local')
     IsAdmin = db.BooleanProperty(default=False)
 
     def put(self):

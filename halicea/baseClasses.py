@@ -126,11 +126,14 @@ class Block(object):
     @staticmethod
     def openOrCreate(filePath, cbl=HalCodeBlockLocator(), renderer=None, renderDict={}, defaultLines=[]):
         if os.path.exists(filePath):
-            return Block.loadFromFile(filePath, cbl, renderer, renderDict)
+            #we dont need rendering here, we just need a simple fileload.
+                return Block.loadFromFile(filePath, cbl, renderer, renderDict)
         else:
             return Block.loadFromLines(defaultLines, 'root', cbl)
 
     def saveToFile(self, filePath, mode='w'):
+        if not os.path.exists(os.path.dirname(filePath)):
+            os.makedirs(os.path.dirname(filePath))
         f = open(filePath, mode)
         f.write(str(self))
         f.close()

@@ -91,7 +91,7 @@ def main(args):
 #            print 'Not a valid command'
         #return
     if True: #TODO: Change to else:
-        if set(args[0]).issubset(set('mvfc')):
+        if set(args[0]).issubset(set('mvfch')):
             makeMvc(args)
         elif args[0]=='del' and len(args)>=2:
             if args[1]=='package':
@@ -118,7 +118,7 @@ def main(args):
                                     proj=config.PROJ_LOC,
                                     options = options)
             # print command
-            subprocess.Popen(command, shell=True)
+            subprocess.Popen(command, shell=True, stdout=sys.stdout, stdin=sys.stdin)
             webbrowser.open('http://localhost:8080')
         elif args[0]=='pack' and len(args)>3:
             if args[1]=='package':

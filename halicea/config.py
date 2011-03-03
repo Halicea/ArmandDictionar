@@ -45,8 +45,10 @@ MvcTemplateFiles = \
     {
         'MTPath'  : pjoin(TMPL_DIR, 'ModelTemplate.txt'),
         'MBTPath' : pjoin(MvcTemplateDirs['MBTMPL_DIR'], 'ModelModule.txt'),
+        
         'FTPath'  : pjoin(TMPL_DIR,'ModelFormTemplate.txt'),
         'FBTPath' : pjoin(MvcTemplateDirs['MBTMPL_DIR'], 'ModelFormModule.txt'),
+        
         'VTPath'  : pjoin(TMPL_DIR,'ViewTemplate.txt'),
         'CTPath'  : pjoin(TMPL_DIR,'ControllerTemplate.txt'),
         'CBTPath' : pjoin(MvcTemplateDirs['MBTMPL_DIR'],'ControllerModule.txt'),
@@ -89,7 +91,7 @@ types =\
         'int'       : 'db.IntegerProperty',
         'float'     : 'db.FloatProperty',
         'ref'       : 'db.ReferenceProperty',
-        'selfref'   : 'db.ReferenceProperty',
+        'selfref'   : 'db.SelfReferenceProperty',
         'list'      : 'db.ListProperty',
         'strlist'   : 'fb.StringListProperty',
         'cat'       : 'db.CategoryProperty',

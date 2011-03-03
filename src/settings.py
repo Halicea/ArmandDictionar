@@ -1,6 +1,7 @@
 import os
 from os.path import join, abspath
-from lib.halicea import defaultControllerMethods as dcm
+#from lib.halicea import defaultControllerMethods as dcm
+from lib.halicea import dummyControllerMethods as dcm
 DEBUG = True
 TEMPLATE_DEBUG = True
 DEFAULT_CHARSET ='UTF-8'
@@ -48,13 +49,15 @@ MODEL_FORM_EXTENSTION = '.py'
 VIEW_EXTENSTION = '.html'
 
 MagicLevel = 0
+
 DEFAULT_OPERATIONS = {
-                      'lst':{'method':dcm.index, 'view':True}, 
-                      'shw':{'method':dcm.show, 'view':True},
-                      'ins':{'method':dcm.save, 'view':False},
-                      'upd':{'method':dcm.save, 'view':False},
-                      'del':{'method':dcm.delete, 'view':False},
                       'default':{'method':dcm.index, 'view':False},
+                      'index':{'method':dcm.index, 'view':True}, 
+                      'details':{'method':dcm.details, 'view':True},
+                      'edit':{'method':dcm.edit, 'view':True},
+                      'insert':{'method':dcm.save, 'view':False},
+                      'update':{'method':dcm.save, 'view':False},
+                      'delete':{'method':dcm.delete, 'view':False},
                      }
 #DJANGO APP SETTINGS SECTION
 #PASTE YOUR CONFIGURATION HERE

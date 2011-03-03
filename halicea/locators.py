@@ -16,3 +16,5 @@ def LocateFormsDir(packageName):
 def BasePathFromName(packageName, sep=os.path.sep, splitter='.'):
     return sep.join(packageName.split(splitter))
 
+def locate(packageName, mvcSegment):
+    return eval("Locate"+mvcSegment)(packageName)

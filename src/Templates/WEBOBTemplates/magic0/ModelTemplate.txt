@@ -1,5 +1,3 @@
-{%for i in imports%}
-i{%endfor%}
 class {{m.Name}}({{m.InheritsFrom}}):
     """{%if m.Description%}{{m.Description}}{%else%}TODO: Describe {{m.Name}}{%endif%}"""
     {% for p in m.Properties %}{{p.Name}}= {{p.Type}}({%for op in p.Options%}{{op}}{%ifequal forloop.last True %}{%else%}, {%endifequal%}{%endfor%})

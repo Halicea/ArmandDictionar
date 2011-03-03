@@ -1,6 +1,6 @@
 from google.appengine.ext import db
 from Magic import MagicSet
-def show(request, *args, **kwargs):
+def edit(request, *args, **kwargs):
     if request.params.key:
         item = db.get(request.params.key)
         if item:
