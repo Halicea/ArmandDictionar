@@ -1,0 +1,5 @@
+<div id="RelativeList">
+    {%for relative in relativeList%}
+        <p><a href="{%url ArmanController%}?key={{relative.key}}">{{relative.Name}} {{relative.Surname}}</p>
+    {%endfor%}
+</div>

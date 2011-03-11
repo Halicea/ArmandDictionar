@@ -1,18 +1,18 @@
 import os
-from os.path import join, abspath
+from os.path import join
 #from lib.halicea import defaultControllerMethods as dcm
 from lib.halicea import dummyControllerMethods as dcm
-DEBUG = True
+DEBUG = False
 TEMPLATE_DEBUG = True
 DEFAULT_CHARSET ='UTF-8'
 APPENGINE_PATH = '/home/costa/DevApps/google_appengine'
 if os.name == 'nt':
     #APPENGINE_PATH = '/home/costa/DevApps/google_appengine'
     APPENGINE_PATH = 'C:\\devApps\\google_appengine'
-TEMPLATE_DIRS = (abspath('Views'), 
-                 abspath('Templates'),)
+
 #we define the path relatively to our settings file
 PROJ_LOC = os.path.dirname(__file__)
+
 #MVC Directories
 MODELS_DIR = join(PROJ_LOC,'Models')
 VIEWS_DIR = join(PROJ_LOC,'Views')
@@ -42,6 +42,7 @@ FORM_VIEW_SUFFIX = 'Form'
 BLOCK_VIEW_SUFIX = ''
 #End MVC Sufixes
 
+
 #File Extensions
 CONTROLLER_EXTENSTION = '.py'
 MODEL_EXTENSTION = '.py'
@@ -59,5 +60,14 @@ DEFAULT_OPERATIONS = {
                       'update':{'method':dcm.save, 'view':False},
                       'delete':{'method':dcm.delete, 'view':False},
                      }
+OPENID_PROVIDERS ={
+    'Google':'Google.com/accounts/o8/id', # shorter alternative: "Gmail.com"
+    'Yahoo':'Yahoo.com',
+    #'MySpace.com',
+    'MyOpenID':'MyOpenID.com',
+    # add more here
+}
 #DJANGO APP SETTINGS SECTION
+TEMPLATE_DIRS = (VIEWS_DIR)
+ROOT_URLCONF ='handlerMap'
 #PASTE YOUR CONFIGURATION HERE

@@ -1,11 +1,4 @@
-# -*- coding: utf-8 -*-
-import os
-import settings
-os.environ['DJANGO_SETTINGS_MODULE']  = 'settings'
-from google.appengine.ext import webapp
-from google.appengine.ext.webapp.util import run_wsgi_app
-from lib.gaesessions import SessionMiddleware
-
+from django.conf.urls.defaults import *
 #{%block imports%}
 from Controllers import BaseControllers
 from Controllers import StaticControllers
@@ -15,11 +8,8 @@ from Controllers import ArmanListingControllers
 from Controllers import ChatControllers
 #{%endblock%}
 
-#Definition of the Controller Url mappings
-application = webapp.WSGIApplication(
-[
+webapphandlers = [
 #{%block ApplicationControllers %}
-
 #{% block DictControllers %}
 ('/', DictControllers.SearchController),
 ('/Dict/Word', DictControllers.WordController),
@@ -45,9 +35,11 @@ application = webapp.WSGIApplication(
 ('/Links', StaticControllers.LinksController),
 ('/NotAuthorized', StaticControllers.NotAuthorizedController),
 #{%endblock%}
+
 #{%block ArmanListingControllers %}
 ('/Listing/Armans', ArmanListingControllers.ArmanController),
 #{%endblock%}
+
 #{%block ShellControllers%}
 ('/admin/Shell', ShellControllers.FrontPageController),
 ('/admin/stat.do', ShellControllers.StatementController),
@@ -59,17 +51,7 @@ application = webapp.WSGIApplication(
 ('/Chat/UserInRoom', ChatControllers.UserInRoomController),
 ('/Chat/Message', ChatControllers.MessageController),
 #{%endblock%}
-#{%endblock%}
 ('/(.*)', StaticControllers.NotExistsController),
-], debug=settings.DEBUG)
-COOKIE_KEY = '''2zÆœ;¾±þ”¡j:ÁõkçŸÐ÷8{»Ën¿A—jÎžQAQqõ"bøó÷*%†™ù¹b¦$vš¡¾4ÇŸ^ñ5¦'''
-def webapp_add_wsgi_middleware(app):
-    from google.appengine.ext.appstats import recording
-    app = SessionMiddleware(app, cookie_key=COOKIE_KEY)
-    app = recording.appstats_wsgi_middleware(app)
-    return app
-def main():
-    run_wsgi_app(webapp_add_wsgi_middleware(application))
-
-if __name__ == "__main__":
-    main()
+#{%endblock%}
+]
+urlpatterns=patterns('',*[(r'^'+x[0][1:]+'$', x[1]) for x in webapphandlers])

@@ -1,17 +1,72 @@
-
-import Models.BaseModels as base
-from lib.halicea.HalRequestHandler import HalRequestHandler as hrh
-from lib.halicea.decorators import *
-from google.appengine.api import memcache
-from lib import messages
+from google.appengine.api import urlfetch
+from django.utils import simplejson
+import urllib, os
 import settings
+from lib.halicea.HalRequestHandler import HalRequestHandler as hrh
+from lib.halicea.decorators import ErrorSafe, LogInRequired
 from Models.BaseModels import RoleAssociation, RoleAssociationForm 
 from Models.BaseModels import Role, RoleForm 
-from Models.BaseModels import Person, WishList
+from Models.BaseModels import Person
 
 class LoginController( hrh ):
+    def SetOperations(self):
+        self.operations = {'default':{'method':self.login},
+                           'JanrainAuth':{'method':self.JanrainAuth}}
+    def login(self, *args):
+        if self.request.method=='GET':
+            self.login_get(*args)
+        else:
+            self.login_post(*args)
     @ErrorSafe()
-    def get( self, *args ):
+    def JanrainAuth(self, *args):
+        token = self.params.token
+        url = 'https://rpxnow.com/api/v2/auth_info'
+        args = {
+          'format': 'json',
+          'apiKey': '4a593fc2715670ab6a03b40653054858ffdc34a2',
+          'token': token
+          }
+    
+        r = urlfetch.fetch(url=url,
+                           payload=urllib.urlencode(args),
+                           method=urlfetch.POST,
+                           headers={'Content-Type':'application/x-www-form-urlencoded'}
+                           )
+    
+        json = simplejson.loads(r.content)
+    
+        if json['stat'] == 'ok':
+            person = Person.gql("WHERE UserName= :u AND AuthenticationType= :auth", u=json['profile']['preferredUsername'], auth=json['profile']['providerName']).get()
+            if not person:
+                name = json['profile'].has_key('givenName') and json['profile']['givenName'] or ''
+                surname = json['profile'].has_key('familyName') and json['profile']['name']['familyName'] or ''
+                display  = json['profile'].has_key('displayName') and json['profile']['displayName'] or ''
+                email  = json['profile'].has_key('email') and json['profile']['email'] or None
+                photo = json['profile'].has_key('photo') and json['profile']['photo'] or None
+                if not name and not surname and display:
+                    arr = display.split(' ')
+                    name = arr[0]; 
+                    surname = len(arr)>1 and arr[1] or ''
+                person = Person.CreateNew(uname=json['profile']['preferredUsername'], 
+                                          name=name, 
+                                          surname=surname,
+                                          email = email, 
+                                          password='openid',
+                                          public=True, 
+                                          notify=True, 
+                                          authType=json['profile']['providerName'],
+                                          photoUrl=photo,
+                                          _autoSave=True)
+                
+            self.login_user2(person)
+            self.status = 'Welcome '+person.UserName   
+            self.redirect('/')
+        else:
+            self.status = 'Not Valid Login'
+            self.respond()
+
+    @ErrorSafe()
+    def login_get( self, *args ):
         if not self.User:
             if self.g('redirect_url'):
                 self.respond({'redirect_url':self.g('redirect_url')})
@@ -20,11 +75,12 @@ class LoginController( hrh ):
         else:
             self.redirect( '/' )
             
-    def post( self ):
+    @ErrorSafe()
+    def login_post(self , *args):
         uname = self.request.get( 'Email' )
         passwd = self.request.get( 'Password' )
         if (uname and passwd):
-            if(self.login_user(uname, passwd)):
+            if(self.login_user_local(uname, passwd)):
                 if self.request.get( 'redirect_url' ):
                     self.redirect( self.request.get( 'redirect_url' ) )
                 else:

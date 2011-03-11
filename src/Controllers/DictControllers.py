@@ -20,7 +20,7 @@ import os
 import sys
 from google.appengine.api.datastore_errors import TransactionFailedError
 class WordController(hrh):
-    def show(self, *args):
+    def edit(self, *args):
         self.SetTemplate(templateName='Word_shw.html')
         if self.params.key:
             item = Word.get(self.params.key)
@@ -46,7 +46,6 @@ class WordController(hrh):
         else:
             self.status = 'Key was not Provided!'
         self.redirect(WordController.get_url())
-
     @AdminOnly()
     def index(self, *args):
         self.SetTemplate(templateName='Word_lst.html')
@@ -85,6 +84,7 @@ class WordController(hrh):
 from Models.DictModels import Search, SearchForm
 class SearchController(hrh):
     def SetOperations(self):
+        self.operations = {}
         self.operations['default']={'method':'search'}
         self.operations['random']={'method':'random'}
         self.operations['atom']={'method':'randomFeed'}

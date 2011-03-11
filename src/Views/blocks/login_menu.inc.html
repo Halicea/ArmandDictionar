@@ -1,15 +1,14 @@
-<div  id="login" style="text-align: left; width: 150px; float: right;" >
+<div  id="login" style="text-align: right; heigth:40px;float: right;" >
 	<form method="get" action="#">
 		{% if current_user %}
-		<div style="float: left; width: 120px; font-size: small;">
-			<label style="color: navy">{{current_user.Name}} {{current_user.Surname}} </label>
-			<a href="{% url LogoutController %}" style="text-align: right; color: black;">Logout</a>
+		<div style="font-size: small; text-align:right;padding-right:20px;vertical-align:middle;">
+			{%if current_user.PhotoUrl%}<img src='{{current_user.PhotoUrl}}' width="40px" style='vertical-align:middle;' />{%endif%}<label style="color: navy">{{current_user.UserName}}</label>
+			<a href="{% url LogoutController %}" style="text-align: right; color: black;vertical-align:middle;">Logout</a>
 		</div>
 		{% else %}
-		<div style="text-align: right; padding-right: 40px; font-size: small; color: blue;">
+		<div style="text-align: right; font-size: small; color: blue; padding-right:20px; vertical-align:middle;">
 		<a href="{% url LoginController %}" style="text-align: right; color: black;">Login </a> &nbsp;&nbsp;  <a href="{% url AddUserController %}" style="text-align: right; color: black;">Register </a>
 		</div>
 		{% endif %}
-		
 	</form>
 </div>

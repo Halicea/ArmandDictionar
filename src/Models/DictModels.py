@@ -6,11 +6,9 @@ from datetime import date
 import re, htmlentitydefs
 import logging
 from BaseModels import Person
-from django.newforms.fields import ChoiceField, EmailField, Field
-from django.newforms.widgets import RadioSelect, Textarea, TextInput
-from django.newforms import widgets, fields, extras
+
+from lib.djangoFormImports import fields, widgets, extras
 import BaseModels
-from django import forms
 va =u'ã'
 rpl ={u'â':va, u'Ã£':va, u'ã':va}
 
@@ -76,7 +74,7 @@ class Dictionary(db.Model):
         return self.Name+'('+self.Language1.Name+'-'+(self.Language2==None and 'None' or self.Language2.Name)+')'
 
 class DictionaryForm(ModelForm):
-    DateAdded= fields.DateField(widget=TextInput(attrs={'class':'date'}))
+    DateAdded= fields.DateField(widget=widgets.TextInput(attrs={'class':'date'}))
     class Meta():
         model=Dictionary
         #exclude
@@ -208,7 +206,7 @@ class Word(db.Model):
         #TODO: Change the method to represent something meaningful
         return (self.Value or 'Nu-ari Zboru')+'( '+(self.Translation or 'Nu-ari Tradutseari')+' )'
 class WordForm(ModelForm):
-    Value = Field(required=True)
+    Value = fields.Field(required=True)
 #    Translation= Field(required=True, widget=Textarea)
 #    res= (HalRequestHandler.GetUser()==None and [[]] or [HalRequestHandler.GetUser().addedby_dictionarys])[0]
 #    Dictionary = ModelChoiceField(Dictionary, required=True, widget=widgets.Select)
@@ -237,7 +235,7 @@ class Search(db.Model):
         #TODO: Change the method to represent something meaningful
         return self.Text+'-'+self.Language 
 class SearchForm(ModelForm):
-    Text = Field(widget=widgets.TextInput, label='Збор')
+    Text = fields.Field(widget=widgets.TextInput, label='Збор')
     Language1 = ModelChoiceField(Language, label="", widget= fields.HiddenInput,)
     Language2 = ModelChoiceField(Language, label="", widget= fields.HiddenInput,)
     class Meta():

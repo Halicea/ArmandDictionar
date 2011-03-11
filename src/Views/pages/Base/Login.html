@@ -2,18 +2,38 @@
 
 {% block content %}
 
-<div class="ui-widget" style="width:320px; margin-left: auto; margin-right: auto;">
-	<div class="ui-widget-header ui-corner-top"><h2>Login</h2></div>
-	<div class="ui-widget-content ui-corner-bottom" style="text-align: right; padding: 10px">
-		<form action="{% url LoginController %}" method="post">
-			{% if redirect_url %}
-			<input type="hidden" name="redirect_url" value="{{redirect_url}}"></input>
-			{% endif %}
-			<p>UserName or Email:<input type="text" name="Email" style="width: 170px" /></p>
-			<p>Password:<input type="password" name="Password" style="width: 170px" /></p>
-			<p><input type="submit" value="Login" /></p>
-		</form>
-	</div>
+<div class="ui-widget" style="width:70%;margin-left: auto; margin-right: auto;">
+	<table>
+	    <tr><td style="width:50%">
+	        <div class="ui-widget-header ui-corner-top"><h2>Login</h2></div>
+        	<div class="ui-widget-content ui-corner-bottom" style="text-align: right; padding: 10px; width:310px">
+        		<form action="{% url LoginController %}" method="post">
+        			{% if redirect_url %}
+        			<input type="hidden" name="redirect_url" value="{{redirect_url}}"></input>
+        			{% endif %}
+        			<p>UserName or Email:<input type="text" name="Email" style="width: 170px" /></p>
+        			<p>Password:<input type="password" name="Password" style="width: 170px" /></p>
+        			<p><input type="submit" value="Login" /></p>
+        		</form>
+        	</div>
+        	
+        </td>
+        <td class="ui-widget-content ui-corner-all" style="width:50%">
+            <div style='text-align:center;padding:15px;'>
+                <h2>Dont Have Account?</h2> 
+                <h1><a href='/AddUser'>Register Now</a></h1>
+            </div>
+        </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                <div style="width:60%;margin-left: 80px; margin-right: auto;">
+                    <iframe src="http://arman.rpxnow.com/openid/embed?token_url=http%3A%2F%2F{{current_server}}%2FLogin%3Fop%3DJanrainAuth" scrolling="no" frameBorder="no" allowtransparency="true" style="width:400px;height:240px"></iframe> 
+                </div>
+            </td>
+        </tr>
+	</table>
+	
 </div>
 
 {% endblock %}

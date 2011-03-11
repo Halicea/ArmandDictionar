@@ -8,7 +8,8 @@ import settings
 from lib.halicea.Magic import MagicSet
 from os import path
 import os
-from google.appengine.ext.webapp import template
+#from google.appengine.ext.webapp import template
+from lib.halicea import template
 from lib.NewsFeed import NewsFeed
 
 templateGroups = {'form':settings.FORM_VIEWS_DIR, 
@@ -74,13 +75,19 @@ class HalRequestHandler( webapp.RequestHandler ):
     def User(self):
         return HalRequestHandler.GetUser()
 
-    def login_user(self, uname, passwd):
+    def login_user_local(self, uname, passwd):
         self.logout_user()
-        user = Person.GetUser(uname, passwd)
+        user = Person.GetUser(uname, passwd, 'local')
         if user:
             self.session['user']= user; return True            
         else:
             return False
+    def login_user2(self, user):
+        if user:
+            self.session['user']= user; return True            
+        else:
+            return False
+        
     def logout_user(self):
         if self.session.is_active():
             self.session.terminate()
@@ -147,6 +154,8 @@ class HalRequestHandler( webapp.RequestHandler ):
             result['status'] = self.status
         if not result.has_key('current_user'):
             result['current_user'] = self.User
+        if not result.has_key('current_server'):
+            result['current_server']=os.environ['HTTP_HOST']
         if not result.has_key('op'):
             result['op'] = self.op
         #update the variables
@@ -154,11 +163,12 @@ class HalRequestHandler( webapp.RequestHandler ):
         result.update(paths.GetBlocksDict())
         result.update(paths.GetFormsDict(path.join(settings.FORM_VIEWS_DIR, self.TemplateType))) ##end
         return result
+
     def respond( self, item={}, *args ):
         #self.response.out.write(self.Template+'<br/>'+ dict)
-        if isinstance(item,str):
+        if isinstance(item, str):
             self.response.out.write(item)
-        elif isinstance(item,dict):
+        elif isinstance(item, dict):
             self.response.out.write( template.render( self.Template, self.render_dict( item ), 
                                                   debug = settings.TEMPLATE_DEBUG ))
         elif isinstance(item,list):
@@ -173,8 +183,10 @@ class HalRequestHandler( webapp.RequestHandler ):
             self.response.out.write(str(item))
     def redirect_login( self ):
         self.redirect( '/Login' )
+
     def respond_static(self, text):
         self.response.out.write(text)
+
     def redirect( self, uri, postargs={}, permanent=False ):
         innerdict = dict( postargs )
         if innerdict.has_key( 'status' ):

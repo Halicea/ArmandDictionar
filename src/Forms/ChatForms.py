@@ -1,4 +1,4 @@
-from django.newforms import widgets, fields, extras
+from lib.djangoFormImports import widgets, fields, extras
 from google.appengine.ext.db.djangoforms import ModelForm
 from Models.ChatModels import *
 #{%block imports%}

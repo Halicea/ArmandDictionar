@@ -8,8 +8,30 @@
 	height: 100px; 
 	background-color: black;
 }
+.right_panel_container{
+    padding-top:10px;
+    float: right;
+    width: 180px; 
+    min-height:600px; 
+    padding-left: 10px;
+    background: green;
+}
+.right_panel_container{
+    background: rgba(0, 0, 0, 0.3);
+    filter:progid:DXImageTransform.Microsoft.gradient(startColorstr=#99000000, endColorstr=#99000000);
+    -ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorstr=#00000000, endColorstr=#99000000)";
+}
 
 </style>
+<!--[if IE]>
+<style type="text/css">
+.transparentBox{
+    background: rgba(0, 0, 0, 0.3);
+    filter:progid:DXImageTransform.Microsoft.gradient(startColorstr=#80000000, endColorstr=#00000000);
+    -ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorstr=#50000000, endColorstr=#50000000)";
+    background:transparent;
+}</style>
+<![endif]-->
 <title>
 	{% block title %} {% endblock %} 
 </title>
@@ -46,16 +68,14 @@ pageTracker._trackPageview();
 			<div style="float: left; width: auto;">
 				{%block top_menu %} {% endblock %}
 			</div>
-			<div  id="login" style="text-align: left; width: 150px; float: right;" >
+			<div  id="login" style="text-align: right;float: right;" >
 				{% block login_menu %}
-					<form method="get" action="#">
 						{% if current_user %}
 						<label style="color: navy">{{current_user.Name}} {{current_user.Surname}} </label>
 						<a href="{% url LogoutController %}" style="text-align: right; color: black;">Logout</a>
 						{% else %}
 						<a href="{% url LoginController %}" style="text-align: right; color: black;">Login</label> </a>
 						{% endif %}
-					</form>
 				{% endblock %}
 			</div>
 		</div> 
@@ -68,15 +88,17 @@ pageTracker._trackPageview();
 			{% endblock %}
 		</div>
 		 -->
-		<div id="main_container" style="float: left;width: 810px; padding: 0px;min-height: 603px;" class="ui-corner-all">
+		<div id="main_container" style="float: left;width: 800px; padding: 0px; margin-right:10px; min-height: 603px;" class="ui-corner-all">
 			{% block status %}
 				Status 
 			{% endblock %}
 			{% block content %}
-			    Main Pane
+			    Main Pane srdfthsrthsrt
+			    srthsrthsrthsr
 			{% endblock %}
 		</div>
-		<div id="right_panel_container" style="float: right;width: 180px; height: 500px; padding-left: 10px;">
+		
+		<div id="right_panel_container" class='right_panel_container transparentBox  ui-corner-top'>
 			{% block sidebar %}
 			<ul>
 				<li>

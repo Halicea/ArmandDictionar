@@ -1,6 +1,6 @@
 import settings
-
 from google.appengine.ext import db
+from Models.BaseModels import Person
 #{% block imports%}
 #{%endblock%}
 ################
@@ -20,17 +20,20 @@ class Address(db.Model):
     
 class Arman(db.Model):
     """TODO: Describe Person"""
-    Name= db.StringProperty(required=True, )
-    Surname= db.StringProperty(required=True, )
+    MappedTo = db.ReferenceProperty(Person, required=False)
+    Name = db.StringProperty(required=True)
+    Surname = db.StringProperty(required=True)
     ArmanSurname= db.StringProperty()
-    PersonallAddress = db.ReferenceProperty(Address, collection_name='personal_adress_persons')
-    Email= db.EmailProperty()
+    PersonalAddress = db.ReferenceProperty(Address, required=True, collection_name='personal_address_persons')
+    #Email= db.EmailProperty()
+    Email = db.StringProperty()
     Facebook= db.StringProperty()
     MobilePhone= db.PhoneNumberProperty()
     HomePhone= db.PhoneNumberProperty()
-    IsSpeakingArman= db.BooleanProperty()
+    IsSpeakingArman= db.BooleanProperty(default=True)
     IsWriteingArman= db.BooleanProperty()
-    
+    AddedBy = db.ReferenceProperty(Person, required=True, collection_name='added_by_armans')
+    #DateAdded = db.DateTimeProperty(auto_now=True, auto_now_add=True)
     @classmethod
     def CreateNew(cls ,name,surname,armansurname, personalladress,
                   email,facebook,mobilephone,homephone,

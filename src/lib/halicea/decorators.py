@@ -4,7 +4,9 @@ Created on 04.1.2010
 @author: KMihajlov
 '''
 #from lib import messages
+from settings import DEBUG
 from lib import messages
+import traceback,logging
 #from Controllers.MyRequestHandler import MyRequestHandler as mrh
 import warnings
 def property(function):
@@ -42,7 +44,7 @@ class LogInRequired(object):
     def __call__(self, f):
         def new_f(request, *args, **kwargs):
             if request.User:
-                f(request, *args, **kwargs)
+                return f(request, *args, **kwargs)
             else:
                 request.status= self.message
                 request.redirect(self.redirect_url)
@@ -57,7 +59,7 @@ class AdminOnly(object):
     def __call__(self, f):
         def new_f(request, *args, **kwargs):
             if request.User and request.User.IsAdmin:
-                f(request, *args, **kwargs)
+                return f(request, *args, **kwargs)
             else:
                 request.status= self.message
                 request.redirect(self.redirect_url)
@@ -72,7 +74,7 @@ class InRole(object):
     def __call__(self, f):
         def new_f(request, *args, **kwargs):
             if request.User and request.User.IsAdmin:
-                f(request, *args, **kwargs)
+                return f(request, *args, **kwargs)
             else:
                 request.status= self.message
                 request.redirect(self.redirect_url)
@@ -83,7 +85,7 @@ class ErrorSafe(object):
                  redirectUrl = '/',
                  message= messages.error_happened,
                  Exception = Exception,
-                 showStackTrace = True ):
+                 showStackTrace = False ):
         self.redirectUrl = redirectUrl
         self.message = message
         self.Exception = Exception
@@ -91,15 +93,18 @@ class ErrorSafe(object):
     def __call__(self, f):
         def new_f(request, *args, **kwargs):
             try:
-                f(request, *args, **kwargs)
+                return f(request, *args, **kwargs)
             except self.Exception, ex:
+                
                 if request.status == None:
                     request.status = self.message or ''
                 else:
                     request.status += self.message or ''
-                    
-                if self.showStackTrace:
-                    request.status+= "  Details:<br/>"+ex.__str__()
+                logging.error(str(ex)+'\n'+traceback.format_exc())
+                if self.showStackTrace or DEBUG:
+                    request.status+= "  Details:<br/>"+ex.__str__()+'</br>'+traceback.format_exc()
+                else:
+                    'There has been some problem, and the moderator was informed about it.'
                 request.redirect(self.redirectUrl)
         return new_f
 

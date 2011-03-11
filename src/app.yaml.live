@@ -1,5 +1,5 @@
-application: armandict-dev
-version: 1
+application: armandict
+version: 2
 runtime: python
 api_version: 1
 
@@ -25,5 +25,5 @@ handlers:
   login: admin
   
 - url: /.*
-  script: main.py
+  script: handlerMap.py
 

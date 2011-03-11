@@ -2,24 +2,23 @@
 import settings
 from google.appengine.ext.db.djangoforms import ModelForm
 from google.appengine.ext import db
-from django.newforms import widgets, fields, extras
+from google.appengine.ext.db import polymodel
 import datetime as dt
 ###########
 
-class Person(db.Model):
+class Person(polymodel.PolyModel):
     '''A Person with UserName, Name, Surname Phone Email e.t.c'''
-
     UserName = db.StringProperty(required=True)
     Password = db.StringProperty(required=True)
-    Name = db.StringProperty(required=True)
-    Surname = db.StringProperty(required=True)
-    Email = db.EmailProperty(required=True)
+    Name = db.StringProperty(required=False)
+    Surname = db.StringProperty(required=False)
+    Email = db.EmailProperty(required=False)
     Public = db.BooleanProperty(default=True)
     Notify = db.BooleanProperty(default=False)
     DateAdded = db.DateTimeProperty()
+    PhotoUrl = db.LinkProperty()
     AuthenticationType = db.StringProperty(default='local')
     IsAdmin = db.BooleanProperty(default=False)
-
     def put(self):
         _isValid_, _error_ = self.__validate__()
         if(_isValid_):
@@ -33,7 +32,7 @@ class Person(db.Model):
         __errors__ = []
         if not self.UserName or len(self.UserName)<3:
             __errors__.append('UserName must not be less than 3 characters')
-        if not self.Email: #or self.Email.validate('^[0-9,a-z,A-Z,.]+@[0-9,a-z,A-Z].[com, net, org]'):
+        if not self.Email and self.AuthenticationType == 'local': #or self.Email.validate('^[0-9,a-z,A-Z,.]+@[0-9,a-z,A-Z].[com, net, org]'):
             __errors__.append('Email Must Not be Empty')
         if len(self.Password) < 6  or str(self.Password).find(self.Name) >= 0:
             __errors__.append('Not a good Password(Must be at least 6 characters long, and not containing your name')
@@ -41,25 +40,28 @@ class Person(db.Model):
         return not __errors__ and (True, None) or (False, ' and\r\n'.join(__errors__))
 
     @classmethod
-    def CreateNew(csl, uname, name, surname, email, password, public, notify, _autoSave=False):
+    def CreateNew(cls, uname, name, surname, email, password, public, notify, authType=None, photoUrl=None, _autoSave=False):
         result = cls(UserName = uname,
                     Email=email,
                     Name=name,
                     Surname=surname,
                     Password=password,
                     Public=public,
-                    Notify=notify
+                    Notify=notify,
+                    PhotoUrl=photoUrl
                     )
+        if authType: result.AuthenticationType = authType
+        
         if _autoSave:
             result.put()
         return result
     @classmethod
-    def GetUser(cls, uname, password):
+    def GetUser(cls, uname, password, authType):
         u = None
         if '@' in uname:
-            u = cls.gql('WHERE Password= :passwd AND Email= :uname', uname=uname, passwd=password).get()
+            u = cls.gql('WHERE Password= :passwd AND Email= :uname AND AuthenticationType= :auth', uname=uname, passwd=password, auth=authType).get()
         else:
-            u = cls.gql('WHERE Password= :passwd AND UserName= :uname', uname=uname, passwd=password).get()
+            u = cls.gql('WHERE Password= :passwd AND UserName= :uname AND AuthenticationType= :auth', uname=uname, passwd=password).get()
         return u
     def __str__(self):
         return self.Name+' '+self.Surname
