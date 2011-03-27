@@ -8,8 +8,15 @@ import settings
 from lib.halicea.Magic import MagicSet
 from os import path
 import os
-#from google.appengine.ext.webapp import template
-from lib.halicea import template
+from google.appengine.ext.webapp import template
+
+#from lib.webapp2 import template
+ 
+#from lib.halicea import template
+
+#from jinja2 import FileSystemLoader, Environment, TemplateNotFound
+#from lib.halicea.jinjaCustomTags import UrlExtension
+#env = Environment(loader = FileSystemLoader([settings.VIEWS_DIR,]), extensions=[UrlExtension])
 from lib.NewsFeed import NewsFeed
 
 templateGroups = {'form':settings.FORM_VIEWS_DIR, 
@@ -88,7 +95,7 @@ class HalRequestHandler( webapp.RequestHandler ):
         else:
             return False
         
-    def logout_user(self):
+    def logout_user(self): 
         if self.session.is_active():
             self.session.terminate()
         return True
@@ -114,14 +121,12 @@ class HalRequestHandler( webapp.RequestHandler ):
     # Methods
     def g(self, item):
         return self.request.get(item)
-
 #   the method by the operation
     def __route__(self, method, *args, **kwargs):
         self.method = method
         self.op = self.g('op')
         outresult = 'No Result returned'
         if self.operations.has_key(self.op):
-            
             if isinstance(self.operations[self.op]['method'], str):
                 outresult = getattr(self, self.operations[self.op]['method'])(self, *args, **kwargs)
             else:
@@ -169,6 +174,9 @@ class HalRequestHandler( webapp.RequestHandler ):
         if isinstance(item, str):
             self.response.out.write(item)
         elif isinstance(item, dict):
+            #commented is jinja implementation of the renderer 
+            #tmpl = env.get_template(self.Template)
+            #self.response.out.write(tmpl.render(self.render_dict(item)))
             self.response.out.write( template.render( self.Template, self.render_dict( item ), 
                                                   debug = settings.TEMPLATE_DEBUG ))
         elif isinstance(item,list):
@@ -177,6 +185,9 @@ class HalRequestHandler( webapp.RequestHandler ):
             self.response.out.write(item.to_xml())
         elif isinstance(item, NewsFeed):
             self.response.headers["Content-Type"] = "application/xml; charset=utf-8"
+            #commented is jinja implementation of the renderer 
+            #tmpl = env.get_template(os.path.join(settings.TEMPLATE_DIRS, 'RssTemplate.txt'))
+            #self.response.out.write(tmpl.render({'m':item}))
             template.render(os.path.join(settings.TEMPLATE_DIRS, 'RssTemplate.txt'), 
                             {'m':item}, debug=settings.DEBUG)
         else:

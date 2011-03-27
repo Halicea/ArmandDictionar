@@ -1,0 +1,25 @@
+<script type="text/javascript">
+$(function(){
+    $('#id_relatedArmans').change(function(){
+        $.ajax({
+            url:"{%url AddressController%}",
+            method:'POST',
+            dataType:'html',
+            data:{'key':$(this).val()},
+            success:function(data, textStatus, jqXHR){
+                $(id_addressTable).html(data);
+            },
+            error:function(jqXHR, textStatus, errorThrown){
+                alert('Error in data');
+            }
+        });
+    });
+});
+</script>
+Same As:
+<select id="id_relatedArmans" name="key">
+    <option value="" selected="selected">--Select Item--</option>
+    {%for per in connectionsList%}
+    <option value="{{per.Arman.key}}">{{per.Arman.Name}} {{per.Arman.Surname}}</option>
+    {%endfor%}
+</select>

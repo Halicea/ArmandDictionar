@@ -14,7 +14,7 @@ sys.path.append(abspath(pjoin(PROJ_LOC)))
 #Set django in pythonpath
 sys.path.append(APPENGINE_PATH)
 sys.path.append(pjoin(APPENGINE_PATH, 'lib'))
-sys.path.append(pjoin(APPENGINE_PATH, 'lib', 'django' ))
+sys.path.append(pjoin(APPENGINE_PATH, 'lib', 'django_1_2' ))
 sys.path.append(pjoin(APPENGINE_PATH, 'lib', 'webob' ))
 sys.path.append(pjoin(APPENGINE_PATH, 'lib', 'yaml','lib' ))
 ###

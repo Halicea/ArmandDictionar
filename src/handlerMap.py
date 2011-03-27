@@ -1,11 +1,9 @@
-from django.conf.urls.defaults import *
 #{%block imports%}
 from Controllers import BaseControllers
 from Controllers import StaticControllers
 from Controllers import DictControllers
 from Controllers import ShellControllers
 from Controllers import ArmanListingControllers
-from Controllers import ChatControllers
 #{%endblock%}
 
 webapphandlers = [
@@ -38,6 +36,7 @@ webapphandlers = [
 
 #{%block ArmanListingControllers %}
 ('/Listing/Armans', ArmanListingControllers.ArmanController),
+('/Listing/Arman/Address', ArmanListingControllers.AddressController),
 #{%endblock%}
 
 #{%block ShellControllers%}
@@ -45,13 +44,7 @@ webapphandlers = [
 ('/admin/stat.do', ShellControllers.StatementController),
 #{%endblock%}
 
-#{%block ChatControllers%}
-('/Chat/User', ChatControllers.UserController),
-('/Chat/Room', ChatControllers.RoomController),
-('/Chat/UserInRoom', ChatControllers.UserInRoomController),
-('/Chat/Message', ChatControllers.MessageController),
 #{%endblock%}
 ('/(.*)', StaticControllers.NotExistsController),
-#{%endblock%}
 ]
-urlpatterns=patterns('',*[(r'^'+x[0][1:]+'$', x[1]) for x in webapphandlers])
+

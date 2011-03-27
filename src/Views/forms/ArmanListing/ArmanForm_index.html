@@ -1,5 +1,9 @@
 <h2>Cafta: </h2>
-<table>
+<form method="POST" action="{%url ArmanSearch%}">
+    {{searchForm}}
+</form>
+
+<table id="id_ArmanSearch">
 {% for item in ArmanList %}
     <tr>
         <td>

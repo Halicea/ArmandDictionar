@@ -16,6 +16,7 @@ PROJ_LOC = os.path.dirname(__file__)
 #MVC Directories
 MODELS_DIR = join(PROJ_LOC,'Models')
 VIEWS_DIR = join(PROJ_LOC,'Views')
+VIEWS_RELATIVE_DIR = ''
 FORM_MODELS_DIR = join(PROJ_LOC, 'Forms')
 CONTROLLERS_DIR = join(PROJ_LOC, 'Controllers')
 BASE_VIEWS_DIR = join(VIEWS_DIR, 'bases')

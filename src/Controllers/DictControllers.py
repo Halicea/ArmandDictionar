@@ -11,7 +11,6 @@ from lib.ascii2cyrillic import asciiToCyrillic as a2c
 from lib.ascii2cyrillic import multiAsciiToCyrillic as ma2c 
 import logging
 
-
 #{% endblock}
 #DICT_SIZE = 38932
 DICT_SIZE = 200
@@ -85,7 +84,7 @@ from Models.DictModels import Search, SearchForm
 class SearchController(hrh):
     def SetOperations(self):
         self.operations = {}
-        self.operations['default']={'method':'search'}
+        self.operations['default']={'method':self.search}
         self.operations['random']={'method':'random'}
         self.operations['atom']={'method':'randomFeed'}
     def replaceWithCyrillic(self, val):

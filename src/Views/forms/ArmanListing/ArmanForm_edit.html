@@ -1,8 +1,16 @@
 <div class="ui-widget">
-<div class='ui-widget-header ui-corner-top' style="padding:2px"><h2>New Arman: </h2></div>
+<div class='ui-widget-header ui-corner-top' style="padding:2px">
+    <h2>{%if ArmanForm.instance%}
+        {%if ArmanForm.MappedToCurrent %}Edit Information:{%else%}Edit Relative Information:{%endif%}
+        {%else%}
+        {%if ArmanForm.MappedToCurrent %}Register:{%else%}Register Relative:{%endif%}
+        {%endif%}
+    </h2>
+</div>
 <div class="ui-widget-content ui-corner-bottom" style="border:1;padding:10px">
 <form method='post' id="ArmanForm_edit" action='{% url ArmanController %}'>
     <input type='hidden' name='key' value={{ArmanForm.instance.key}}></input>
+    <input type='hidden' name='MappedTo' value='{{ArmanForm.instance.MappedTo.key}}'></input>
     <table>
         <tr>
             <td style="text-align:right;">
@@ -10,8 +18,9 @@
             </td>
             <td>
             <input type='text' id="id_Name" name="Name" 
-                value="{%if ArmanForm.instance.MappedTo%}{{ArmanForm.instance.MappedTo.Name}}{%else%}{{ArmanForm.instance.Name}}{%endif%}" 
-                {%if ArmanForm.instance.MappedTo%}disabled="disabled"{%endif%} />
+                {%if ArmanForm.instance%}value="{%if ArmanForm.instance.MappedTo%}{{ArmanForm.instance.MappedTo.Name}}{%else%}{{ArmanForm.instance.Name}}{%endif%}"
+                {%else%}value="{%if ArmanForm.MappedToCurrent%}{{current_user.Name}}{%endif%}"{%endif%}
+                {%if ArmanForm.instance.MappedTo%}readonly="readonly"{%endif%} />
             </td>
             <td style='color: red;'>
             {{ ArmanForm.Name.errors }}
@@ -23,8 +32,9 @@
             </td>
             <td>
             <input type='text' id="id_Surname" name="Surname" 
-                value="{%if ArmanForm.instance.MappedTo%}{{ArmanForm.instance.MappedTo.Surname}}{%else%}{{ArmanForm.instance.Surname}}{%endif%}" 
-                {%if ArmanForm.instance.MappedTo%}disabled="disabled"{%endif%} />
+                {%if ArmanForm.instance%}value="{%if ArmanForm.instance.MappedTo%}{{ArmanForm.instance.MappedTo.Surname}}{%else%}{{ArmanForm.instance.Surname}}{%endif%}"
+                {%else%}value="{%if ArmanForm.MappedToCurrent%}{{current_user.Surname}}{%endif%}"{%endif%}
+                {%if ArmanForm.instance.MappedTo%}readonly="readonly"{%endif%} />
             </td>
             <td style='color: red;'>
             {{ ArmanForm.Surname.errors }}
@@ -32,20 +42,23 @@
         <tr>
         <tr>
             <td style="text-align:right;" >{{ArmanForm.Email.label_tag}}</td>
-            <td><input type='text' id="id_Email" name="Email" 
-                value="{%if ArmanForm.instance.MappedTo%}{{ArmanForm.instance.MappedTo.Email}}{%else%}{{ArmanForm.instance.Email}}{%endif%}" 
-                {%if ArmanForm.instance.MappedTo%}disabled="disabled"{%endif%} /></td>
+            <td><input type='text' id="id_Email" name="Email"
+                {%if ArmanForm.instance%}value="{%if ArmanForm.instance.MappedTo%}{{ArmanForm.instance.MappedTo.Email}}{%else%}{{ArmanForm.instance.Email}}{%endif%}" 
+                {%else%}value="{%if ArmanForm.MappedToCurrent%}{{current_user.Email}}{%endif%}"{%endif%}
+                {%if ArmanForm.instance.MappedTo%}readonly="readonly"{%endif%} /></td>
             <td style='color: red;'>{{ArmanForm.Email.errors}}</td>
         </tr>
     </table>
     <table>
         <tr>
-            <td></td>
+            <td>
+                {%include AutoFillAddress%}
+            </td>
             <td colspan="2">
               <div style='color: red;'>
                 {{ArmanForm.PersonalAddressForm.message.errors }}
               </div>
-              <table>
+              <table id="id_addressTable">
                   {{ArmanForm.PersonalAddressForm.as_table}}
               </table>
             </td>

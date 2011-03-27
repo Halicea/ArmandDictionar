@@ -61,7 +61,7 @@ class Person(polymodel.PolyModel):
         if '@' in uname:
             u = cls.gql('WHERE Password= :passwd AND Email= :uname AND AuthenticationType= :auth', uname=uname, passwd=password, auth=authType).get()
         else:
-            u = cls.gql('WHERE Password= :passwd AND UserName= :uname AND AuthenticationType= :auth', uname=uname, passwd=password).get()
+            u = cls.gql('WHERE Password= :passwd AND UserName= :uname AND AuthenticationType= :auth', uname=uname, passwd=password, auth=authType).get()
         return u
     def __str__(self):
         return self.Name+' '+self.Surname
@@ -123,9 +123,9 @@ class RoleAssociation(db.Model):
 
     @classmethod
     def CreateNew(cls ,rolename,roledescription,role,person , _isAutoInsert=False):
-        result = cls(
-                     Role=role,
+        result = cls(Role=role,
                      Person=person,)
+
         if _isAutoInsert: result.put()
         return result
     def __str__(self):

@@ -1,13 +1,14 @@
 # -*- coding: utf-8 -*-
 import os 
-import settings
+import settings 
 os.environ['DJANGO_SETTINGS_MODULE']  = 'settings'
 #from google.appengine.dist import use_library
 #use_library('django', '1.2')
+from handlerMap import webapphandlers
 from google.appengine.ext import webapp
 from google.appengine.ext.webapp.util import run_wsgi_app
+#from lib import webapp2 as webapp
 from lib.gaesessions import SessionMiddleware
-from handlerMap import webapphandlers
 
 application = webapp.WSGIApplication(webapphandlers, debug=settings.DEBUG)
 
