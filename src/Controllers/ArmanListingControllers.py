@@ -30,10 +30,6 @@ class ArmanController(hrh):
     def edit(self, *args):
         self.SetTemplate(templateName="Arman.html")
         if self.request.method == 'GET':
-            mapToCurrent = False
-            instance = None
-            relativeList=[]
-            op = self.params.op or 'save'
             if self.params.key: #edit
                 instance = Arman.get(self.params.key)
                 if not instance:
@@ -68,7 +64,7 @@ class ArmanController(hrh):
                 instance=form.save(addedBy=self.User, mappedTo=mappedTo)
                 self.status = 'Arman saved'
                 return {
-                    'connectionsList':[Connection(arman) for arman in relativeList],
+                    'connectionsList':[Connection(arman) for arman in instance.RelatedArmans],
                     'ArmanForm':ArmanForm(),
                    }
             else:
