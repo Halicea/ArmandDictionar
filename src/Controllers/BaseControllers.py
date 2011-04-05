@@ -59,8 +59,11 @@ class LoginController( hrh ):
                                           _autoSave=True)
                 
             self.login_user2(person)
-            self.status = 'Welcome '+person.UserName   
-            self.redirect('/')
+            self.status = 'Welcome '+person.UserName
+            if self.params.redirect_url:
+                self.redirect(self.params.redirect_url)
+            else:
+                self.redirect('/')
         else:
             self.status = 'Not Valid Login'
             self.respond()

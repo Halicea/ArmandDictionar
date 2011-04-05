@@ -7,10 +7,8 @@ from lib.ArmanDict.MunicipalityList import MunicipalityList
 ################
 
 class Address(db.Model):
-    City =db.StringProperty(required=True)
     Municipality = db.StringProperty(required=True)
     Street = db.StringProperty()
-    State = db.StringProperty()
     @classmethod
     def CreateNew(cls, city, municipality, street, zipcode, state, _isAutoInsert=False):
         result = cls(City=city, Municipality=municipality, Street=street, ZipCode=zipcode, State=state)
@@ -37,7 +35,7 @@ class Arman(db.Model):
     #DateAdded = db.DateTimeProperty(auto_now=True, auto_now_add=True)
     @property
     def RelatedArmans(self):
-        return self.AddedBy.added_by_armans.filter('__key__ !=', str(self.key())).fetch(limit=100)
+        return self.AddedBy.added_by_armans.filter('__key__ !=', self.key()).fetch(limit=100)
     
     @classmethod
     def CreateNew(cls ,mappedTo, name,surname,armansurname, personalladress,

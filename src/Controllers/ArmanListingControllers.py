@@ -68,7 +68,6 @@ class ArmanController(hrh):
                 instance=form.save(addedBy=self.User, mappedTo=mappedTo)
                 self.status = 'Arman saved'
                 return {
-                    
                     'connectionsList':[Connection(arman) for arman in relativeList],
                     'ArmanForm':ArmanForm(),
                    }
@@ -76,10 +75,10 @@ class ArmanController(hrh):
                 self.SetTemplate(templateName='Arman.html')
                 self.status = 'Error in Data'
                 return  {'ArmanForm':form}
-    
+    @AdminOnly()
     def index(self, *args):
         return {'ArmanList':Arman.all().fetch(limit=100, offset=0)}
-
+        
 class AddressController(hrh):
     def SetOperations(self):
         self.operations = {'default':{'method':self.getAddress}}

@@ -9,13 +9,11 @@ from Models.ArmanListingModels import Address, Arman
 from lib.ArmanDict import MunicipalityList
 class AddressForm(ModelForm):
     Municipality = fields.ComboField(widget=widgets.Select(choices=MunicipalityList.MunicipalityList), required=True)
-    DOB = fields.DateField()
     class Meta():
         model = Address
 class ArmanForm(ModelForm):
     PersonalAddressForm = AddressForm()
     MappedToCurrent = False
-
     class Meta():
         model = Arman
         exclude = ('AddedBy', 'DateAdded', 'PersonalAddress')
