@@ -147,7 +147,7 @@ class HalRequestHandler( webapp.RequestHandler ):
 
     #otherwise we have been redirected
     def get(self, *args):
-        self.__route__('GET', *args )
+        self.__route__('GET', *args)
     def post(self, *args):
         self.__route__('POST', *args)
 
