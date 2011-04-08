@@ -146,10 +146,10 @@ class HalRequestHandler( webapp.RequestHandler ):
             self.respond(outresult)
 
     #otherwise we have been redirected
-    def get(self, *args, **kwargs):
-        self.__route__('GET', *args, **kwargs)
-    def post(self, *args, **kwargs):
-        self.__route__('POST', *args, **kwargs)
+    def get(self, *args):
+        self.__route__('GET', *args )
+    def post(self, *args):
+        self.__route__('POST', *args)
 
     def render_dict( self, basedict ):
         result = dict( basedict )

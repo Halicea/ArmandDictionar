@@ -11,8 +11,17 @@ class Connection(object):
     def __init__(self, arman):
         self.Arman = arman
         self.AddedBy = arman.AddedBy.mapped_to_arman.get()
+class ArmansBaseController(hrh):
+    def render_dict(self, basedict):
+        res = super(ArmansBaseController, self).render_dict(basedict)
+        arman = self.User.mapped_to_arman.get()
+        connList =[]
+        if arman:
+            connList = arman.RelatedArmans
+        res.update({'connectionsList':[Connection(arman) for arman in connList]})
+        return res
 
-class ArmanController(hrh):
+class ArmanController(ArmansBaseController):
     def SetOperations(self):
         self.operations ={
                           'default':{'method':self.edit},
@@ -37,8 +46,7 @@ class ArmanController(hrh):
                     self.respond()
                     return
                 else:
-                    return {'connectionsList':[Connection(arman) for arman in instance.RelatedArmans],
-                            'op':'edit',
+                    return {'op':'edit',
                             'ArmanForm': ArmanForm(instance),
                             'register':False}
             else: #new
@@ -48,7 +56,6 @@ class ArmanController(hrh):
                     form.MappedToCurrent = True
                 result= {'op':'save',\
                         'register':True,\
-                        'connectionsList': instance and [Connection(arman) for arman in instance.RelatedArmans] or [],\
                         'ArmanForm':form,\
                        }
                 return result
