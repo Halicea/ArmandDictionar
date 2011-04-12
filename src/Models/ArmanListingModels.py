@@ -60,6 +60,20 @@ class Arman(db.Model):
                      AddedBy=addedBy,)
         if _isAutoInsert: result.put()
         return result
+    @staticmethod
+    def search(name=None, surname=None, armanSurname=None, city=None, street=None, limit=1000, offset=0):
+        results = Arman.all()
+        if name:
+            results.filter('Name = ', name)
+        if surname:
+            results.filter('Surname = ', surname)
+        if armanSurname:
+            results.filter('ArmanSurname = ', armanSurname)
+        if city:
+            results.filter('PersonallAddress.City = ', city)
+        if street:
+            results.filter('PersonallAddress.Street = ', street)
+        return results.fetch(limit=limit, offset=offset)
     def __str__(self):
         return self.Name+' '+self.Surname 
 ## End Person

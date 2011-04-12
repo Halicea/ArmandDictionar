@@ -37,6 +37,7 @@ webapphandlers = [
 #{%block ArmanListingControllers %}
 ('/Listing/Armans', ArmanListingControllers.ArmanController),
 ('/Listing/Arman/Address', ArmanListingControllers.AddressController),
+('/Listing/Armans/Search', ArmanListingControllers.ArmanSearchController),
 #{%endblock%}
 
 #{%block ShellControllers%}

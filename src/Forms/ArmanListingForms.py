@@ -17,8 +17,7 @@ class ArmanForm(ModelForm):
     class Meta():
         model = Arman
         exclude = ('AddedBy', 'DateAdded', 'PersonalAddress')
-    def save(self, addedBy=None, mappedTo=None):
-        addrInstance = None
+    def save(self, addedBy=None, mappedTo=None):        
 #        if self.clean_data['PersonallAddressKey']:
 #            addrInstance = Address.get(self.clean_data['PersonallAddressKey'])
         addr = self.PersonalAddressForm.save(commit=False)
@@ -52,7 +51,7 @@ class ArmanForm(ModelForm):
         if instance:
             self.PersonalAddressForm = AddressForm(data=data, instance=instance.PersonalAddress)
         else:
-            self.PersonalAddressForm = AddressForm(data=data)
+            self.PersonalAddressForm = AddressForm(data=data, instance=None)
     def is_valid(self):
         result = ModelForm.is_valid(self) 
         return self.PersonalAddressForm.is_valid() and result

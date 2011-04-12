@@ -20,21 +20,33 @@ class ArmansBaseController(hrh):
             connList = arman.RelatedArmans
         res.update({'connectionsList':[Connection(arman) for arman in connList]})
         return res
+class ArmanSearchController(ArmansBaseController):
+    def SetOperations(self):
+        self.operations = {'default':{'method':self.search}}
+    def search(self, *args):
+        if self.isAjax:
+            self.SetTemplate("form", "ArmanListing", "ArmanForm_index.html")
+        else:
+            self.SetTemplate(templateName = "Arman_index.html")
+        ArmanList = Arman.search(name=self.params.name, surname=self.params.surname, 
+                            armanSurname=self.params.armanSurname, 
+                            city=self.params.city, street=self.params.street, limit=10, offset= self.params.offset or 0)
+        return {"ArmanList":ArmanList}
 
 class ArmanController(ArmansBaseController):
     def SetOperations(self):
         self.operations ={
                           'default':{'method':self.edit},
-                          'edit':{'method':self.edit},
-                          'index':{'method':self.index},
+                          'edit':   {'method':self.edit},
+                          'del':    {'method':self.delete},
+                          'index':  {'method':self.index},
                           }
-    def registerself(self,*args):
-        pass
-    def editself(self,*args):
-        pass
-    def new(self, *args):
-        pass
-    
+    def delete(self, *args):
+        if self.params.key:
+            Arman.get(self.params.key).delete()
+            self.redirect(self.get_url())
+        else:
+            self.status = "Not Allowed"
     @LogInRequired()
     def edit(self, *args):
         self.SetTemplate(templateName="Arman.html")
@@ -47,7 +59,7 @@ class ArmanController(ArmansBaseController):
                     return
                 else:
                     return {'op':'edit',
-                            'ArmanForm': ArmanForm(instance),
+                            'ArmanForm': ArmanForm(instance=instance),
                             'register':False}
             else: #new
                 form = ArmanForm()
@@ -65,6 +77,7 @@ class ArmanController(ArmansBaseController):
                 instance = Arman.get(self.params.key)
             form = ArmanForm(data = self.request.POST, instance=instance)
             if form.is_valid():
+                mappedTo = None
                 if not self.params.key:
                     alreadyMapped = (self.User.mapped_to_arman.get() and [True] or [False])[0]
                     mappedTo = (alreadyMapped and [None] or [self.User])[0]
