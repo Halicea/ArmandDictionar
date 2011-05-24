@@ -1,6 +1,6 @@
 <h2>Dictionary: </h2>
 <form method='post' action='{% url DictionaryController %}'>
-    <input type='hidden' name='op' value={{op}}>
+    <input type='hidden' name='op' value='edit'>
     <input type='hidden' name='key' value={{DictionaryForm.instance.key}}></input>
 <table>
 {% for field in DictionaryForm %}

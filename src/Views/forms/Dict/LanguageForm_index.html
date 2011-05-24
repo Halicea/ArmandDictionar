@@ -1,0 +1,13 @@
+<h2>Language List: </h2>
+<table>
+{% for item in LanguageList %}
+    <tr>
+        <td>
+            {{item}}
+        </td>
+        <td><a href='{%url LanguageController %}?op=edit&key={{item.key}}'>Detail</a></td>
+        <td> <a href='{%url LanguageController %}?op=delete&key={{item.key}}'>Delete</a></td>
+    </tr>
+{% endfor %}
+</table>
+<h3><a href='{%url LanguageController %}?op=edit'>New</a><h3>

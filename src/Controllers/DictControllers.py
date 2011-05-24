@@ -20,7 +20,6 @@ import sys
 from google.appengine.api.datastore_errors import TransactionFailedError
 class WordController(hrh):
     def edit(self, *args):
-        self.SetTemplate(templateName='Word_shw.html')
         if self.params.key:
             item = Word.get(self.params.key)
             if item:
@@ -47,7 +46,6 @@ class WordController(hrh):
         self.redirect(WordController.get_url())
     @AdminOnly()
     def index(self, *args):
-        self.SetTemplate(templateName='Word_lst.html')
         results =None
         index = 0; count=50
         try:
@@ -205,19 +203,18 @@ class ImporterController(hrh):
 from Models.DictModels import Language, LanguageForm 
 class LanguageController(hrh):
     @AdminOnly()
-    def show(self, *args):
-        self.SetTemplate(templateName='Language_shw.html')
+    def edit(self, *args):
         if self.params.key:
             item = Language.get(self.params.key)
             if item:
-                result = {'op':'upd', 'LanguageForm': LanguageForm(instance=item)}
+                result = {'op':'update', 'LanguageForm': LanguageForm(instance=item)}
                 self.respond(result)
             else:
                 self.status = 'Language does not exists'
                 self.redirect(LanguageController.get_url())
         else:
             self.status = 'Key not provided'
-            self.respond({'op':'ins' ,'LanguageForm':LanguageForm()})
+            self.respond({'op':'insert' ,'LanguageForm':LanguageForm()})
 
     @AdminOnly()
     def delete(self, *args):
@@ -234,7 +231,6 @@ class LanguageController(hrh):
 
     
     def index(self, *args):
-        self.SetTemplate(templateName='Language_lst.html')
         results =None
         index = 0; count=1000
         try:
@@ -247,7 +243,7 @@ class LanguageController(hrh):
         self.respond(result)
 
     @AdminOnly()
-    def insert(self, *args):
+    def save(self, *args):
         instance = None
         if self.params.key:
             instance = Language.get(self.params.key)
@@ -266,8 +262,7 @@ class LanguageController(hrh):
 from Models.DictModels import Dictionary, DictionaryForm 
 class DictionaryController(hrh):
     
-    def show(self, *agrs):
-        self.SetTemplate(templateName='Dictionary_shw.html')
+    def edit(self, *agrs):
         if self.params.key:
             item = Dictionary.get(self.params.key)
             if item:
@@ -279,7 +274,6 @@ class DictionaryController(hrh):
         else:
             self.status = 'Key not provided'
             self.respond({'op':'ins' ,'DictionaryForm':DictionaryForm()})
-
 
     def delete(self, *args):
         if self.params.key:
@@ -293,9 +287,7 @@ class DictionaryController(hrh):
             self.status = 'Key was not Provided!'
         self.redirect(DictionaryController.get_url())
 
-
     def index(self, *args):
-        self.SetTemplate(templateName='Dictionary_lst.html')
         results =None
         index = 0; count=1000
         try:
@@ -307,8 +299,7 @@ class DictionaryController(hrh):
         result.update(locals())
         self.respond(result)
 
-
-    def insert(self, *args):
+    def save(self, *args):
         instance = None
         form = None
         if self.params.key:
