@@ -24,10 +24,10 @@ $(document).ready(function() {
         {% if current_user %}
             {% if current_user.IsAdmin %}
                 <ul>
-                    <li><a href='{% url WordController %}?op=shw'>New Word</a></li>
-                    <li><a href='{% url WordController %}?op=lst'>List Words</a></li>
-                	<li><a href='{% url DictionaryController %}?op=lst'>Dictionaries</a></li>
-                	<li><a href='{% url LanguageController %}?op=lst'>Languages</a></li>
+                    <li><a href='{% url WordController %}?op=edit'>New Word</a></li>
+                    <li><a href='{% url WordController %}?op=index'>List Words</a></li>
+                	<li><a href='{% url DictionaryController %}?op=index'>Dictionaries</a></li>
+                	<li><a href='{% url LanguageController %}?op=index'>Languages</a></li>
                 </ul>
             {% endif %}
         {% endif %}

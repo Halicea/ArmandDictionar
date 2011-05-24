@@ -1,13 +1,21 @@
-<h2>Dictionary List: </h2>
+<h2>Dictionary: </h2>
+<form method='post' action='{% url DictionaryController %}'>
+    <input type='hidden' name='op' value='{{op}}'>
+    <input type='hidden' name='key' value={{DictionaryForm.instance.key}}></input>
 <table>
-{% for item in DictionaryList %}
+{% for field in DictionaryForm %}
     <tr>
-        <td>
-            {{item}}
+        <td style="text-align:right;">
+            {{ field.label_tag }}:
         </td>
-        <td><a href='{%url DictionaryController %}?op=shw&key={{item.key}}'>Detail</a></td>
-        <td> <a href='{%url DictionaryController %}?op=del&key={{item.key}}'>Delete</a></td>
-    </tr>
+        <td>
+            {{ field }}
+        </td>
+        <td style='color: red;'>
+            {{ field.errors }}
+        </td>
+    <tr>
 {% endfor %}
 </table>
-<h3><a href='{%url DictionaryController %}?op=shw'>New</a><h3>
+<input type='submit' value={%if DictionaryForm.instance.key%} 'Update' {% else %} 'Create' {%endif%}></input>
+</form>

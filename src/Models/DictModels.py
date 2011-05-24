@@ -201,7 +201,7 @@ class Word(db.Model):
             self.Dictionary.Language1.TotalWordCount+=1
             self.Dictionary.put()
             self.Dictionary.Language1.put()
-            self.put()
+            super(Word, self).put()
     def __str__(self):
         #TODO: Change the method to represent something meaningful
         return (self.Value or 'Nu-ari Zboru')+'( '+(self.Translation or 'Nu-ari Tradutseari')+' )'

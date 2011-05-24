@@ -23,14 +23,13 @@ class WordController(hrh):
         if self.params.key:
             item = Word.get(self.params.key)
             if item:
-                result = {'op':'upd', 'WordForm': WordForm(instance=item)}
+                result = {'op':'update', 'WordForm': WordForm(instance=item)}
                 return result
             else:
                 self.status = 'Word does not exists'
                 self.redirect(WordController.get_url())
         else:
-            self.status = 'Key not provided'
-            return {'op':'ins' ,'WordForm':WordForm()}
+            return {'op':'insert' ,'WordForm':WordForm()}
 
     @AdminOnly()
     def delete(self, *args):
@@ -60,7 +59,7 @@ class WordController(hrh):
         result = {'WordList':r, 'index':index, 'count':abs(count) }
         self.respond(result)
     @AdminOnly()
-    def insert(self, *args):
+    def save(self, *args):
         instance = None
         if self.params.key:
             instance = Word.get(self.params.key)
@@ -266,14 +265,14 @@ class DictionaryController(hrh):
         if self.params.key:
             item = Dictionary.get(self.params.key)
             if item:
-                result = {'op':'upd', 'DictionaryForm': DictionaryForm(instance=item)}
+                result = {'op':'update', 'DictionaryForm': DictionaryForm(instance=item)}
                 self.respond(result)
             else:
                 self.status = 'Dictionary does not exists'
                 self.redirect(DictionaryController.get_url())
         else:
             self.status = 'Key not provided'
-            self.respond({'op':'ins' ,'DictionaryForm':DictionaryForm()})
+            self.respond({'op':'insert' ,'DictionaryForm':DictionaryForm()})
 
     def delete(self, *args):
         if self.params.key:
