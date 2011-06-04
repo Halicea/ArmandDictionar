@@ -19,6 +19,9 @@ $(function(){
 Same As:<br/>
 <select id="id_relatedArmans" name="key" style="width:100px;">
     <option value="" selected="selected">--Select Item--</option>
+    {%if arman%}
+    <option value="{{arman.key}}">{{arman.Name}} {{arman.Surname}}</option>
+    {%endif%}
     {%for per in connectionsList%}
     <option value="{{per.Arman.key}}">{{per.Arman.Name}} {{per.Arman.Surname}}</option>
     {%endfor%}

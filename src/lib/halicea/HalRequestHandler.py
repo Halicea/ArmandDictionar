@@ -103,10 +103,11 @@ class HalRequestHandler( webapp.RequestHandler ):
     # end Properties
     def SetOperations(self):
         self.operations = settings.DEFAULT_OPERATIONS
-    # Constructors   
+    # Constructors
     def initialize( self, request, response ):
         """Initializes this request handler with the given Request and Response."""
         self.isAjax = ((request.headers.get('HTTP_X_REQUESTED_WITH')=='XMLHttpRequest') or (request.headers.get('X-Requested-With')=='XMLHttpRequest'))
+        request.heaters.get('Content-Type')
         self.request = request
         self.response = response
         self.params = RequestParameters(self.request)
