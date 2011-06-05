@@ -3,6 +3,10 @@ version: 1
 runtime: python
 api_version: 1
 
+builtins:
+#- remote_api: on
+- datastore_admin: on
+
 handlers:
 - url: /styles
   static_dir: StaticData/styles
@@ -16,12 +20,12 @@ handlers:
 - url: /jscripts
   static_dir: StaticData/jscripts
   
-- url: /remote_api
-  script: $PYTHON_LIB/google/appengine/ext/remote_api/handler.py
-  login: admin
-  
 - url: /stats.*
   script: $PYTHON_LIB/google/appengine/ext/appstats/ui.py
+  login: admin
+  
+- url: /remote_api
+  script: $PYTHON_LIB/google/appengine/ext/remote_api/handler.py
   login: admin
   
 - url: /.*

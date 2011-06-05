@@ -72,9 +72,9 @@ class WordController(hrh):
             self.status = 'Word is saved'
             self.redirect(WordController.get_url())
         else:
-            self.SetTemplate(templateName = 'Word_shw.html')
+            self.SetTemplate(templateName = 'Word_edit.html')
             self.status = 'Form is not Valid'
-            result = {'op':'upd', 'WordForm': form}
+            result = {'op':'update', 'WordForm': form}
             self.respond(result)
 
 from Models.DictModels import Search, SearchForm
@@ -125,7 +125,7 @@ class SearchController(hrh):
         if sf.is_valid():
             showMessage = True
             search = sf.save(commit=False)
-            search.Text = self.replaceWithCyrillic(search.Text)
+            #search.Text = self.replaceWithCyrillic(search.Text)
             results = Word.gql('WHERE Value= :v', v=search.Text).fetch(limit=100, offset=offset)
             self.respond({'results':results, 'showMessage':showMessage})
         else:
@@ -253,9 +253,9 @@ class LanguageController(hrh):
             self.status = 'Language is saved'
             self.redirect(LanguageController.get_url())
         else:
-            self.SetTemplate(templateName = 'Language_shw.html')
+            self.SetTemplate(templateName = 'Language_edit.html')
             self.status = 'Form is not Valid'
-            result = {'op':'upd', 'LanguageForm': form}
+            result = {'op':'update', 'LanguageForm': form}
             self.respond(result)
 
 from Models.DictModels import Dictionary, DictionaryForm 
@@ -315,9 +315,9 @@ class DictionaryController(hrh):
             self.status = 'Dictionary is saved'
             self.redirect(DictionaryController.get_url())
         else:
-            self.SetTemplate(templateName = 'Dictionary_shw.html')
+            self.SetTemplate(templateName = 'Dictionary_edit.html')
             self.status = 'Form is not Valid'
-            result = {'op':'upd', 'DictionaryForm': form}
+            result = {'op':'update', 'DictionaryForm': form}
             self.respond(result)
 
 from Models.DictModels import WordSugestion, WordSugestionForm 
@@ -342,18 +342,18 @@ class WordSugestionController(hrh):
             self.respond("Cannot Add the Suggestion!")
     @AdminOnly()
     def show(self, *args):
-        self.SetTemplate(templateName='WordSugestion_shw.html')
+        self.SetTemplate(templateName='WordSugestion_edit.html')
         if self.params.key:
             item = WordSugestion.get(self.params.key)
             if item:
-                result = {'op':'upd', 'WordSugestionForm': WordSugestionForm(instance=item)}
+                result = {'op':'update', 'WordSugestionForm': WordSugestionForm(instance=item)}
                 self.respond(result)
             else:
                 self.status = 'WordSugestion does not exists'
                 self.redirect(WordSugestionController.get_url())
         else:
             self.status = 'Key not provided'
-            self.respond({'op':'ins' ,'WordSugestionForm':WordSugestionForm()})
+            self.respond({'op':'insert' ,'WordSugestionForm':WordSugestionForm()})
 
     @AdminOnly()
     def delete(self, *args):
@@ -370,7 +370,6 @@ class WordSugestionController(hrh):
 
 
     def index(self, *args):
-        self.SetTemplate(templateName='WordSugestion_lst.html')
         results =None
         index = 0; count=1000
         try:
@@ -394,7 +393,7 @@ class WordSugestionController(hrh):
             self.status = 'WordSugestion is saved'
             self.redirect(WordSugestionController.get_url())
         else:
-            self.SetTemplate(templateName = 'WordSugestion_shw.html')
+            self.SetTemplate(templateName = 'WordSugestion_edit.html')
             self.status = 'Form is not Valid'
-            result = {'op':'upd', 'WordSugestionForm': form}
+            result = {'op':'update', 'WordSugestionForm': form}
             self.respond(result)

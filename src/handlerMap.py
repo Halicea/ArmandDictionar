@@ -46,6 +46,6 @@ webapphandlers = [
 #{%endblock%}
 
 #{%endblock%}
-('/(.*)', StaticControllers.NotExistsController),
+#('/(.*)', StaticControllers.NotExistsController),
 ]
 

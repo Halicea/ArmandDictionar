@@ -7,7 +7,6 @@ from lib.halicea.decorators import ErrorSafe, LogInRequired
 from Models.BaseModels import RoleAssociation, RoleAssociationForm 
 from Models.BaseModels import Role, RoleForm 
 from Models.BaseModels import Person
-
 class LoginController( hrh ):
     def SetOperations(self):
         self.operations = {'default':{'method':self.login},
