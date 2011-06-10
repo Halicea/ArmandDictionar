@@ -1,0 +1,18 @@
+{
+  "insertOutput": 0, 
+  "parseRegex": "^(?P<file>.+?):(?P<line>\\d+):(?P<content>.*)$", 
+  "name": "RUN Console", 
+  "keyboard_shortcut": "", 
+  "operateOnSelection": 0, 
+  "value": [
+    "D:\\Kosta\\DevApps\\google_appengine\\dev_appserver.py %p\\src --port=1234"
+  ], 
+  "parseOutput": 1, 
+  "version": "1.0.7", 
+  "env": "", 
+  "doNotOpenOutputWindow": 0, 
+  "showParsedOutputList": 0, 
+  "type": "command", 
+  "cwd": "%p", 
+  "runIn": "new-console"
+}

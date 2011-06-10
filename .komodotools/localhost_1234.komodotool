@@ -1,0 +1,9 @@
+{
+  "keyboard_shortcut": "", 
+  "version": "1.0.7", 
+  "type": "URL", 
+  "name": "localhost:1234", 
+  "value": [
+    "http://localhost:1234"
+  ]
+}
