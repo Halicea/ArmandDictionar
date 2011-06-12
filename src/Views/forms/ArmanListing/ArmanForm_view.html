@@ -26,6 +26,12 @@
             </td>
         <tr>
         <tr>
+            <td style="text-align:right;">{{ArmanForm.ArmanSurname.label_tag}}</td>
+            <td>{{ArmanForm.ArmanSurname}}</td>
+            <td>{{ArmanForm.ArmanSurname.errors}}</td>
+        </tr>
+            
+        <tr>
             <td style="text-align:right;" >{{ArmanForm.Email.label_tag}}</td>
             <td><input type='text' id="id_Email" name="Email" 
                 value="{%if ArmanForm.instance.MappedTo%}{{ArmanForm.instance.MappedTo.Email}}{%else%}{{ArmanForm.instance.Email}}{%endif%}" 
