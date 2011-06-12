@@ -6,7 +6,6 @@ from Models.ArmanListingModels import Arman, Address
 from Controllers import BaseControllers
 from django.utils import simplejson
 #{%endblock%}
-
 class Connection(object):
     def __init__(self, arman):
         self.Arman = arman
