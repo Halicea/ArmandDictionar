@@ -83,3 +83,10 @@ asciiToCyrillic = {
 '|':u'Ж',
 '}':u'Ѓ',
 }
+
+def replaceWithCyrillic(text):
+    for k, v in multiAsciiToCyrillic.iteritems():
+        text = val.replace(k, v)
+    for k, v in asciiToCyrillic.iteritems():
+        text = text.replace(k, v)
+    return text

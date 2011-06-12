@@ -17,6 +17,7 @@ class ArmansBaseController(hrh):
         connList =[]
         if arman:
             connList = arman.RelatedArmans
+            res.update({'arman':arman})
         res.update({'connectionsList':[Connection(arman) for arman in connList]})
         return res
 class ArmanSearchController(ArmansBaseController):

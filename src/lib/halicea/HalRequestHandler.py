@@ -4,6 +4,7 @@ from Models.BaseModels import Person
 #from lib.appengine_utilities import sessions
 from lib.gaesessions import get_current_session
 import lib.paths as paths
+import logging
 import settings
 from lib.halicea.Magic import MagicSet
 from os import path
@@ -103,10 +104,11 @@ class HalRequestHandler( webapp.RequestHandler ):
     # end Properties
     def SetOperations(self):
         self.operations = settings.DEFAULT_OPERATIONS
-    # Constructors   
+    # Constructors
     def initialize( self, request, response ):
         """Initializes this request handler with the given Request and Response."""
         self.isAjax = ((request.headers.get('HTTP_X_REQUESTED_WITH')=='XMLHttpRequest') or (request.headers.get('X-Requested-With')=='XMLHttpRequest'))
+        logging.debug("Content Type is %s", str(request.headers.get('Content-Type')))
         self.request = request
         self.response = response
         self.params = RequestParameters(self.request)

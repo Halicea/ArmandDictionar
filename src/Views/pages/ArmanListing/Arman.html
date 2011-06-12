@@ -1,4 +1,8 @@
 {% extends base %}
+{% block styles%}
+{{block.super}}
+<link href="/styles/ArmanListing.css" rel="stylesheet" type="text/css" media="screen" />
+{%endblock%}
 {% block scripts %}
 {{block.super}}
 <script type="text/javascript" src='/jscripts/jquery.form.js'></script>

@@ -4,6 +4,7 @@ from Controllers import StaticControllers
 from Controllers import DictControllers
 from Controllers import ShellControllers
 from Controllers import ArmanListingControllers
+from Controllers import BordjControllers
 #{%endblock%}
 
 webapphandlers = [
@@ -39,7 +40,9 @@ webapphandlers = [
 ('/Listing/Arman/Address', ArmanListingControllers.AddressController),
 ('/Listing/Armans/Search', ArmanListingControllers.ArmanSearchController),
 #{%endblock%}
-
+#{%block BordjContorlles%}
+('/Bordj', BordjControllers.DolgController),
+#{%endblock%}
 #{%block ShellControllers%}
 ('/admin/Shell', ShellControllers.FrontPageController),
 ('/admin/stat.do', ShellControllers.StatementController),
