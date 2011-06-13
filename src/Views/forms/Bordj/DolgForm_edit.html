@@ -1,7 +1,7 @@
 <h2>Dolg: </h2>
 <form id='DolgForm' method='post' action='{% url DolgController %}'>
     <input type='hidden' name='op' value={{op}}>
-    <input type='hidden' name='key' value={{DolgForm.instance.key}}></input>
+    <input type='hidden' name='key' value={{key}}></input>
 <table>
 {% for field in DolgForm %}
     <tr>

@@ -3,10 +3,10 @@
         if self.params.key:
             item = {{m.Name}}.get(self.params.key)
             if item:
-                return {'op':'upd', '{{m.Name}}Form': {{m.Name}}Form(instance=item)}
+                return {'op':'update', '{{m.Name}}Form': {{m.Name}}Form(instance=item)}
             else:
                 self.status = '{{m.Name}} does not exists'
                 self.redirect({{m.Name}}Controller.get_url())
         else:
             self.status = 'Key not provided'
-            return {'op':'ins' ,'{{m.Name}}Form':{{m.Name}}Form()}
+            return {'op':'insert' ,'{{m.Name}}Form':{{m.Name}}Form()}

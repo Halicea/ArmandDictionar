@@ -10,6 +10,6 @@
             self.status = '{{m.Name}} is saved'
             self.redirect({{m.Name}}Controller.get_url())
         else:
-            self.SetTemplate(templateName = '{{m.Name}}_shw.html')
+            self.SetTemplate(templateName = '{{m.Name}}_edit.html')
             self.status = 'Form is not Valid'
-            return {'op':'upd', '{{m.Name}}Form': form}
+            return {'op':'update', '{{m.Name}}Form': form}

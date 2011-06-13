@@ -1,17 +1,48 @@
 <h2>Dolg List: </h2>
-<table>
+<table class="sortable">
+<thead>
+    <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Ammount</th>
+        <th>Note</th>
+        <th>Date</th>
+        <th> </th>
+    </tr>
+</thead>
+<tbody>
 {% for item in DolgList %}
     <tr>
         <td>
-            {{item}}
+            {%ifequal item.Od.key current_user.key%}
+                <a href="?filter&key={{item.Na.key}}">{{item.Na.Name}} {{item.Na.Surname}}</a>
+            {%else%}
+                 <a href="?filter&key={{item.Od.key}}">{{item.Od.Name}} {{item.Od.Surname}}</a>
+            {%endifequal%}
         </td>
-        <td><a class='detail' href='{%url DolgController %}?op=edit&key={{item.key}}'>Edit</a></td>
-        <td><a class='detail' href='{%url DolgController %}?op=details&key={{item.key}}'>Detail</a></td>
-        <td> <a class='delete' href='{%url DolgController %}?op=delete&key={{item.key}}'>Delete</a></td>
+        <td>
+            {%ifequal item.Od.key current_user.key%}
+                Dolzi
+            {%else%}
+                Dolzam
+            {%endifequal%}
+        </td>
+        <td>
+            {{item.Kolicina}}
+        </td>
+        <td>
+            {{item.Note}}
+        </td>
+        <td>
+            {{item.Datum}}
+        </td>
+        <td>
+        <a class='detail' href='{%url DolgController %}?op=edit&key={{item.key}}'>Edit</a>|
+        <a class='detail' href='{%url DolgController %}?op=details&key={{item.key}}'>Detail</a>|
+         <a class='delete' href='{%url DolgController %}?op=delete&key={{item.key}}'>Delete</a>
+        </td>
     </tr>
 {% endfor %}
-{%ifequal previousIndex -1 %}{%else%}<a href="{%url DolgController %}?op=index&index={{previousIndex}}">Previous</a>{%endifequal%}
- | {%ifequal nextIndex 0 %}{%else%}<a href="{%url DolgController %}?op=index&index={{nextIndex}}">Next</a>{%endifequal%}
- 
+</tbody>
 </table>
 <h3><a href='{%url DolgController %}?op=edit'>New</a><h3>

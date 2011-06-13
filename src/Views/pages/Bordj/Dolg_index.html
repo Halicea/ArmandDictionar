@@ -1,10 +1,59 @@
 {% extends base %}
+{% block styles%}
+{{block.super}}
+
+{%endblock%}
 {% block scripts %}
 {{block.super}}
+
+<script type="text/javascript" src="/jscripts/dataTables/jquery.dataTables.min.js"></script>
+<script type="text/javascript">
+    var frm;
+    function getKey(key){
+    if ( key == null ) {
+    keycode = event.keyCode;
+    // To Mozilla
+    } else {
+    keycode = key.keyCode;
+    }
+    // Return the key in lower case form
+    return String.fromCharCode(keycode).toLowerCase();
+    }
+    $(function(){
+       $('.sortable').dataTable({"bJQueryUI": true});
+       frm = $('#DolgForm_edit').dialog({autoOpen: false});
+       $(document).keypress(function (eh){
+            if('n' == getKey(eh)){
+                frm.dialog('open');
+                //$('#DolgForm_edit').dialog();
+            }
+        });
+
+        {%if Party%}
+            $('.dataTables_filter').append("<a href='/Bordj'>Iscisti Filter</a>");
+        {%endif%}
+
+    });
+</script>
 {% endblock %}
 
 {% block content %}
 <div id='DolgForm_index'>
 {%include DolgForm_index %}
 </div>
+<div id="DolgForm_edit">
+{%include DolgForm_edit %}
+</div>
 {% endblock %}
+
+{% block sidebar %}
+        <div class="ui-widget-content ui-corner-all" style="padding-left: 10px; padding-right: 10px; margin-right: 10px;">
+            {%if Party %}
+            <p>Na <b> {{Party.Name}} {{Party.Surname}}, </b></p>
+            {%endif%}
+            <p>Dolzam:<b> {{Totals.dolzam}} </b></p>
+            <p>{%if Party%}Mi Dolzi:{%else%}Mi Dolzat:{%endif%} <b>{{Totals.dolzat}}</b></p>
+            <hr/>
+            <p>Balans: <b>{{Totals.balans}}</b></p>
+        </div>
+{% endblock%}

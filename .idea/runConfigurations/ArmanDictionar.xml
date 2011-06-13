@@ -9,7 +9,7 @@
     <module name="ArmandDictionar" />
     <option name="port" value="8080" />
     <option name="browserUrl" value="http://127.0.0.1:8080/" />
-    <option name="additionalOptions" value="" />
+    <option name="additionalOptions" value="--enable_sendmail" />
     <RunnerSettings RunnerId="PyDebugRunner" />
     <RunnerSettings RunnerId="PythonRunner" />
     <ConfigurationWrapper RunnerId="PyDebugRunner" />
