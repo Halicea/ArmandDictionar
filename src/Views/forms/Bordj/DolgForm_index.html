@@ -1,5 +1,5 @@
 <h2>Dolg List: </h2>
-<table class="sortable">
+<table class="sortable" border="1" cellspacing="0">
 <thead>
     <tr>
         <th>Name</th>
@@ -37,8 +37,7 @@
             {{item.Datum}}
         </td>
         <td>
-        <a class='detail' href='{%url DolgController %}?op=edit&key={{item.key}}'>Edit</a>|
-        <a class='detail' href='{%url DolgController %}?op=details&key={{item.key}}'>Detail</a>|
+        <a class='detail' href='{%url DolgController %}?op=edit&key={{item.key}}'>Edit</a>
          <a class='delete' href='{%url DolgController %}?op=delete&key={{item.key}}'>Delete</a>
         </td>
     </tr>

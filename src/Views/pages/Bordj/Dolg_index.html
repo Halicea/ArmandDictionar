@@ -5,7 +5,7 @@
 {%endblock%}
 {% block scripts %}
 {{block.super}}
-
+{%if mobile%}{%else%}
 <script type="text/javascript" src="/jscripts/dataTables/jquery.dataTables.min.js"></script>
 <script type="text/javascript">
     var frm;
@@ -30,10 +30,11 @@
         });
 
         {%if Party%}
-            $('.dataTables_filter').append("<a href='/Bordj'>Iscisti Filter</a>");
+            $('.dataTables_filter').append("<a href='{%url DolgController%}'>Iscisti Filter</a>");
         {%endif%}
 
     });
+ {%endif%}
 </script>
 {% endblock %}
 
@@ -41,13 +42,15 @@
 <div id='DolgForm_index'>
 {%include DolgForm_index %}
 </div>
+{%if mobile%}{%else%}
 <div id="DolgForm_edit">
 {%include DolgForm_edit %}
 </div>
+{%endif%}
 {% endblock %}
 
 {% block sidebar %}
-        <div class="ui-widget-content ui-corner-all" style="padding-left: 10px; padding-right: 10px; margin-right: 10px;">
+        <div class="ui-widget-content ui-corner-all" {%if mobile%}{%else%}style="padding-left: 10px; padding-right: 10px; margin-right: 10px;"{%endif%}>
             {%if Party %}
             <p>Na <b> {{Party.Name}} {{Party.Surname}}, </b></p>
             {%endif%}

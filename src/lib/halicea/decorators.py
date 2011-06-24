@@ -46,8 +46,8 @@ class LogInRequired(object):
             if request.User:
                 return f(request, *args, **kwargs)
             else:
-                request.status= self.message
                 request.redirect(self.redirect_url)
+                request.status= self.message
         return new_f
 
 class AdminOnly(object):
@@ -64,7 +64,6 @@ class AdminOnly(object):
                 request.status= self.message
                 request.redirect(self.redirect_url)
         return new_f
-
 class InRole(object):
     def __init__(self, role='Admin',redirect_url='/Login', message= messages.must_be_in_role):
         self.redirect_url = redirect_url
@@ -107,4 +106,3 @@ class ErrorSafe(object):
                     'There has been some problem, and the moderator was informed about it.'
                 request.redirect(self.redirectUrl)
         return new_f
-

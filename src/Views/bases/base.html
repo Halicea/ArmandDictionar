@@ -14,7 +14,8 @@
 <script type="text/javascript" src="/jscripts/jquery.form.js"></script>
 <script type="text/javascript">
 $(function(){
-	$('.date').datepicker()
+    $('input[name*="Date"]').datepicker();
+	$('.date').datepicker();
 	$('.my-collapsible').click(function(){
 		 var o = $(this);
 		 o.next('div').toggle('fast');

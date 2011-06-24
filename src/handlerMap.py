@@ -5,12 +5,13 @@ from Controllers import DictControllers
 from Controllers import ShellControllers
 from Controllers import ArmanListingControllers
 from Controllers import BordjControllers
+from Controllers import LWConnectControllers
 #{%endblock%}
 
 webapphandlers = [
 #{%block ApplicationControllers %}
 #{% block DictControllers %}
-('/', DictControllers.SearchController),
+('/Search', DictControllers.SearchController),
 ('/Dict/Word', DictControllers.WordController),
 ('/Dict/Importer', DictControllers.ImporterController),
 ('/Dict/Language', DictControllers.LanguageController),
@@ -42,12 +43,18 @@ webapphandlers = [
 #{%endblock%}
 #{%block BordjContorlles%}
 ('/Bordj', BordjControllers.DolgController),
+('/', BordjControllers.DolgController),
 #{%endblock%}
 #{%block ShellControllers%}
 ('/admin/Shell', ShellControllers.FrontPageController),
 ('/admin/stat.do', ShellControllers.StatementController),
 #{%endblock%}
 
+#{%block LWConnectControllers%}
+('/LWConnect', LWConnectControllers.SprintController),
+('/LWConnect/Branch', LWConnectControllers.BranchController),
+('/LWConnect/ActivityLog', LWConnectControllers.ActivityLogController),
+#{%endblock%}
 #{%endblock%}
 #('/(.*)', StaticControllers.NotExistsController),
 ]

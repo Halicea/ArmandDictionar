@@ -3,10 +3,11 @@ from google.appengine.api import mail
 import settings
 from lib.halicea.HalRequestHandler import HalRequestHandler as hrh
 from lib.halicea.decorators import *
-from google.appengine.ext import db
+import os
 #{%block imports%}
 from Models.BordjModels import Dolg
 from Forms.BordjForms import DolgForm
+from lib.halicea import mobile_agents
 #{%endblock%}
 ################################
 class Totals(object):
@@ -14,7 +15,10 @@ class Totals(object):
         self.dolzam = sum([x.Kolicina for x in dolgovi if str(x.Na.key()) == str(user.key())])
         self.dolzat = sum([x.Kolicina for x in dolgovi if str(x.Od.key()) == str(user.key())])
         self.balans = self.dolzat-self.dolzam
+
 class DolgController(hrh):
+    def SetOperations(self):
+        self.operations['default'] = {'method':self.index}
     @LogInRequired()
     def edit(self, *args):
         if self.params.key:
@@ -85,7 +89,6 @@ class DolgController(hrh):
                     self.status += ' Also mail was sent to the corresponding person'
                 except Exception, ex:
                     self.status += ' Unfortunately mail was not sent to the corresponding person!'
-
             else:
                 self.status='Dolg does not exist'
         else:
@@ -141,9 +144,8 @@ class DolgController(hrh):
 
     def get_edit_body(self, dolg, nov ):
         to = str(self.User.key())==str(dolg.Na.key()) and dolg.Od or dolg.Na
-        tip  = str(self.User.key())==dolg.Na and 'Vi e Dolzen' or 'Mu Dolzite'
+        tip  = str(self.User.key())==str(dolg.Na.key()) and 'Vi e Dolzen' or 'Mu Dolzite'
         zz = nov and 'vnese' or 'izmeni'
-
         return "Pocituvan/a "+ to.Name+",\n"+\
         self.User.Name+' '+self.User.Surname+' '+zz+' deka '+tip+' '+str(dolg.Kolicina)+' denari od datum '+str(dolg.Datum)+'.\n'+\
         "Porakata bese:"+dolg.Note+'\n------------------------------\n'+\
@@ -151,7 +153,7 @@ class DolgController(hrh):
     def get_delete_body(self, dolg ):
         to = str(self.User.key())==str(dolg.Na.key()) and dolg.Od or dolg.Na
         tip  = str(self.User.key())==dolg.Na and 'Vi e Dolzen' or 'Mu Dolzite'
-        
+
         return "Pocituvan/a "+ to.Name+",\n"+\
         self.User.Name+' '+self.User.Surname+' go izbrisa dolgot->'+' deka '+tip+' '+str(dolg.Kolicina)+' denari od datum '+str(dolg.Datum)+'.\n'+\
         "Porakata bese:"+dolg.Note+'\n------------------------------\n'+\

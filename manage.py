@@ -32,7 +32,6 @@ commandsDict={'*':{ 'new':{'template':{}, 'real':{}}, 'project':{},
                     }
                 }
 mvcStates = {'package':{},'class':{}, 'prop':{'ref':modelsStructure} }
-
 completions={}
 currentState = ''
 def completer(text, state):

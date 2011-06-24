@@ -7,6 +7,7 @@ import lib.paths as paths
 import logging
 import settings
 from lib.halicea.Magic import MagicSet
+from lib.halicea import  mobile_agents
 from os import path
 import os
 from google.appengine.ext.webapp import template
@@ -32,16 +33,19 @@ class RequestParameters(object):
         return self.request.get(name)
 
 class HalRequestHandler( webapp.RequestHandler ):
-    params = None
-    operations = {}
-    TemplateDir = settings.PAGE_VIEWS_DIR
-    TemplateType = ''
-    status = None
-    isAjax=False
-    op = None
-    method = 'GET'
-    __templateIsSet__= False
-    __template__ =""
+    def __init__(self, *args, **kwargs):
+        super(HalRequestHandler, self).__init__(*args, **kwargs)
+        self.params = None
+        self.operations = {}
+        self.TemplateDir = settings.PAGE_VIEWS_DIR
+        self.TemplateType = ''
+        self.status = None
+        self.isAjax=False
+        self.op = None
+        self.method = 'GET'
+        self.__templateIsSet__= False
+        self.__template__ =""
+        
     def getTemplate(self):
         if not self.__templateIsSet__:
             self.SetTemplate(None, None, None)
@@ -65,7 +69,7 @@ class HalRequestHandler( webapp.RequestHandler ):
             self.__template__+=settings.VIEW_EXTENSTION
         else:
             self.__template__ = os.path.join(self.TemplateDir, self.TemplateType, templateName)
-        
+
         self.__templateIsSet__ = True
     Template =property(getTemplate)
     def __getSession__(self):
@@ -108,7 +112,7 @@ class HalRequestHandler( webapp.RequestHandler ):
     def initialize( self, request, response ):
         """Initializes this request handler with the given Request and Response."""
         self.isAjax = ((request.headers.get('HTTP_X_REQUESTED_WITH')=='XMLHttpRequest') or (request.headers.get('X-Requested-With')=='XMLHttpRequest'))
-        logging.debug("Content Type is %s", str(request.headers.get('Content-Type')))
+#        logging.debug("Content Type is %s", str(request.headers.get('Content-Type')))
         self.request = request
         self.response = response
         self.params = RequestParameters(self.request)
@@ -145,13 +149,13 @@ class HalRequestHandler( webapp.RequestHandler ):
                 else:
                     outresult = self.operations['default']['method'](self, *args, **kwargs)
         if outresult!=None:
-            self.respond(outresult)
+            return self.respond(outresult)
 
     #otherwise we have been redirected
     def get(self, *args):
-        self.__route__('GET', *args)
+        return self.__route__('GET', *args)
     def post(self, *args):
-        self.__route__('POST', *args)
+        return self.__route__('POST', *args)
 
     def render_dict( self, basedict ):
         result = dict( basedict )
@@ -169,36 +173,42 @@ class HalRequestHandler( webapp.RequestHandler ):
         result.update(paths.GetBasesDict())
         result.update(paths.GetBlocksDict())
         result.update(paths.GetFormsDict(path.join(settings.FORM_VIEWS_DIR, self.TemplateType))) ##end
+        if mobile_agents.detect_mobile(self.request): #decide if the request is mobile
+            self.mobile = True
+            result['mobile']='mobile'
+            result['base']=os.path.join(os.path.dirname(result['base']), 'base_mobile.html')
+        else:
+            self.mobile = False
         return result
 
     def respond( self, item={}, *args ):
         #self.response.out.write(self.Template+'<br/>'+ dict)
         if isinstance(item, str):
-            self.response.out.write(item)
+            self.__respond(item)
         elif isinstance(item, dict):
             #commented is jinja implementation of the renderer 
             #tmpl = env.get_template(self.Template)
             #self.response.out.write(tmpl.render(self.render_dict(item)))
-            self.response.out.write( template.render( self.Template, self.render_dict( item ), 
+            self.__respond( template.render( self.Template, self.render_dict( item ),
                                                   debug = settings.TEMPLATE_DEBUG ))
         elif isinstance(item,list):
-            self.response.out.write('<ul>'+'\n'.join(['<li>'+str(x)+'</li>' for x in item])+'</ul>')
+            return self.__respond('<ul>'+'\n'.join(['<li>'+str(x)+'</li>' for x in item])+'</ul>')
         elif isinstance(item,db.Model):
-            self.response.out.write(item.to_xml())
+            return self.__respond(item.to_xml())
         elif isinstance(item, NewsFeed):
             self.response.headers["Content-Type"] = "application/xml; charset=utf-8"
             #commented is jinja implementation of the renderer 
             #tmpl = env.get_template(os.path.join(settings.TEMPLATE_DIRS, 'RssTemplate.txt'))
             #self.response.out.write(tmpl.render({'m':item}))
-            template.render(os.path.join(settings.TEMPLATE_DIRS, 'RssTemplate.txt'), 
-                            {'m':item}, debug=settings.DEBUG)
+            self.__respond(template.render(os.path.join(settings.TEMPLATE_DIRS, 'RssTemplate.txt'),
+                            {'m':item}, debug=settings.DEBUG))
         else:
-            self.response.out.write(str(item))
+            self.__respond(str(item))
     def redirect_login( self ):
         self.redirect( '/Login' )
 
     def respond_static(self, text):
-        self.response.out.write(text)
+        self.__respond(text)
 
     def redirect( self, uri, postargs={}, permanent=False ):
         innerdict = dict( postargs )
@@ -212,11 +222,15 @@ class HalRequestHandler( webapp.RequestHandler ):
         if innerdict and len( innerdict ) > 0:
             params= '&'.join( [k + '=' + str(innerdict[k]) for k in innerdict] )
             if uri.find('?')==-1:
-                webapp.RequestHandler.redirect( self, uri + '?' + params, permanent )
+                return self.__redirect(uri + '?' + params )
             elif uri.endswith('&'):
-                webapp.RequestHandler.redirect( self, uri + params, permanent )
+                return self.__redirect( uri + params )
             else:
-                webapp.RequestHandler.redirect( self, uri+ '&' + params, permanent )
+                return self.__redirect( uri+ '&' + params )
         else:
-            webapp.RequestHandler.redirect( self, uri, permanent )
+            return self.__redirect( uri )
 
+    def __respond(self, text):
+        self.response.out.write(text)
+    def __redirect(self, uri, *args):
+        webapp.RequestHandler.redirect(self, uri, *args)

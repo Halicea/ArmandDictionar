@@ -1,4 +1,4 @@
-<h2>Dolg: </h2>
+<h2>Dolg <i style="font-size: small">({%if key%} Update {% else %} Create {%endif%})</i>: </h2>
 <form id='DolgForm' method='post' action='{% url DolgController %}'>
     <input type='hidden' name='op' value={{op}}>
     <input type='hidden' name='key' value={{key}}></input>
@@ -17,6 +17,6 @@
     <tr>
 {% endfor %}
 </table>
-<input type='submit' value={%if DolgForm.instance.key%} 'Update' {% else %} 'Create' {%endif%}></input>
+<input type='submit' value={%if key%} 'Update' {% else %} 'Create' {%endif%}></input>
 </form>
 <a href='{%url DolgController%}'>Back</a>

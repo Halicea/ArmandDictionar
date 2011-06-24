@@ -41,6 +41,7 @@ BASE_VIEW_SUFIX = ''
 PAGE_VIEW_SUFFIX = ''
 FORM_VIEW_SUFFIX = 'Form'
 BLOCK_VIEW_SUFIX = ''
+BASE_MOBILE_VIEW_EXTENSION = '_mobile'
 #End MVC Sufixes
 
 
@@ -61,13 +62,7 @@ DEFAULT_OPERATIONS = {
                       'update':{'method':dcm.save, 'view':False},
                       'delete':{'method':dcm.delete, 'view':False},
                      }
-OPENID_PROVIDERS ={
-    'Google':'Google.com/accounts/o8/id', # shorter alternative: "Gmail.com"
-    'Yahoo':'Yahoo.com',
-    #'MySpace.com',
-    'MyOpenID':'MyOpenID.com',
-    # add more here
-}
+OPENID_PROVIDERS = {'Google': 'Google.com/accounts/o8/id', 'Yahoo': 'Yahoo.com', 'MyOpenID': 'MyOpenID.com'}
 #DJANGO APP SETTINGS SECTION
 TEMPLATE_DIRS = (VIEWS_DIR)
 ROOT_URLCONF ='handlerMap'
