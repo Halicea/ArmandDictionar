@@ -2,8 +2,8 @@
 import os 
 import settings 
 os.environ['DJANGO_SETTINGS_MODULE']  = 'settings'
-#from google.appengine.dist import use_library
-#use_library('django', '1.2')
+from google.appengine.dist import use_library
+use_library('django', '1.2')
 from handlerMap import webapphandlers
 from google.appengine.ext import webapp
 import re

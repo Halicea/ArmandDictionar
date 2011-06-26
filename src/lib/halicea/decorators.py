@@ -34,7 +34,66 @@ def deprecated(func):
     new_func.__doc__ = func.__doc__
     new_func.__dict__.update(func.__dict__)
     return new_func
+class Post(object):
+    def __init__(self):
+        pass
+    def __call__(self, f):
+        def new_f(request, *args, **kwargs):
+            if request.method!='POST':
+                raise Exception('Only Post requests are accepted from the handler')
+            return f(request, *args, **kwargs)
+        return new_f
+def Get(func):
+    def new_f(request, *args, **kwargs):
+        if request.method!='GET':
+            raise Exception('Only GET requests are accepted from the handler')
+        return func(request, *args, **kwargs)
+    return new_f
+def Put(func):
+    def new_f(request, *args, **kwargs):
+        if request.method!='PUT':
+            raise Exception('Only PUT requests are accepted from the handler')
+        return func(request, *args, **kwargs)
+    return new_f
+class Methods(object):
+    def __init__(self, *args):
+        self.methods = args
+    def __call__(self, f):
+        def new_f(request, *args, **kwargs):
+            if not request.method in self.methods:
+                raise Exception('Only '+str(self.methods)+' are allowed. Request was made with '+request.method)
+            return f(request, *args, **kwargs)
+        return new_f
+class Default(object):
+    def __init__(self, method):
+        self.default =method
+    def __call__(self, f):
+        def new_f(request, *args, **kwargs):
+            request.operations['default']={'method':self.default}
+            result = f(request, *args, **kwargs)
+            return result
+        return new_f
 
+class Handler(object):
+    def __init__(self, operation=None, template=None):
+        self.operation = operation or 'default'
+        self.template =template
+    def __call__(self, f):
+        def new_f(request, *args, **kwargs):
+            request.operations[self.operation] = {'method':f}
+            if self.template:
+                request.SetTemplate(*self.template)
+            return f(request, *args, **kwargs)
+        return  new_f
+class ClearDefaults(object):
+    def __init__(self):
+        pass
+    def __call__(self, f):
+        def new_f(request, *args, **kwargs):
+            result = f(request, *args, **kwargs)
+            request.operations ={}
+            return result
+        return new_f
 class LogInRequired(object):
     def __init__(self, redirect_url='/Login', message= messages.must_be_loged):
         self.redirect_url = redirect_url

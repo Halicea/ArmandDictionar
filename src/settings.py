@@ -66,4 +66,5 @@ OPENID_PROVIDERS = {'Google': 'Google.com/accounts/o8/id', 'Yahoo': 'Yahoo.com',
 #DJANGO APP SETTINGS SECTION
 TEMPLATE_DIRS = (VIEWS_DIR)
 ROOT_URLCONF ='handlerMap'
+TEMPLATE_LOADERS = ('lib.halicea.HalTemplateLoader.HalLoader',)
 #PASTE YOUR CONFIGURATION HERE

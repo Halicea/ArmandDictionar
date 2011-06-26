@@ -1,6 +1,6 @@
 from lib.djangoFormImports import widgets, fields, extras
 from google.appengine.ext.db.djangoforms import ModelForm
-from django.newforms import Form
+from django.forms import Form
 from Models.BordjModels import *
 #{%block imports%}
 #{%endblock%}

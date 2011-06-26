@@ -54,8 +54,9 @@ webapphandlers = [
 ('/LWConnect', LWConnectControllers.SprintController),
 ('/LWConnect/Branch', LWConnectControllers.BranchController),
 ('/LWConnect/ActivityLog', LWConnectControllers.ActivityLogController),
+#('/LWConnect/test', LWConnectControllers.TestController),
 #{%endblock%}
 #{%endblock%}
-#('/(.*)', StaticControllers.NotExistsController),
+('/(.*)', StaticControllers.NotExistsController),
 ]
 
