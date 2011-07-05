@@ -40,7 +40,7 @@ class Person(polymodel.PolyModel):
         return not __errors__ and (True, None) or (False, ' and\r\n'.join(__errors__))
 
     @classmethod
-    def CreateNew(cls, uname, name, surname, email, password, public, notify, authType=None, photoUrl=None, _autoSave=False):
+    def CreateNew(cls, uname, name, surname, email, password, public=True, notify=True, authType=None, photoUrl=None, _autoSave=False):
         result = cls(UserName = uname,
                     Email=email,
                     Name=name,
@@ -139,3 +139,24 @@ class RoleAssociationForm(ModelForm):
 ## End RoleAssociation
 ##**************************
 
+class Invitation(db.Model):
+    """Creates new invitation for user to register on the web site
+    Initialy a user is created. so after the user registers only it's information will be updated
+    when the user registers the Accepted property is set to true"""
+    InviteFrom= db.ReferenceProperty(Person, collection_name='invitefrom_invitations', required=True, )
+    InvitationDate= db.DateProperty(auto_now_add=True, )
+    PersonBinding= db.ReferenceProperty(Person, collection_name='personbinding_invitations', required=True, )
+    Accepted= db.BooleanProperty(default=False, )
+    DateAccepted = db.DateProperty()
+    @classmethod
+    def CreateNew(cls ,invitefrom, personbinding, _isAutoInsert=False):
+        result = cls(InviteFrom=invitefrom,PersonBinding=personbinding,)
+        if _isAutoInsert: result.put()
+        return result
+    def accept(self):
+        self.Accepted = True
+        self.DateAccepted = dt.datetime.now()
+        self.put()
+    def __str__(self):
+        return '('+(self.Accepted and 'Y' or 'N')+')From '+self.InviteFrom.UserName+' to '+self.PersonBinding.UserName+' on '+str(self.InvitationDate)
+## End Invitation

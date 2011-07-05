@@ -1,4 +1,4 @@
-class {{m.Name}}({{m.InheritsFrom}}):
+{%autoescape off%}class {{m.Name}}({{m.InheritsFrom}}):
     """{%if m.Description%}{{m.Description}}{%else%}TODO: Describe {{m.Name}}{%endif%}"""
     {% for p in m.Properties %}{{p.Name}}= {{p.Type}}({%for op in p.Options%}{{op}}{%ifequal forloop.last True %}{%else%}, {%endifequal%}{%endfor%})
     {%endfor%}
@@ -11,5 +11,4 @@ class {{m.Name}}({{m.InheritsFrom}}):
     def __str__(self):
         #TODO: Change the method to represent something meaningful
         return 'Change __str__ method' 
-## End {{m.Name}}
-
+## End {{m.Name}}{%endautoescape%}

@@ -1,3 +1,4 @@
+from lib.paths import getViewsDict
 from Models.BaseModels import Person
 from google.appengine.api import mail
 import settings
@@ -18,6 +19,7 @@ class Totals(object):
 
 class DolgController(hrh):
     def SetOperations(self):
+        super(DolgController, self).SetOperations()
         self.operations['default'] = {'method':self.index}
     @LogInRequired()
     def edit(self, *args):
@@ -47,21 +49,24 @@ class DolgController(hrh):
         if form.is_valid():
             od = None
             na = None
-            if  form.clean_data['Type']=='1':
-                na = Person.get(form.clean_data['Party'])
+            if  form.cleaned_data['Type']=='1':
+                na = Person.get(form.cleaned_data['Party'])
                 od = self.User
             else:
-                 od = Person.get(form.clean_data['Party'])
+                 od = Person.get(form.cleaned_data['Party'])
                  na = self.User
             if instance:
-                instance.Note = form.clean_data["Note"]
-                instance.Kolicina = float(form.clean_data["Ammount"])
+                instance.Note = form.cleaned_data["Note"]
+                instance.Kolicina = float(form.cleaned_data["Ammount"])
                 instance.Od = od
                 instance.Na = na
                 instance.DodadenOd = self.User
                 instance.put()
             else:
-                instance = Dolg.CreateNew(od=od, na=na, kolicina= form.clean_data["Ammount"], note=form.clean_data["Note"], dodaden_od=self.User, _isAutoInsert=True)
+                instance = Dolg.CreateNew(od=od, na=na,
+                                          kolicina= form.cleaned_data["Ammount"],
+                                          note=form.cleaned_data["Note"],
+                                          dodaden_od=self.User, _isAutoInsert=True)
             self.status = 'Dolg is saved'
             try:
                 self.send_email(instance, self.get_edit_body(instance, nov=not self.params.key))
@@ -117,6 +122,7 @@ class DolgController(hrh):
             return {'op':'insert' ,'DolgForm':DolgForm()}
 
     @LogInRequired()
+    @ExtraContext([getViewsDict(os.path.join(settings.FORM_VIEWS_DIR, 'Base'))])
     def index(self, *args):
         self.SetTemplate(templateName="Dolg_index.html")
         result ={}
@@ -139,6 +145,8 @@ class DolgController(hrh):
         result['DolgList'] = sorted(result['DolgList'], key=lambda x:x.Datum, reverse=True)
         nextIndex = index+count;
         previousIndex = index<=0 and -1 or (index-count>0 and 0 or index-count)
+        from Forms.BaseForms import InvitationForm
+        result['InvitationFormK'] = InvitationForm()
         result.update(locals())
         return result
 

@@ -1,4 +1,4 @@
-{%for i in imports%}
+{%autoescape off%}{%for i in imports%}
 i{%endfor%}
 class {{m.Name}}({{m.InheritsFrom}}):
     """{%if m.Description%}{{m.Description}}{%else%}TODO: Describe {{m.Name}}{%endif%}"""
@@ -13,4 +13,4 @@ class {{m.Name}}({{m.InheritsFrom}}):
     def __str__(self):
         #TODO: Change the method to represent something meaningful
         return 'Change __str__ method' 
-## End {{m.Name}}
+## End {{m.Name}}{%endautoescape%}

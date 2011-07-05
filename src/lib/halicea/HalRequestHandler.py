@@ -11,32 +11,25 @@ from lib.halicea import  mobile_agents
 from os import path
 import os
 from google.appengine.ext.webapp import template
-
+from django.utils import simplejson
+from django.core import serializers
 #from lib.webapp2 import template
- 
 #from lib.halicea import template
-
 #from jinja2 import FileSystemLoader, Environment, TemplateNotFound
 #from lib.halicea.jinjaCustomTags import UrlExtension
 #env = Environment(loader = FileSystemLoader([settings.VIEWS_DIR,]), extensions=[UrlExtension])
 from lib.NewsFeed import NewsFeed
-
-templateGroups = {'form':settings.FORM_VIEWS_DIR, 
+templateGroups = {'form':settings.FORM_VIEWS_DIR,
                   'page':settings.PAGE_VIEWS_DIR,
                   'block':settings.BLOCK_VIEWS_DIR,
                   'base':settings.BASE_VIEWS_DIR,}
-
-class RequestParameters(object):
-    def __init__(self, request):
-        self.request = request
-    def __getattr__(self, name):
-        return self.request.get(name)
 
 class HalRequestHandler( webapp.RequestHandler ):
     def __init__(self, *args, **kwargs):
         super(HalRequestHandler, self).__init__(*args, **kwargs)
         self.params = None
         self.operations = {}
+        #setattr(self.operations, 'update', self.upd)
         self.TemplateDir = settings.PAGE_VIEWS_DIR
         self.TemplateType = ''
         self.status = None
@@ -45,12 +38,17 @@ class HalRequestHandler( webapp.RequestHandler ):
         self.method = 'GET'
         self.__templateIsSet__= False
         self.__template__ =""
-        
-    def getTemplate(self):
+        self.extra_context ={}
+    class RequestParameters(object):
+        def __init__(self, request):
+            self.request = request
+        def __getattr__(self, name):
+            return self.request.get(name)
+    def __get_template(self):
         if not self.__templateIsSet__:
             self.SetTemplate(None, None, None)
         return self.__template__
-
+    Template =property(__get_template)
     def SetTemplate(self,templateGroup=None, templateType=None, templateName=None):
         bn = MagicSet.baseName(self)
 #        templateTypes = The specific modelFullName
@@ -58,10 +56,12 @@ class HalRequestHandler( webapp.RequestHandler ):
             self.TemplateDir =settings.PAGE_VIEWS_DIR
         else:
             self.TemplateDir = templateGroups[templateGroup]
+
         if not templateType:
-            self.TemplateType  = bn[:bn.rindex('.')].replace('.', path.sep)
+            self.TemplateType = bn[:bn.rindex('.')].replace('.', path.sep)
         else:
             self.TemplateType = templateType.replace('.', path.sep)
+
         if not templateName: #default name will be set
             self.__template__ = os.path.join(self.TemplateDir, self.TemplateType, bn[bn.rindex('.')+1:])
             if self.op:
@@ -69,13 +69,44 @@ class HalRequestHandler( webapp.RequestHandler ):
             self.__template__+=settings.VIEW_EXTENSTION
         else:
             self.__template__ = os.path.join(self.TemplateDir, self.TemplateType, templateName)
-
+            
         self.__templateIsSet__ = True
-    Template =property(getTemplate)
+    def GetTemplatePath(self, templateGroup=None, templateType=None, templateName=None):
+        tDir = None
+        tType =None
+        tName =None
+        result = None
+        if templateName == templateGroup == templateType == None and self.__templateIsSet__:
+            return self.Template
+        bn = MagicSet.baseName(self)
+#       templateTypes = The specific modelFullName
+        if not templateGroup:
+            tDir =settings.PAGE_VIEWS_DIR
+        else:
+            tDir = templateGroups[templateGroup]
+
+        if not templateType:
+            tType = bn[:bn.rindex('.')].replace('.', path.sep)
+        else:
+            tType = templateType.replace('.', path.sep)
+
+        if not templateName: #default name will be set
+            result = os.path.join(tDir, tType, bn[bn.rindex('.')+1:])
+            if self.op:
+                result += '_'+self.op
+            else:
+                try:
+                    result += '_'+self.operations['default']['method'].__name__
+                except :
+                    result += '_'+self.operations['default']['method']
+            result+=settings.VIEW_EXTENSTION
+        else:
+            result = os.path.join(tDir, tType, templateName)
+        return result
+
     def __getSession__(self):
         return get_current_session()
     session = property(__getSession__)
-
     @classmethod
     def GetUser(cls):
         s = get_current_session()
@@ -86,7 +117,6 @@ class HalRequestHandler( webapp.RequestHandler ):
     @property
     def User(self):
         return HalRequestHandler.GetUser()
-
     def login_user_local(self, uname, passwd):
         self.logout_user()
         user = Person.GetUser(uname, passwd, 'local')
@@ -99,53 +129,82 @@ class HalRequestHandler( webapp.RequestHandler ):
             self.session['user']= user; return True            
         else:
             return False
-        
     def logout_user(self): 
         if self.session.is_active():
             self.session.terminate()
         return True
-    #request =None
     # end Properties
+    def __set_operations(self):
+        self.operations.update(settings.DEFAULT_OPERATIONS)
+        for k, v in self.operations.iteritems():
+            if isinstance(v['method'], str):
+                try:
+                    attr = getattr(self, v['method'])
+                    self.operations[k]={'method':attr}
+                except Exception, ex:
+                    pass
+            else:
+                try:
+                    attr = getattr(self, v['method'].__name__)
+                    self.operations[k]={'method':attr}
+                except Exception, ex:
+                    pass
     def SetOperations(self):
-        self.operations = settings.DEFAULT_OPERATIONS
+        """This method needs to be overwritten in order to customize the operations in the handler"""
+        pass
+
     # Constructors
     def initialize( self, request, response ):
         """Initializes this request handler with the given Request and Response."""
-        self.isAjax = ((request.headers.get('HTTP_X_REQUESTED_WITH')=='XMLHttpRequest') or (request.headers.get('X-Requested-With')=='XMLHttpRequest'))
+        self.isAjax = ((request.headers.environ.get('HTTP_X_REQUESTED_WITH')=='XMLHttpRequest') or (request.headers.get('X-Requested-With')=='XMLHttpRequest'))
 #        logging.debug("Content Type is %s", str(request.headers.get('Content-Type')))
         self.request = request
         self.response = response
-        self.params = RequestParameters(self.request)
+        if self.request.headers.environ.get('CONTENT_TYPE') == 'application/json':
+            data = simplejson.loads(self.request.body)
+            self.params = HalRequestHandler.RequestParameters(data)
+        elif self.request.headers.environ.get('CONTENT_TYPE') == 'application/xml':
+            data = serializers.deserialize('xml', self.request.body)
+            self.params = HalRequestHandler.RequestParameters(data)
+            pass
+        else:
+            self.params = HalRequestHandler.RequestParameters(self.request)
         webapp.RequestHandler.__init__(self)
         #self.request = super(MyRequestHandler, self).request
         if not self.isAjax: self.isAjax = self.g('isAjax')=='true'
         # set the status variable
         if self.session.has_key( 'status' ):
             self.status = self.session.pop('status')
-        self.operations = {}
+        #set the default operations
+        self.__set_operations()
+        #make any customisations by overloading this method
         self.SetOperations()
     # Methods
     def g(self, item):
         return self.request.get(item)
 #   the method by the operation
     def __route__(self, method, *args, **kwargs):
+        """main in-class routing function
+           in future it can be replaced with different routing methods
+           now it routes in the methods by a given parameter named op
+        """
         self.method = method
         self.op = self.g('op')
         outresult = 'No Result returned'
         if self.operations.has_key(self.op):
             if isinstance(self.operations[self.op]['method'], str):
-                outresult = getattr(self, self.operations[self.op]['method'])(self, *args, **kwargs)
+                outresult = getattr(self, self.operations[self.op]['method'])(*args, **kwargs)
             else:
                 if hasattr(self, self.operations[self.op]['method'].__name__):
-                    outresult = getattr(self, self.operations[self.op]['method'].__name__)(self, *args, **kwargs)
+                    outresult = getattr(self, self.operations[self.op]['method'].__name__)(*args, **kwargs)
                 else:
                     outresult = self.operations[self.op]['method'](self, *args, **kwargs)
         else:
             if isinstance(self.operations['default']['method'], str):
-                outresult = getattr(self, self.operations['default']['method'])()
+                outresult = getattr(self, self.operations['default']['method'])(*args, **kwargs)
             else:
                 if hasattr(self, self.operations['default']['method'].__name__):
-                    outresult = getattr(self, self.operations['default']['method'].__name__)(self, *args, **kwargs)
+                    outresult = getattr(self, self.operations['default']['method'].__name__)(*args, **kwargs)
                 else:
                     outresult = self.operations['default']['method'](self, *args, **kwargs)
         if outresult!=None:
@@ -153,12 +212,69 @@ class HalRequestHandler( webapp.RequestHandler ):
 
     #otherwise we have been redirected
     def get(self, *args):
+        """Used to comply with the appengines webob Controller"""
         return self.__route__('GET', *args)
     def post(self, *args):
+        """Used to comply with the appengines webob Controller"""
         return self.__route__('POST', *args)
+    def put(self, *args):
+        return self.__route__('PUT', *args)
 
-    def render_dict( self, basedict ):
-        result = dict( basedict )
+    def respond( self, item={}, *args ):
+        #self.response.out.write(self.Template+'<br/>'+ dict)
+        if isinstance(item, str):
+            self.__respond(item)
+        elif isinstance(item, dict):
+            #commented is jinja implementation of the renderer 
+            #tmpl = env.get_template(self.Template)
+            #self.response.out.write(tmpl.render(self.__render_dict(item)))
+            self.__respond( template.render( self.Template, self.__render_dict( item ),
+                                                  debug = settings.TEMPLATE_DEBUG ))
+        elif isinstance(item,list):
+            return self.__respond('<ul>'+'\n'.join(['<li>'+str(x)+'</li>' for x in item])+'</ul>')
+        elif isinstance(item,db.Model):
+            return self.__respond(item.to_xml())
+        elif isinstance(item, NewsFeed):
+            self.response.headers["Content-Type"] = "application/xml; charset=utf-8"
+            #commented is jinja implementation of the renderer 
+            #tmpl = env.get_template(os.path.join(settings.TEMPLATE_DIRS, 'RssTemplate.txt'))
+            #self.response.out.write(tmpl.render({'m':item}))
+            self.__respond(template.render(os.path.join(settings.TEMPLATE_DIRS, 'RssTemplate.txt'),
+                            {'m':item}, debug=settings.DEBUG))
+        else:
+            self.__respond(str(item))
+    def respond_static(self, text):
+        self.__respond(text)
+    def redirect( self, uri, postargs={}, permanent=False ):
+        innerdict = dict( postargs )
+        if innerdict.has_key( 'status' ):
+            self.status = innerdict['status']
+            del innerdict['status']
+        if self.status:
+            self.session['status']=self.status
+        if uri=='/Login' and not self.request.url.endswith('/Logout'):
+            innerdict['redirect_url']=self.request.url
+        if innerdict and len( innerdict ) > 0:
+            params= '&'.join( [k + '=' + str(innerdict[k]) for k in innerdict] )
+            if uri.find('?')==-1:
+                return self.__redirect(uri + '?' + params )
+            elif uri.endswith('&'):
+                return self.__redirect( uri + params )
+            else:
+                return self.__redirect( uri+ '&' + params )
+        else:
+            return self.__redirect( uri )
+    def redirect_login( self ):
+        self.redirect( '/Login' )
+        
+    def __respond(self, text):
+        self.response.out.write(text)
+    def __redirect(self, uri, *args):
+        webapp.RequestHandler.redirect(self, uri, *args)
+    def __render_dict( self, basedict ):
+        result={}
+        result.update(self.extra_context)
+        result.update(basedict)
         if result.has_key( 'self' ):
             result.pop( 'self' )
         if not result.has_key( 'status' ):
@@ -180,57 +296,3 @@ class HalRequestHandler( webapp.RequestHandler ):
         else:
             self.mobile = False
         return result
-
-    def respond( self, item={}, *args ):
-        #self.response.out.write(self.Template+'<br/>'+ dict)
-        if isinstance(item, str):
-            self.__respond(item)
-        elif isinstance(item, dict):
-            #commented is jinja implementation of the renderer 
-            #tmpl = env.get_template(self.Template)
-            #self.response.out.write(tmpl.render(self.render_dict(item)))
-            self.__respond( template.render( self.Template, self.render_dict( item ),
-                                                  debug = settings.TEMPLATE_DEBUG ))
-        elif isinstance(item,list):
-            return self.__respond('<ul>'+'\n'.join(['<li>'+str(x)+'</li>' for x in item])+'</ul>')
-        elif isinstance(item,db.Model):
-            return self.__respond(item.to_xml())
-        elif isinstance(item, NewsFeed):
-            self.response.headers["Content-Type"] = "application/xml; charset=utf-8"
-            #commented is jinja implementation of the renderer 
-            #tmpl = env.get_template(os.path.join(settings.TEMPLATE_DIRS, 'RssTemplate.txt'))
-            #self.response.out.write(tmpl.render({'m':item}))
-            self.__respond(template.render(os.path.join(settings.TEMPLATE_DIRS, 'RssTemplate.txt'),
-                            {'m':item}, debug=settings.DEBUG))
-        else:
-            self.__respond(str(item))
-    def redirect_login( self ):
-        self.redirect( '/Login' )
-
-    def respond_static(self, text):
-        self.__respond(text)
-
-    def redirect( self, uri, postargs={}, permanent=False ):
-        innerdict = dict( postargs )
-        if innerdict.has_key( 'status' ):
-            self.status = innerdict['status']
-            del innerdict['status']
-        if self.status:
-            self.session['status']=self.status
-        if uri=='/Login' and not self.request.url.endswith('/Logout'):
-            innerdict['redirect_url']=self.request.url
-        if innerdict and len( innerdict ) > 0:
-            params= '&'.join( [k + '=' + str(innerdict[k]) for k in innerdict] )
-            if uri.find('?')==-1:
-                return self.__redirect(uri + '?' + params )
-            elif uri.endswith('&'):
-                return self.__redirect( uri + params )
-            else:
-                return self.__redirect( uri+ '&' + params )
-        else:
-            return self.__redirect( uri )
-
-    def __respond(self, text):
-        self.response.out.write(text)
-    def __redirect(self, uri, *args):
-        webapp.RequestHandler.redirect(self, uri, *args)

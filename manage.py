@@ -25,7 +25,7 @@ def tail(arr, cnt):
 values =['project', 'mvc','vc','mc', 'mv','m','v','c','run','deploy']
 modelsStructure ={}
 commandsDict={'*':{ 'new':{'template':{}, 'real':{}}, 'project':{}, 
-                    'mvcf':{},
+                    'mvcfh':{},
                     'del':{'package':{}, 'model':{}}, 
                     'deploy':{'--no_cookies':{},'--email=':{}}, 
                     'run':{'--port=':{}, '--clear_datastore=':{}, '--datastore_path=':{}}

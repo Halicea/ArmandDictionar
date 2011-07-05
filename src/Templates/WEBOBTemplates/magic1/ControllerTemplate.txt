@@ -1,2 +1,2 @@
-class {{m.Name}}Controller(hrh):
-    pass
+{%autoescape off%}class {{m.Name}}Controller(hrh):
+    pass{%endautoescape%}

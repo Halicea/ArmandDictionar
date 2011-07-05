@@ -1,12 +1,18 @@
 from google.appengine.api import urlfetch
 from django.utils import simplejson
 import urllib, os
+from Forms.BaseForms import InvitationForm
+from lib.halicea import ContentTypes as ct
 import settings
+#{%block imports%}
 from lib.halicea.HalRequestHandler import HalRequestHandler as hrh
-from lib.halicea.decorators import ErrorSafe, LogInRequired
+from lib.halicea.decorators import *
 from Models.BaseModels import RoleAssociation, RoleAssociationForm 
 from Models.BaseModels import Role, RoleForm 
 from Models.BaseModels import Person
+from Models.BaseModels import Invitation
+from Models.BaseModels import WishList, WishListForm 
+#{%endblock%}
 class LoginController( hrh ):
     def SetOperations(self):
         self.operations = {'default':{'method':self.login},
@@ -25,7 +31,6 @@ class LoginController( hrh ):
           'apiKey': '4a593fc2715670ab6a03b40653054858ffdc34a2',
           'token': token
           }
-    
         r = urlfetch.fetch(url=url,
                            payload=urllib.urlencode(args),
                            method=urlfetch.POST,
@@ -46,17 +51,30 @@ class LoginController( hrh ):
                     arr = display.split(' ')
                     name = arr[0]; 
                     surname = len(arr)>1 and arr[1] or ''
-                person = Person.CreateNew(uname=json['profile']['preferredUsername'], 
-                                          name=name, 
-                                          surname=surname,
-                                          email = email, 
-                                          password='openid',
-                                          public=True, 
-                                          notify=True, 
-                                          authType=json['profile']['providerName'],
-                                          photoUrl=photo,
-                                          _autoSave=True)
-                
+                if len(args)==1:
+                    person = Person.get(args[0])
+                    person.UserName=json['profile']['preferredUsername'],
+                    person.Name=name,
+                    person.Surname=surname,
+                    person.Email = email,
+                    person.Password='openid',
+                    person.Public=True,
+                    person.Notify=True,
+                    person.AuthenticationType=json['profile']['providerName'],
+                    person.PhotoUrl=photo,
+                    person.put()
+                else:
+                    person = Person.CreateNew(uname=json['profile']['preferredUsername'],
+                                              name=name,
+                                              surname=surname,
+                                              email = email,
+                                              password='openid',
+                                              public=True,
+                                              notify=True,
+                                              authType=json['profile']['providerName'],
+                                              photoUrl=photo,
+                                              _autoSave=True)
+                    
             self.login_user2(person)
             self.status = 'Welcome '+person.UserName
             if self.params.redirect_url:
@@ -259,7 +277,6 @@ class RoleAssociationController(hrh):
             result = {'op':'upd', 'RoleAssociationForm': form}
             self.respond(result)
 
-from Models.BaseModels import WishList, WishListForm 
 class WishListController(hrh):
     def SetOperations(self):
         self.operations = settings.DEFAULT_OPERATIONS
@@ -327,4 +344,56 @@ class WishListController(hrh):
         else:
             self.status = 'Key was not Provided!'
         self.redirect(WishListController.get_url())
+
+class InvitationController(hrh):
+
+    @ClearDefaults()
+    @Default('create')
+    @Handler('create', 'create')
+    @Handler('index', 'index')
+    @Handler('delete', 'delete')
+    def SetOperations(self):pass
+
+    @ResponseHeaders(**{'Content-Type':ct.JSON})
+    @Post()
+    @ErrorSafe()
+    def create(self,*args):
+        form = InvitationForm(data=self.request.POST)
+        if form.is_valid():
+            email = form.cleaned_data['email']
+            from google.appengine.api import mail
+            p=Person.CreateNew(uname=email, email=email,
+                             name=email,surname=email,
+                             password='blablabla', _autoSave=True)
+            inv =Invitation.CreateNew(invitefrom=self.User, personbinding=p, _isAutoInsert=True)
+            mail.send_mail(sender='admin@halicea.com',to=p.Email,subject='Invitation for Bordj',
+                           body="""Dear Mr/Ms,<br/>
+    You have been invited to register on Bordj app from {%s}.<br/>
+    Please go to this <a href="%s">link</a> in order to finish the registration.<br/>
+    <b>Note:</b>Registration info will expire in 7 days.<br/>
+    Regards,
+       Bordj Admin"""%(self.User, LoginController.get_url(inv.key().__str__())))
+            return """{result:True, message:"Invitation is sent to the user"}"""
+
+    def index(self, accepted=False, *args):
+        results =None
+        index = 0; count=20
+        try:
+            index = int(self.params.index)
+            count = int(self.params.count)
+        except:
+            pass
+        nextIndex = index+count;
+        previousIndex = index<=0 and -1 or (index-count>0 and 0 or index-count) 
+        result = {'InvitationList': Invitation.all().filter('Accepted = ', accepted).fetch(limit=count, offset=index)}
+        result.update(locals())
+        return result
+    def delete(self, *args):
+        Invitation.get(self.params.key).delete()
+        if self.isAjax:
+            self.response.headers["Content-Type"]=ct.JSON
+            return """{message:"Item is deleted"}"""
+        else:
+            from BordjControllers import DolgController
+            self.redirect(DolgController.get_url())
 

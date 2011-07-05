@@ -12,7 +12,7 @@ class Connection(object):
         self.AddedBy = arman.AddedBy.mapped_to_arman.get()
 class ArmansBaseController(hrh):
     def render_dict(self, basedict):
-        res = super(ArmansBaseController, self).render_dict(basedict)
+        res = super(ArmansBaseController, self).__render_dict(basedict)
         arman = self.User.mapped_to_arman.get()
         connList =[]
         if arman:

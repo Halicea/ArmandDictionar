@@ -14,3 +14,7 @@ class RoleAssociationForm(ModelForm):
         self.fields['Person'].queryset = Person.all().fetch(limit=100)
     class Meta():
         model=RoleAssociation
+##End Invitation
+from django.forms import Form
+class InvitationForm(Form):
+    Email = fields.EmailField(required=True)

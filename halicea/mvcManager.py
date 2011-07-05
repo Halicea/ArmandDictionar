@@ -107,6 +107,8 @@ def renderController(model=None , baseBlock=None,outputStream=stdout, magicType=
             .substitute(formsPath=basename(settings.FORM_MODELS_DIR),
                     formModule=m.Package+settings.MODEL_FORM_MODULE_SUFIX,
                     formClass=m.Name+settings.MODEL_FORM_CLASS_SUFIX)
+        if not baseBlock['imports']:
+            baseBlock.createEmptyBlocks('imports', cblPy)
         baseBlock['imports'].appendLines([classImport, formImport])
     baseBlock.appendText(render(MvcTemplateFiles['CTPath'], {'m':m, 'methods':methods}))
     outputStream.write(str(baseBlock))
@@ -139,6 +141,7 @@ def makeModelFromFile(modelFile):
     modelList = []
 
     m=Model()
+    print 'Parsing the File '+modelFile
     for line in lines:
         if not m.Name:
             m.Name = line[line.rindex('.')+1:]
@@ -150,6 +153,7 @@ def makeModelFromFile(modelFile):
             modelList.append(m)
             m=Model()
     f.close()
+    print 'created Models'+str(modelList)
     return modelList
         
 def makeMvc(args):
@@ -165,7 +169,7 @@ def makeMvc(args):
             modelList = makeModelFromFile(args[1][len('path='):])
         else:
             name = args[1][args[1].rindex('.')+1:]
-            package = args[1][:args[1].rindex('.')] 
+            package = args[1][:args[1].rindex('.')]
     if len(args)>2:
         magicLevel = int(args[2])
     magicType = 'magic'+str(magicLevel)

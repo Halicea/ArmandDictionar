@@ -3,43 +3,27 @@ import os
 class MagicSet(object):
     @staticmethod
     def getControllerClass(mvcItemInstance):
-        moduleBase, nameBase = MagicSet.baseName(mvcItemInstance, splitParts=True)
-        name = moduleBase+settings.CONTROLLER_MODULE_SUFIX+'.'+nameBase+settings.CONTROLLER_CLASS_SUFIX
-        result = None
-        exec('result = Controllers.'+name)
-        return result
+        return mvcItemInstance.__class__
+
     @staticmethod
     def getModelClass(mvcItemInstance):
         moduleBase, nameBase = MagicSet.baseName(mvcItemInstance, splitParts=True)
-        nameBase = nameBase+settings.MODEL_FORM_CLASS_SUFIX
-        #Do Caching inhere instead of reloading it all te time
-        result = None
-        exec('from '+os.path.basename(settings.FORM_MODELS_DIR)+'.'+moduleBase+' import '+nameBase)
-        exec('result ='+nameBase)
-        return result
+        name = nameBase+settings.MODEL_FORM_CLASS_SUFIX
+        module = moduleBase+settings.MODEL_MODULE_SUFIX
+        m = __import__(module)
+        return m.getattr(name)
     @staticmethod
     def getViewDir(mvcItemInstance):
         moduleBase, nameBase = MagicSet.baseName(mvcItemInstance, splitParts=True)
-        nameBase = nameBase+settings.MODEL_FORM_CLASS_SUFIX
-        #Do Caching inhere instead of reloading it all te time
-        result =None
-        exec('from '+os.path.basename(settings.FORM_MODELS_DIR)+'.'+moduleBase+' import '+nameBase)
-        exec('result ='+nameBase)
-        return result
+        return moduleBase.replace('.', os.sep)
+
     @staticmethod
     def getFormClass(mvcItemInstance):
         moduleBase, nameBase = MagicSet.baseName(mvcItemInstance, splitParts=True)
         moduleBase = moduleBase+settings.MODEL_FORM_MODULE_SUFIX
         nameBase = nameBase+settings.MODEL_FORM_CLASS_SUFIX
-        #Do Caching inhere instead of reloading it all te time
-        result =None
-        try:
-            importStmt = 'from '+os.path.basename(settings.FORM_MODELS_DIR)+'.'+moduleBase+' import '+nameBase
-            exec(importStmt)
-            exec('result ='+nameBase)
-        except Exception, ex:
-            raise ex 
-        return result
+        m = __import__(moduleBase)
+        return m.getattr(nameBase)
     @staticmethod
     def baseName(mvcItemInstance, splitParts = False):
         modPart = mvcItemInstance.__class__.__module__
