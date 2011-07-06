@@ -1,0 +1,22 @@
+<h2>ActivityLog: </h2>
+<form id='ActivityLogForm' method='post' action='{% url ActivityLogController %}'>
+    <input type='hidden' name='op' value={{op}}>
+    <input type='hidden' name='key' value={{ActivityLogForm.instance.key}}></input>
+<table>
+{% for field in ActivityLogForm %}
+    <tr>
+        <td style="text-align:right;">
+            {{ field.label_tag }}:
+        </td>
+        <td>
+            {{ field }}
+        </td>
+        <td style='color: red;'>
+            {{ field.errors }}
+        </td>
+    <tr>
+{% endfor %}
+</table>
+<input type='submit' value={%if ActivityLogForm.instance.key%} 'Update' {% else %} 'Create' {%endif%}></input>
+</form>
+<a href='{%url ActivityLogController%}'>Back</a>

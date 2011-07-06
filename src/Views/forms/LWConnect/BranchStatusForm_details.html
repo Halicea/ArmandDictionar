@@ -1,0 +1,22 @@
+<h2>BranchStatus: </h2>
+<form id='BranchStatusForm' method='post' action='{% url BranchStatusController %}'>
+    <input type='hidden' name='op' value={{op}}>
+    <input type='hidden' name='key' value={{BranchStatusForm.instance.key}}></input>
+<table>
+{% for field in BranchStatusForm %}
+    <tr>
+        <td style="text-align:right;">
+            {{ field.label_tag }}:
+        </td>
+        <td>
+            {{ field }}
+        </td>
+        <td style='color: red;'>
+            {{ field.errors }}
+        </td>
+    <tr>
+{% endfor %}
+</table>
+<input type='submit' value={%if BranchStatusForm.instance.key%} 'Update' {% else %} 'Create' {%endif%}></input>
+</form>
+<a href='{%url BranchStatusController%}'>Back</a>

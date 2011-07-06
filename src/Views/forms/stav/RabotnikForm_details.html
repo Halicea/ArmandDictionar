@@ -1,0 +1,22 @@
+<h2>Rabotnik: </h2>
+<form id='RabotnikForm' method='post' action='{% url RabotnikController %}'>
+    <input type='hidden' name='op' value={{op}}>
+    <input type='hidden' name='key' value={{RabotnikForm.instance.key}}></input>
+<table>
+{% for field in RabotnikForm %}
+    <tr>
+        <td style="text-align:right;">
+            {{ field.label_tag }}:
+        </td>
+        <td>
+            {{ field }}
+        </td>
+        <td style='color: red;'>
+            {{ field.errors }}
+        </td>
+    <tr>
+{% endfor %}
+</table>
+<input type='submit' value={%if RabotnikForm.instance.key%} 'Update' {% else %} 'Create' {%endif%}></input>
+</form>
+<a href='{%url RabotnikController%}'>Back</a>

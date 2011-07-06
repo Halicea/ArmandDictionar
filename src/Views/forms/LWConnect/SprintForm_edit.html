@@ -1,0 +1,22 @@
+<h2>Sprint: </h2>
+<form id='SprintForm' method='post' action='{% url SprintController %}'>
+    <input type='hidden' name='op' value={{op}}>
+    <input type='hidden' name='key' value={{SprintForm.instance.key}}></input>
+<table>
+{% for field in SprintForm %}
+    <tr>
+        <td style="text-align:right;">
+            {{ field.label_tag }}:
+        </td>
+        <td>
+            {{ field }}
+        </td>
+        <td style='color: red;'>
+            {{ field.errors }}
+        </td>
+    <tr>
+{% endfor %}
+</table>
+<input type='submit' value={%if SprintForm.instance.key%} 'Update' {% else %} 'Create' {%endif%}></input>
+</form>
+<a href='{%url SprintController%}'>Back</a>
