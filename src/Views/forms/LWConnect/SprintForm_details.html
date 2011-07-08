@@ -1,8 +1,0 @@
-<h2>Sprint: {{Sprint.Name}}</h2> {{Sprint.StartDate}} - {{Sprint.EndDate}} <a href="{% url SprintController%}?op=edit&key={{Sprint.key}}">Edit</a>
-<hr/>
-<table>
-    {%for Branch in Sprint.Branches%}
-    {%include BranchForm_details%}
-    {%endfor%}
-</table>
-<a href='{%url SprintController%}'>Back</a>

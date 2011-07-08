@@ -1,6 +1,6 @@
 #{%block imports%}
 from lib.halicea.HalRequestHandler import HalRequestHandler as hrh
-from lib.halicea.decorators import AdminOnly, LogInRequired, InRole
+from lib.halicea.decorators import *
 from Forms.ArmanListingForms import ArmanForm, AddressForm
 from Models.ArmanListingModels import Arman, Address
 from Controllers import BaseControllers
@@ -10,6 +10,7 @@ class Connection(object):
     def __init__(self, arman):
         self.Arman = arman
         self.AddedBy = arman.AddedBy.mapped_to_arman.get()
+
 class ArmansBaseController(hrh):
     def render_dict(self, basedict):
         res = super(ArmansBaseController, self).__render_dict(basedict)
@@ -20,9 +21,11 @@ class ArmansBaseController(hrh):
             res.update({'arman':arman})
         res.update({'connectionsList':[Connection(arman) for arman in connList]})
         return res
+
 class ArmanSearchController(ArmansBaseController):
-    def SetOperations(self):
-        self.operations = {'default':{'method':self.search}}
+    @Default(method='search')
+    def SetOperations(self):pass
+
     def search(self, *args):
         if self.isAjax:
             self.SetTemplate("form", "ArmanListing", "ArmanForm_index.html")
@@ -34,13 +37,13 @@ class ArmanSearchController(ArmansBaseController):
         return {"ArmanList":ArmanList}
 
 class ArmanController(ArmansBaseController):
-    def SetOperations(self):
-        self.operations ={
-                          'default':{'method':self.edit},
-                          'edit':   {'method':self.edit},
-                          'del':    {'method':self.delete},
-                          'index':  {'method':self.index},
-                          }
+    @ClearDefaults()
+    @Default('edit')
+    @Handler(method='edit', operation='edit')
+    @Handler(method='delete', operation='delete')
+    @Handler(method='index', operation='index')
+    def SetOperations(self):pass
+    @LogInRequired()
     def delete(self, *args):
         if self.params.key:
             Arman.get(self.params.key).delete()
@@ -48,8 +51,8 @@ class ArmanController(ArmansBaseController):
         else:
             self.status = "Not Allowed"
     @LogInRequired()
+    @View(**{'templateName':"Arman.html"})
     def edit(self, *args):
-        self.SetTemplate(templateName="Arman.html")
         if self.request.method == 'GET':
             if self.params.key: #edit
                 instance = Arman.get(self.params.key)
@@ -91,15 +94,19 @@ class ArmanController(ArmansBaseController):
                 self.SetTemplate(templateName='Arman.html')
                 self.status = 'Error in Data'
                 return  {'ArmanForm':form}
+
     @AdminOnly()
     def index(self, *args):
         return {'ArmanList':Arman.all().fetch(limit=100, offset=0)}
         
 class AddressController(hrh):
-    def SetOperations(self):
-        self.operations = {'default':{'method':self.getAddress}}
+    @ClearDefaults()
+    @Default('getAddress')
+    def SetOperations(self):pass
+    
+    @Post()
     def getAddress(self, *args, **kwargs):
         if self.params.key:
             arman = Arman.get(self.params.key)
             addressForm = AddressForm(instance=arman.PersonalAddress)
-            self.respond_static(addressForm.as_table())
+            return addressForm.as_table()

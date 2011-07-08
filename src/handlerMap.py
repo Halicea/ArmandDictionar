@@ -4,10 +4,6 @@ from Controllers import StaticControllers
 from Controllers import DictControllers
 from Controllers import ShellControllers
 from Controllers import ArmanListingControllers
-from Controllers import BordjControllers
-from Controllers import LWConnectControllers
-from Controllers import stavControllers
-from Controllers import testingControllers
 #{%endblock%}
 
 webapphandlers = [
@@ -54,25 +50,6 @@ webapphandlers = [
 ('/admin/stat.do', ShellControllers.StatementController),
 #{%endblock%}
 
-#{%block LWConnectControllers%}
-('/LWConnect', LWConnectControllers.SprintController),
-('/LWConnect/Branch', LWConnectControllers.BranchController),
-('/LWConnect/ActivityLog', LWConnectControllers.ActivityLogController),
-#('/LWConnect/test', LWConnectControllers.TestController),
-#{%endblock%}
-#{%block stavControllers%}
-('/stav/Rabotnik', stavControllers.RabotnikController),
-('/stav/Rezija', stavControllers.RezijaController),
-('/stav/Nalog', stavControllers.NalogController),
-('/stav/Partija', stavControllers.PartijaController),
-('/stav/Rabota', stavControllers.RabotaController),
-('/stav/Operacija', stavControllers.OperacijaController),
-('/stav', stavControllers.PlataZaMesecController),
-('/stav/(.*)', stavControllers.PlataZaMesecController),
-#{%endblock%}
-#{%block testingControllers%}
-('/testing', testingControllers.testingController),
-#{%endblock%}
 #{%endblock%}
 ('/(.*)', StaticControllers.NotExistsController),
 ]

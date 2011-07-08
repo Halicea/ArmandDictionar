@@ -23,6 +23,12 @@ def property(function):
     function()
     return property(**func_locals)
 
+def CopyDecoratorProperties(func, new_func):
+    new_func.__name__ = func.__name__
+    new_func.__doc__ = func.__doc__
+    new_func.__dict__.update(func.__dict__)
+
+
 def deprecated(func):
     """This is a decorator which can be used to mark functions
     as deprecated. It will result in a warning being emitted
@@ -31,9 +37,7 @@ def deprecated(func):
         warnings.warn("Call to deprecated function %s." % func.__name__,
                       category=DeprecationWarning)
         return func(*args, **kwargs)
-    new_func.__name__ = func.__name__
-    new_func.__doc__ = func.__doc__
-    new_func.__dict__.update(func.__dict__)
+    CopyDecoratorProperties(func, new_func)
     return new_func
 class Post(object):
     def __init__(self):
@@ -43,7 +47,7 @@ class Post(object):
             if request.method!='POST':
                 raise Exception('Only Post requests are accepted from the handler')
             return f(request, *args, **kwargs)
-        new_f.__name__ = f.__name__
+        CopyDecoratorProperties(f, new_f)
         return new_f
 class Get(object):
     def __call__(self, f):
@@ -51,7 +55,7 @@ class Get(object):
             if request.method!='GET':
                 raise Exception('Only GET requests are accepted from the handler')
             return func(request, *args, **kwargs)
-        new_f.__name__ = f.__name__
+        CopyDecoratorProperties(f, new_f)
         return new_f
 def Put(func):
     def new_f(request, *args, **kwargs):
@@ -67,7 +71,7 @@ class Methods(object):
             if not request.method in self.methods:
                 raise Exception('Only '+str(self.methods)+' are allowed. Request was made with '+request.method)
             return f(request, *args, **kwargs)
-        new_f.__name__ = f.__name__
+        CopyDecoratorProperties(f, new_f)
         return new_f
 class Default(object):
     def __init__(self, method):
@@ -78,7 +82,7 @@ class Default(object):
             request.operations['default']={'method':self.default}
             result = f(request, *args, **kwargs)
             return result
-        new_f.__name__ = f.__name__
+        CopyDecoratorProperties(f, new_f)
         return new_f
 
 class Handler(object):
@@ -90,7 +94,7 @@ class Handler(object):
             if self.operation:
                 request.operations[self.operation] ={'method':self.method}
             return f(request, *args, **kwargs)
-        new_f.__name__ = f.__name__
+        CopyDecoratorProperties(f, new_f)
         return  new_f
 class View(object):
     def __init__(self, **template ):
@@ -99,7 +103,7 @@ class View(object):
         def new_f(request, *args, **kwargs):
             request.SetTemplate(**self.template)
             return f(request, *args, **kwargs)
-        new_f.__name__ = f.__name__
+        CopyDecoratorProperties(f, new_f)
         return new_f
 
 class ResponseHeaders(object):
@@ -110,7 +114,7 @@ class ResponseHeaders(object):
             for k, v in self.d.iteritems():
                 request.response.headers[k]=v
             return f(request, *args, **kwargs)
-        new_f.__name__ = f.__name__
+        CopyDecoratorProperties(f, new_f)
         return new_f
 
 class ClearDefaults(object):
@@ -120,7 +124,7 @@ class ClearDefaults(object):
         def new_f(request, *args, **kwargs):
             request.operations ={}
             return f(request, *args, **kwargs)
-        new_f.__name__ = f.__name__
+        CopyDecoratorProperties(f, new_f)
         return new_f
 class LogInRequired(object):
     def __init__(self, redirect_url='/Login', message= messages.must_be_loged):
@@ -135,7 +139,7 @@ class LogInRequired(object):
             else:
                 request.redirect(self.redirect_url)
                 request.status= self.message
-        new_f.__name__ = f.__name__
+        CopyDecoratorProperties(f, new_f)
         return new_f
 
 class AdminOnly(object):
@@ -151,7 +155,7 @@ class AdminOnly(object):
             else:
                 request.status= self.message
                 request.redirect(self.redirect_url)
-        new_f.__name__ = f.__name__
+        CopyDecoratorProperties(f, new_f)
         return new_f
 class InRole(object):
     def __init__(self, role='Admin',redirect_url='/Login', message= messages.must_be_in_role):
@@ -166,7 +170,7 @@ class InRole(object):
             else:
                 request.status= self.message
                 request.redirect(self.redirect_url)
-        new_f.__name__ = f.__name__
+        CopyDecoratorProperties(f, new_f)
         return new_f
 
 class ErrorSafe(object):
@@ -205,7 +209,7 @@ class ErrorSafe(object):
                     else:
                         'There has been some problem, and the moderator was informed about it.'
                     request.redirect(self.redirectUrl)
-        new_f.__name__ = f.__name__
+        CopyDecoratorProperties(f, new_f)
         return new_f
 class ExtraContext(object):
     def __init__(self, context_dicts=[]):
@@ -216,7 +220,7 @@ class ExtraContext(object):
             for d in self.context_dicts:
                 request.extra_context.update(d)
             return f(request, *args, **kwargs)
-        new_f.__name__ = f.__name__
+        CopyDecoratorProperties(f, new_f)
         return new_f
 
 
