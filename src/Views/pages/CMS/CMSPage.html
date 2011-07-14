@@ -1,0 +1,9 @@
+{%extends base %}
+{%block content%}
+	<div class="post">
+       <div class="postHeader"><h1>{{link.Content.Title}}</h1></div>
+       <div class="postContent">
+            {%autoescape off%}{{link.Content.Content}}{%endautoescape%}
+       </div>
+    </div>
+{%endblock %}

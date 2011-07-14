@@ -11,4 +11,4 @@
                 self.redirect({{m.Name}}Controller.get_url())
         else:
             self.status = 'Key not provided'
-            self.respond({'op':'ins' ,'{{m.Name}}Form':{{m.Name}}Form()})
+            return {'op':'ins' ,'{{m.Name}}Form':{{m.Name}}Form()}

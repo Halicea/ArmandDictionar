@@ -39,6 +39,17 @@ def deprecated(func):
         return func(*args, **kwargs)
     CopyDecoratorProperties(func, new_func)
     return new_func
+
+#Decorators for Set Operations Method
+class ClearDefaults(object):
+    def __init__(self):
+        pass
+    def __call__(self, f):
+        def new_f(request, *args, **kwargs):
+            request.operations ={}
+            return f(request, *args, **kwargs)
+        CopyDecoratorProperties(f, new_f)
+        return new_f
 class Post(object):
     def __init__(self):
         pass
@@ -54,7 +65,7 @@ class Get(object):
         def new_f(request, *args, **kwargs):
             if request.method!='GET':
                 raise Exception('Only GET requests are accepted from the handler')
-            return func(request, *args, **kwargs)
+            return f(request, *args, **kwargs)
         CopyDecoratorProperties(f, new_f)
         return new_f
 def Put(func):
@@ -84,7 +95,6 @@ class Default(object):
             return result
         CopyDecoratorProperties(f, new_f)
         return new_f
-
 class Handler(object):
     def __init__(self, operation=None, method=None):
         self.operation = operation or 'default'
@@ -96,6 +106,9 @@ class Handler(object):
             return f(request, *args, **kwargs)
         CopyDecoratorProperties(f, new_f)
         return  new_f
+#End Decorators for Set Operations Method
+
+# Decorators for Handler Methods
 class View(object):
     def __init__(self, **template ):
         self.template = template
@@ -117,15 +130,6 @@ class ResponseHeaders(object):
         CopyDecoratorProperties(f, new_f)
         return new_f
 
-class ClearDefaults(object):
-    def __init__(self):
-        pass
-    def __call__(self, f):
-        def new_f(request, *args, **kwargs):
-            request.operations ={}
-            return f(request, *args, **kwargs)
-        CopyDecoratorProperties(f, new_f)
-        return new_f
 class LogInRequired(object):
     def __init__(self, redirect_url='/Login', message= messages.must_be_loged):
         self.redirect_url = redirect_url
@@ -172,7 +176,6 @@ class InRole(object):
                 request.redirect(self.redirect_url)
         CopyDecoratorProperties(f, new_f)
         return new_f
-
 class ErrorSafe(object):
     def __init__(self,
                  redirectUrl = '/',
@@ -212,15 +215,21 @@ class ErrorSafe(object):
         CopyDecoratorProperties(f, new_f)
         return new_f
 class ExtraContext(object):
-    def __init__(self, context_dicts=[]):
-        """context_docts is an array of dictionaries"""
-        self.context_dicts = context_dicts
+    def __init__(self, context_dicts):
+        """context_docts is an array of dictionaries or a single dictionary"""
+        if isinstance(context_dicts, dict):
+            self.context_dicts = context_dicts
+        elif isinstance(context_dicts, list):
+            self.context_dicts = [context_dicts, ]
+        else:
+            raise Exception("Wrong Extra context input variable, Mut be either dict of list of dicts")
+
     def __call__(self, f):
         def new_f(request, *args, **kwargs):
-            for d in self.context_dicts:
-                request.extra_context.update(d)
+            if self.context_dicts:
+                for d in self.context_dicts:
+                    request.extra_context.update(d)
             return f(request, *args, **kwargs)
         CopyDecoratorProperties(f, new_f)
         return new_f
-
-
+# End Decorators for handler Methods

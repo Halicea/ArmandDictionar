@@ -4,17 +4,17 @@ from Controllers import StaticControllers
 from Controllers import DictControllers
 from Controllers import ShellControllers
 from Controllers import ArmanListingControllers
+from Controllers import CMSControllers
 #{%endblock%}
-
 webapphandlers = [
 #{%block ApplicationControllers %}
 #{% block DictControllers %}
 ('/Search', DictControllers.SearchController),
-('/Dict/Word', DictControllers.WordController),
-('/Dict/Importer', DictControllers.ImporterController),
-('/Dict/Language', DictControllers.LanguageController),
-('/Dict/Dictionary', DictControllers.DictionaryController),
-('/Dict/WordSugestion', DictControllers.WordSugestionController),
+('/dict/Word', DictControllers.WordController),
+('/dict/Importer', DictControllers.ImporterController),
+('/dict/Language', DictControllers.LanguageController),
+('/dict/Dictionary', DictControllers.DictionaryController),
+('/dict/WordSugestion', DictControllers.WordSugestionController),
 #{%endblock%}
 
 #{%block BaseControllers %}
@@ -37,20 +37,24 @@ webapphandlers = [
 #{%endblock%}
 
 #{%block ArmanListingControllers %}
-('/Listing/Armans', ArmanListingControllers.ArmanController),
-('/Listing/Arman/Address', ArmanListingControllers.AddressController),
-('/Listing/Armans/Search', ArmanListingControllers.ArmanSearchController),
+('/listing/Armans', ArmanListingControllers.ArmanController),
+('/listing/Arman/Address', ArmanListingControllers.AddressController),
+('/listing/Armans/Search', ArmanListingControllers.ArmanSearchController),
 #{%endblock%}
-#{%block BordjContorlles%}
-('/Bordj', BordjControllers.DolgController),
-('/', BordjControllers.DolgController),
-#{%endblock%}
+
+
 #{%block ShellControllers%}
 ('/admin/Shell', ShellControllers.FrontPageController),
 ('/admin/stat.do', ShellControllers.StatementController),
 #{%endblock%}
 
+#{%block CMSControllers
+('/cms/content', CMSControllers.CMSContentController),
+('/cms/links', CMSControllers.CMSLinksController),
+('/cms/page/(.*)', CMSControllers.CMSPageController),
 #{%endblock%}
 ('/(.*)', StaticControllers.NotExistsController),
 ]
 
+
+#{%endblock%}

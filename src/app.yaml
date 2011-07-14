@@ -27,7 +27,29 @@ handlers:
 - url: /remote_api
   script: $PYTHON_LIB/google/appengine/ext/remote_api/handler.py
   login: admin
+
+#Arman Listing 
+- url: /listing/.*
+  script: Apps/armans.py
   
+#Dictionary urls
+- url: /dict/.*
+  script: Apps/dictionary.py
+- url: /dict
+  script: Apps/dictionary.py
+- url: /Search
+  script: Apps/dictionary.py
+
+#Admin
+- url: /admin/.*
+  script: Apps/admin.py
+  login: admin
+
+#CMS
+- url: /cms*
+  script: Apps/cms.py
+
+#TheRest
 - url: /.*
-  script: main.py
+  script: Apps/base.py
 

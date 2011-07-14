@@ -10,4 +10,4 @@
             pass
         result = {'{{m.Name}}List': {{m.Name}}.all().fetch(limit=count, offset=index)}
         result.update(locals())
-        self.respond(result)
+        return result

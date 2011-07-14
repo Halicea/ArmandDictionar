@@ -2,6 +2,13 @@
 {% block styles%}
 {{block.super}}
 <link href="/styles/ArmanListing.css" rel="stylesheet" type="text/css" media="screen" />
+<style type="text/css">
+#id_ArmanFormDiv{
+    float:left;
+    width: 370px;
+    border-right: blue solid 1px;
+}
+</style>
 {%endblock%}
 {% block scripts %}
 {{block.super}}
@@ -14,13 +21,15 @@
 {% endblock %}
 
 {% block content %}
-  <div style="float:left; width:400px">
+  <div>
     {%include ArmanForm_edit %}
-  </div>
-  <div style="float:left; margin-left:10px; width:300px; border:solid;padding:10px"; class='ui-corner-all'>
-    <h2 style="margin-top:-10px">Vrski</h2>
+  <div class="post" style="float:left; margin-left:10px; width:260px;">
+    <div class="postHeader"><h1>Vrski</h1></div>
+    <div class="postContent">
     <ul>
      {%include ConnectionsList %}
     </ul>
+    </div>
+  </div>
   </div>
 {% endblock %}

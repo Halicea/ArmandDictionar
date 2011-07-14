@@ -25,16 +25,16 @@ class ArmanForm(ModelForm):
         if not self.instance:
             res = Arman.CreateNew(
                     mappedTo = mappedTo,
-                    name = self.clean_data['Name'], 
-                    surname = self.clean_data['Surname'], 
-                    armansurname = self.clean_data['ArmanSurname'] or None, 
+                    name = self.cleaned_data['Name'],
+                    surname = self.cleaned_data['Surname'],
+                    armansurname = self.cleaned_data['ArmanSurname'] or None,
                     personalladress = addr,
-                    email = self.clean_data['Email'] or None, 
-                    facebook = self.clean_data['Facebook'] or None, 
-                    mobilephone = self.clean_data['MobilePhone'] or None, 
-                    homephone= self.clean_data['HomePhone'] or None, 
-                    isspeakingarman = self.clean_data['IsSpeakingArman'], 
-                    iswriteingarman = self.clean_data['IsWriteingArman'],
+                    email = self.cleaned_data['Email'] or None,
+                    facebook = self.cleaned_data['Facebook'] or None,
+                    mobilephone = self.cleaned_data['MobilePhone'] or None,
+                    homephone= self.cleaned_data['HomePhone'] or None,
+                    isspeakingarman = self.cleaned_data['IsSpeakingArman'],
+                    iswriteingarman = self.cleaned_data['IsWriteingArman'],
                     addedBy = addedBy,  
                     _isAutoInsert=True)
         else:

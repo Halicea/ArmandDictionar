@@ -2,6 +2,7 @@ import pprint
 from sys import stdout,stdin
 from string import Template
 from os import makedirs
+import os
 from os.path import basename, dirname, join as pjoin, exists
 #------------
 from halicea.consoleHelpers import ask
@@ -72,7 +73,6 @@ def setProperties(p, model):
 operations = [(x[0],x[1]) for x in settings.DEFAULT_OPERATIONS.iteritems() 
               if x[1].has_key('view') and x[1]['view']]
 
-
 def renderModel(model=None, baseBlock=None, outputStream=stdout, magicType='magic0', *args):
     MvcTemplateFiles = mvcPaths.getTemplateFiles(magicType)
     baseBlock.appendText(render(MvcTemplateFiles['MTPath'], {'m':model}))
@@ -89,16 +89,22 @@ def renderController(model=None , baseBlock=None,outputStream=stdout, magicType=
     methods = None
     m = model
     if m:
+        ops=[]
+        if os.path.exists(MvcTemplateDirs['OPRTMPL_DIR']):
+            ops = [x[:x.rindex('.')] for x in os.listdir(MvcTemplateDirs['OPRTMPL_DIR'])]
         methodTemplates = []
-        for k, v in settings.DEFAULT_OPERATIONS.iteritems():
-            if isinstance(v['method'], str):
-                methodTemplates.append(pjoin(MvcTemplateDirs['OPRTMPL_DIR'],v['method']+'.txt'))
-            else:
-                methodTemplates.append(pjoin(MvcTemplateDirs['OPRTMPL_DIR'],v['method'].__name__+'.txt'))
+        for k in ops:
+            methodTemplates.append(pjoin(MvcTemplateDirs['OPRTMPL_DIR'],k+'.txt'))
+#NOTICE: We dont need this. most probably we will need to walk thru template files only
+#        and not to make them dependend on the operations
+#        for k, v in settings.DEFAULT_OPERATIONS.iteritems():
+#            if isinstance(v['method'], str):
+#                methodTemplates.append(pjoin(MvcTemplateDirs['OPRTMPL_DIR'],v['method']+'.txt'))
+#            else:
+#                methodTemplates.append(pjoin(MvcTemplateDirs['OPRTMPL_DIR'],v['method'].__name__+'.txt'))
         methodTemplates = list(set(methodTemplates))
-    
+
         methods = map(lambda x: render(x, {'m':m}), methodTemplates)
-    
         classImport = Template('from ${modelsPath}.${modelModule} import ${modelClass}')\
             .substitute(modelsPath=basename(settings.MODELS_DIR),
                         modelModule=m.Package+settings.MODEL_MODULE_SUFIX,
@@ -135,7 +141,7 @@ def renderHandlerMap(model=None, baseBlock=None,outputStream=stdout, magicType='
         imports.append(Block.createLineBlock(importsLine))
     outputStream.write(str(handlerMap))
 
-def makeModelFromFile(modelFile):
+def makeModelListFromFile(modelFile):
     f = open(modelFile, 'r')
     lines = [x.replace('\n','') for x in f.readlines()]
     modelList = []
@@ -155,7 +161,13 @@ def makeModelFromFile(modelFile):
     f.close()
     print 'created Models'+str(modelList)
     return modelList
-        
+
+#TODO make creating a model to a File based object that can be parsed
+def makeModelFromClass(fullName):
+    pass
+def makeModelListFromModule(moduleName):
+    pass
+
 def makeMvc(args):
     arg = args[0]
     package = ''
@@ -163,10 +175,10 @@ def makeMvc(args):
     magicLevel = settings.MagicLevel
     modelList = []
     #TODO: set the MagicLevel
-    #TODO: make try catch and display proper output if wrong sintax is entered
+    #TODO: make try catch and display proper output if wrong syntax is entered
     if len(args)>1:
         if args[1][:len('path=')]=='path=':
-            modelList = makeModelFromFile(args[1][len('path='):])
+            modelList = makeModelListFromFile(args[1][len('path='):])
         else:
             name = args[1][args[1].rindex('.')+1:]
             package = args[1][:args[1].rindex('.')]
@@ -246,10 +258,13 @@ def makeMvc(args):
                     pass
                 #if we want to generate the view by the model provided
                 else:
-                    #if we dont want to use magic but to generate the default code instead
-                    if not magicLevel:
-                        for k, v in operations:
-                            templateName = isinstance(v['method'],str) and v['method'] or v['method'].__name__
+                    #Find the operations for the templates
+                    ops=[]
+                    if os.path.exists(mvcTemplateDirs['FRMTMPL_DIR']):
+                        ops = [x[:x.rindex('.')] for x in os.listdir(mvcTemplateDirs['FRMTMPL_DIR'])]
+                    if ops:
+                        for k in ops:
+                            templateName = k
                             formTemplatePath = pjoin(mvcTemplateDirs['FRMTMPL_DIR'], templateName+'.txt')
                             viewPath = pjoin(viewFolder, m.Name+'_'+(k=='default' and [''] or [k])[0] +'.html')
                             baseBlock  = Block.loadFromFile(mvcTemplateFiles['VTPath'], cblHal, render,{'m':m,'formTemplate': m.Name+'Form_'+k })
@@ -259,7 +274,9 @@ def makeMvc(args):
                             baseBlock  = Block.loadFromFile(formTemplatePath, cblHal, render,{'m':m})
                             baseBlock.saveToFile(formPath)
                     else: #here the magic will be used and we dont need some special view
-                        pass
+                        viewPath = pjoin(viewFolder, m.Name+'.html')
+                        baseBlock  = Block.loadFromFile(mvcTemplateFiles['VTPath'], cblHal, render,{'m':m})
+                        baseBlock.saveToFile(viewPath)
             if 'h' in arg:
                 #HandlerMap Setup
                 baseBlock = Block.loadFromFile(config.proj_settings.HANDLER_MAP_FILE, cblPy)
@@ -267,5 +284,6 @@ def makeMvc(args):
                 renderHandlerMap(m, baseBlock, stream, magicLevel)
                 stream.close()
                 #End HandlerMap
+
 def delMvc(mvc, modelFullName):
     pass

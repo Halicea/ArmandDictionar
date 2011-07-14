@@ -1,4 +1,3 @@
-<h2>Dictionary: </h2>
 <form method='post' action='{% url DictionaryController %}'>
     <input type='hidden' name='op' value='{{op}}'>
     <input type='hidden' name='key' value={{DictionaryForm.instance.key}}></input>
@@ -17,5 +16,5 @@
     <tr>
 {% endfor %}
 </table>
-<input type='submit' value={%if DictionaryForm.instance.key%} 'Update' {% else %} 'Create' {%endif%}></input>
+<input type='submit' style="margin-left: 80px;width:185px" value={%if DictionaryForm.instance.key%} 'Update' {% else %} 'Create' {%endif%}></input>
 </form>

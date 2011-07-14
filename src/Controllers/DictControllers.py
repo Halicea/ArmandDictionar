@@ -19,6 +19,9 @@ import os
 import sys
 from google.appengine.api.datastore_errors import TransactionFailedError
 class WordController(hrh):
+    @Default('edit')
+    def SetOperations(self):pass
+    @View(templateName='Word_edit.html')
     def edit(self, *args):
         if self.params.key:
             item = Word.get(self.params.key)
@@ -44,6 +47,7 @@ class WordController(hrh):
             self.status = 'Key was not Provided!'
         self.redirect(WordController.get_url())
     @AdminOnly()
+    @View(**{'templateName':'Word_index.html'})
     def index(self, *args):
         results =None
         index = 0; count=50
@@ -56,8 +60,8 @@ class WordController(hrh):
             pass
         r= Word.all().fetch(limit=abs(count), offset=index)
         index+=count
-        result = {'WordList':r, 'index':index, 'count':abs(count) }
-        self.respond(result)
+        return {'WordList':r, 'index':index, 'count':abs(count) }
+
     @AdminOnly()
     def save(self, *args):
         instance = None
@@ -79,11 +83,12 @@ class WordController(hrh):
 
 from Models.DictModels import Search, SearchForm
 class SearchController(hrh):
-    def SetOperations(self):
-        self.operations = {}
-        self.operations['default']={'method':self.search}
-        self.operations['random']={'method':'random'}
-        self.operations['atom']={'method':'randomFeed'}
+    @ClearDefaults()
+    @Default('search')
+    @Handler('random', 'random')
+    @Handler('atom', 'atom')
+    def SetOperations(self): pass
+
     def replaceWithCyrillic(self, val):
         for k, v in ma2c.iteritems():
             val = val.replace(k, v)
@@ -92,7 +97,7 @@ class SearchController(hrh):
         return val
     def search(self, *args):
         if self.isAjax:
-            self.search_ajax()
+            return self.search_ajax()
         else:
             results = []
 #            languages = Language.all().fetch(limit=100)
@@ -113,9 +118,9 @@ class SearchController(hrh):
                 val = self.replaceWithCyrillic(self.params.Text)
                 results = Word.gql('WHERE Value= :v', v=val).fetch(limit=100)
             randomResults = self.randomSample(30, DICT_SIZE, 5)
-            self.respond({'SearchForms':searches,'results':results, 
+            return {'SearchForms':searches,'results':results,
                           'showMessage':showMessage,
-                          'randomResults':randomResults})
+                          'randomResults':randomResults}
     def search_ajax(self, *args):
         self.SetTemplate(templateGroup='form', templateName='SearchForm_results.html')
         offset = self.params.offset and int(self.params.offset) or 0 
@@ -127,18 +132,19 @@ class SearchController(hrh):
             search = sf.save(commit=False)
             #search.Text = self.replaceWithCyrillic(search.Text)
             results = Word.gql('WHERE Value= :v', v=search.Text).fetch(limit=100, offset=offset)
-            self.respond({'results':results, 'showMessage':showMessage})
+            return {'results':results, 'showMessage':showMessage}
         else:
-            self.respond('')
+            return ''
+
     def random(self, *args):
         if self.isAjax:
-            self.random_ajax(*args)
-        else: self.search()
+            return self.random_ajax(*args)
+        else: return self.search()
         
     def random_ajax(self, *args):
         self.SetTemplate('form', templateName='SearchForm_random.html')
         randomResults = self.randomSample(30, DICT_SIZE, 5)
-        self.respond({'randomResults':randomResults})
+        return {'randomResults':randomResults}
     def randomFeed(self):
 #        self.respond(self.randomSample(30, DICT_SIZE, 5)[0])
         self.SetTemplate(templateGroup='form', 
@@ -149,7 +155,8 @@ class SearchController(hrh):
         for t in randomResults:
             entry = nf.FeedEntry(Title='')
             feed.Entries.append(object)
-        self.respond()
+        return {}
+
     def randomSample(self, fr, to, cnt):
         offset = random.randint(fr, to)
         if offset+cnt>to:
@@ -176,16 +183,16 @@ class ImporterController(hrh):
             items = Word.all().fetch(limit=100, offset=0)
             if len(items)>0:
                 db.delete(items)
-                self.response.out.write(str(f+100))
+                return str(f+100)
             else:
-                self.response.out.write('-1')
+                return '-1'
             time.sleep(0.5)
         except TransactionFailedError, msg:
             logging.error(msg)
-            self.response.out.write('-1')
+            return '-1'
         except Exception, msg:
             logging.error(msg)
-            self.response.out.write('-1')
+            return '-1'
     def importHtml(self,*args):
         try:
             self.SetTemplate(templateName ='Importer_import.html')
@@ -195,12 +202,14 @@ class ImporterController(hrh):
 #                pdb.set_trace()
                 WordList = imp.importHtml(self.params.Html)
                 #d = {'Importer':imp, 'WordList':WordList, 'check':True}
-                self.response.out.write(len(WordList))
+                return len(WordList)
         except Exception, ex:
             logging.error(ex, ex.args)
 
 from Models.DictModels import Language, LanguageForm 
 class LanguageController(hrh):
+    @AdminOnly()
+    def SetOperations(self):pass
     @AdminOnly()
     def edit(self, *args):
         if self.params.key:
@@ -213,7 +222,7 @@ class LanguageController(hrh):
                 self.redirect(LanguageController.get_url())
         else:
             self.status = 'Key not provided'
-            self.respond({'op':'insert' ,'LanguageForm':LanguageForm()})
+            return {'op':'insert' ,'LanguageForm':LanguageForm()}
 
     @AdminOnly()
     def delete(self, *args):
@@ -229,6 +238,8 @@ class LanguageController(hrh):
         self.redirect(LanguageController.get_url())
 
     
+    @View(templateName='Language.html')
+    @Get()
     def index(self, *args):
         results =None
         index = 0; count=1000
@@ -239,8 +250,8 @@ class LanguageController(hrh):
             pass
         result = {'LanguageList': Language.all().fetch(limit=count, offset=index)}
         result.update(locals())
-        self.respond(result)
-
+        return result
+    
     @AdminOnly()
     def save(self, *args):
         instance = None
@@ -256,23 +267,23 @@ class LanguageController(hrh):
             self.SetTemplate(templateName = 'Language_edit.html')
             self.status = 'Form is not Valid'
             result = {'op':'update', 'LanguageForm': form}
-            self.respond(result)
+            return result
 
 from Models.DictModels import Dictionary, DictionaryForm 
 class DictionaryController(hrh):
-    
+    @AdminOnly()
+    def SetOperations(self):pass
     def edit(self, *agrs):
         if self.params.key:
             item = Dictionary.get(self.params.key)
             if item:
-                result = {'op':'update', 'DictionaryForm': DictionaryForm(instance=item)}
-                self.respond(result)
+                return  {'op':'update', 'DictionaryForm': DictionaryForm(instance=item)}
             else:
                 self.status = 'Dictionary does not exists'
                 self.redirect(DictionaryController.get_url())
         else:
             self.status = 'Key not provided'
-            self.respond({'op':'insert' ,'DictionaryForm':DictionaryForm()})
+            return {'op':'insert' ,'DictionaryForm':DictionaryForm()}
 
     def delete(self, *args):
         if self.params.key:
@@ -317,17 +328,17 @@ class DictionaryController(hrh):
         else:
             self.SetTemplate(templateName = 'Dictionary_edit.html')
             self.status = 'Form is not Valid'
-            result = {'op':'update', 'DictionaryForm': form}
-            self.respond(result)
+            return {'op':'update', 'DictionaryForm': form}
 
 from Models.DictModels import WordSugestion, WordSugestionForm 
 class WordSugestionController(hrh):
-    def SetOperations(self):
-        self.operations['default'] = {'method':self.sugest}
+    @Default('sugest')
+    def SetOperations(self):pass
+
     @LogInRequired()
     def sugest(self, *args):
         if self.isAjax:
-            self.sugest_ajax()
+            return self.sugest_ajax()
         else:
             #TODO: Not Implemented yet
             pass
@@ -337,9 +348,9 @@ class WordSugestionController(hrh):
             word = Word.get(self.params.Wordkey)
             sugestion = self.params.Sugestion
             sug = WordSugestion.CreateNew(word, sugestion, self.User, _isAutoInsert=True)
-            self.respond("Suggestion is saved. Thanks for helping!")
+            return "Suggestion is saved. Thanks for helping!"
         else:
-            self.respond("Cannot Add the Suggestion!")
+            return "Cannot Add the Suggestion!"
     @AdminOnly()
     def show(self, *args):
         self.SetTemplate(templateName='WordSugestion_edit.html')
@@ -353,7 +364,7 @@ class WordSugestionController(hrh):
                 self.redirect(WordSugestionController.get_url())
         else:
             self.status = 'Key not provided'
-            self.respond({'op':'insert' ,'WordSugestionForm':WordSugestionForm()})
+            return {'op':'insert' ,'WordSugestionForm':WordSugestionForm()}
 
     @AdminOnly()
     def delete(self, *args):
@@ -379,7 +390,7 @@ class WordSugestionController(hrh):
             pass
         result = {'WordSugestionList': WordSugestion.all().fetch(limit=count, offset=index)}
         result.update(locals())
-        self.respond(result)
+        return result
 
 
     def insert(self, *args):
@@ -395,5 +406,4 @@ class WordSugestionController(hrh):
         else:
             self.SetTemplate(templateName = 'WordSugestion_edit.html')
             self.status = 'Form is not Valid'
-            result = {'op':'update', 'WordSugestionForm': form}
-            self.respond(result)
+            return {'op':'update', 'WordSugestionForm': form}

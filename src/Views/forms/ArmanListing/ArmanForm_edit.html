@@ -1,13 +1,13 @@
-<div class="ui-widget">
-<div class='ui-widget-header ui-corner-top' style="padding:2px">
-    <h2>{%if ArmanForm.instance%}
+<div class="post" id="id_ArmanFormDiv">
+<div class='postHeader'>
+    <h1>{%if ArmanForm.instance%}
         {%if ArmanForm.MappedToCurrent %}Edit Information:{%else%}Edit Relative Information:{%endif%}
         {%else%}
         {%if ArmanForm.MappedToCurrent %}Register:{%else%}Register Relative:{%endif%}
         {%endif%}
-    </h2>
+    </h1>
 </div>
-<div class="ui-widget-content ui-corner-bottom" style="border:1;padding:10px">
+<div class="postContent">
 <form method='post' id="ArmanForm_edit" action='{% url ArmanController %}'>
     <input type='hidden' name='key' value={{ArmanForm.instance.key}}></input>
     <input type='hidden' name='MappedTo' value='{{ArmanForm.instance.MappedTo.key}}'></input>
@@ -94,7 +94,7 @@
             <td style='color: red;'>{{ArmanForm.IsWriteingArman.errors}}</td>
         </tr>
     </table>
-    <input type='submit' value={%if ArmanForm.instance.key%} 'Update' {% else %} 'Create' {%endif%}></input>
+    <input style="margin-left: 100px;font-size: 20px;"  type='submit' value={%if ArmanForm.instance.key%} 'Update' {% else %} 'Create' {%endif%}></input>
 </form>
 </div>
 </div>

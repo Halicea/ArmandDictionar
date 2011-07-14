@@ -13,6 +13,7 @@ import os
 from google.appengine.ext.webapp import template
 from django.utils import simplejson
 from django.core import serializers
+import warnings
 #from lib.webapp2 import template
 #from lib.halicea import template
 #from jinja2 import FileSystemLoader, Environment, TemplateNotFound
@@ -25,8 +26,14 @@ templateGroups = {'form':settings.FORM_VIEWS_DIR,
                   'base':settings.BASE_VIEWS_DIR,}
 
 class HalRequestHandler( webapp.RequestHandler ):
+    """Bas Request handler class for the Hal framework.
+        Note: standard items that are responded in the context are:
+           - {{current_user}}
+           - {{status}} - returning the self.status variable (also stored in session and useful for redirects)
+           - {{current_server}} -responding the server url
+           - {{current_url}}
+    """
     def __init__(self, *args, **kwargs):
-        super(HalRequestHandler, self).__init__(*args, **kwargs)
         self.params = None
         self.operations = {}
         #setattr(self.operations, 'update', self.upd)
@@ -39,11 +46,39 @@ class HalRequestHandler( webapp.RequestHandler ):
         self.__templateIsSet__= False
         self.__template__ =""
         self.extra_context ={}
+    # Constructors
+    def initialize( self, request, response ):
+        warnings.warn('Entered in Hal')
+        """Initializes this request handler with the given Request and Response."""
+        self.isAjax = ((request.headers.environ.get('HTTP_X_REQUESTED_WITH')=='XMLHttpRequest') or (request.headers.get('X-Requested-With')=='XMLHttpRequest'))
+#        logging.debug("Content Type is %s", str(request.headers.get('Content-Type')))
+        self.request = request
+        self.response = response
+        if self.request.headers.environ.get('CONTENT_TYPE') == 'application/json':
+            data = simplejson.loads(self.request.body)
+            self.params = HalRequestHandler.RequestParameters(data)
+        elif self.request.headers.environ.get('CONTENT_TYPE') == 'application/xml':
+            data = serializers.deserialize('xml', self.request.body)
+            self.params = HalRequestHandler.RequestParameters(data)
+        else:
+            self.params = HalRequestHandler.RequestParameters(self.request)
+        #self.request = super(MyRequestHandler, self).request
+        if not self.isAjax: self.isAjax = self.g('isAjax')=='true'
+        # set the status variable
+        if self.session.has_key( 'status' ):
+            self.status = self.session.pop('status')
+        #set the default operations
+        self.SetDefaultOperations()
+        #make any customisations by overloading this method
+        self.SetOperations()
+
     class RequestParameters(object):
         def __init__(self, request):
             self.request = request
         def __getattr__(self, name):
             return self.request.get(name)
+        def get(self, name , default=None):
+            return self.request.get(name, default)
     def __get_template(self):
         if not self.__templateIsSet__:
             self.SetTemplate(None, None, None)
@@ -134,51 +169,27 @@ class HalRequestHandler( webapp.RequestHandler ):
             self.session.terminate()
         return True
     # end Properties
-    def __set_operations(self):
-        self.operations.update(settings.DEFAULT_OPERATIONS)
-        for k, v in self.operations.iteritems():
-            if isinstance(v['method'], str):
-                try:
-                    attr = getattr(self, v['method'])
-                    self.operations[k]={'method':attr}
-                except Exception, ex:
-                    pass
-            else:
-                try:
-                    attr = getattr(self, v['method'].__name__)
-                    self.operations[k]={'method':attr}
-                except Exception, ex:
-                    pass
+    def SetDefaultOperations(self):
+        if hasattr(settings, 'DEFAULT_OPERATIONS'):
+            if settings.DEFAULT_OPERATIONS:
+                self.operations.update(settings.DEFAULT_OPERATIONS)
+                for k, v in self.operations.iteritems():
+                    if isinstance(v['method'], str):
+                        try:
+                            attr = getattr(self, v['method'])
+                            self.operations[k]={'method':attr}
+                        except Exception, ex:
+                            pass
+                    else:
+                        try:
+                            attr = getattr(self, v['method'].__name__)
+                            self.operations[k]={'method':attr}
+                        except Exception, ex:
+                            pass
     def SetOperations(self):
         """This method needs to be overwritten in order to customize the operations in the handler"""
         pass
 
-    # Constructors
-    def initialize( self, request, response ):
-        """Initializes this request handler with the given Request and Response."""
-        self.isAjax = ((request.headers.environ.get('HTTP_X_REQUESTED_WITH')=='XMLHttpRequest') or (request.headers.get('X-Requested-With')=='XMLHttpRequest'))
-#        logging.debug("Content Type is %s", str(request.headers.get('Content-Type')))
-        self.request = request
-        self.response = response
-        if self.request.headers.environ.get('CONTENT_TYPE') == 'application/json':
-            data = simplejson.loads(self.request.body)
-            self.params = HalRequestHandler.RequestParameters(data)
-        elif self.request.headers.environ.get('CONTENT_TYPE') == 'application/xml':
-            data = serializers.deserialize('xml', self.request.body)
-            self.params = HalRequestHandler.RequestParameters(data)
-            pass
-        else:
-            self.params = HalRequestHandler.RequestParameters(self.request)
-        webapp.RequestHandler.__init__(self)
-        #self.request = super(MyRequestHandler, self).request
-        if not self.isAjax: self.isAjax = self.g('isAjax')=='true'
-        # set the status variable
-        if self.session.has_key( 'status' ):
-            self.status = self.session.pop('status')
-        #set the default operations
-        self.__set_operations()
-        #make any customisations by overloading this method
-        self.SetOperations()
     # Methods
     def g(self, item):
         return self.request.get(item)
@@ -275,8 +286,11 @@ class HalRequestHandler( webapp.RequestHandler ):
         result={}
         result.update(self.extra_context)
         result.update(basedict)
+
         if result.has_key( 'self' ):
             result.pop( 'self' )
+        if not result.has_key('uri'):
+            result['uri']=self.request.url
         if not result.has_key( 'status' ):
             result['status'] = self.status
         if not result.has_key('current_user'):

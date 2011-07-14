@@ -5,16 +5,16 @@
 <div class="ui-widget" style="width:70%;margin-left: auto; margin-right: auto;">
 	<table>
 	    <tr><td style="width:50%">
-	        <div class="ui-widget-header ui-corner-top"><h2>Login</h2></div>
-        	<div class="ui-widget-content ui-corner-bottom" style="text-align: right; padding: 10px; width:310px">
+	        <div class="post" style="margin-left: auto;margin-right: auto;width: 400px;">
+                <div class="postHeader"><h1>Login</h1></div>
+        	    <div class="postContent">
         		<form action="{% url LoginController %}" method="post">
-        			{% if redirect_url %}
-        			<input type="hidden" name="redirect_url" value="{{redirect_url}}"></input>
-        			{% endif %}
-        			<p>UserName or Email:<input type="text" name="Email" style="width: 170px" /></p>
-        			<p>Password:<input type="password" name="Password" style="width: 170px" /></p>
-        			<p><input type="submit" value="Login" /></p>
+                    <table>
+                    {{LoginForm.as_table}}
+        			</table>
+                    <p><input type="submit" value="Login" /></p>
         		</form>
+                </div>
         	</div>
         	
         </td>

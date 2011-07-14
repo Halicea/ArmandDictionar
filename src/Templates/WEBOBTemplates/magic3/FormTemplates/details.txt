@@ -1,0 +1,24 @@
+<div class="postHeader"><h1>{{m.Name}}: </h1></div>
+<div class="postContent">
+<table>
+{{os}} for p in {{m.Name}}.properties {{cs}}
+    <tr>
+        <td style="text-align:right;">
+            {{ob}} p.label_tag {{cb}}:
+        </td>
+        <td>
+            {{ob}} field {{cb}}
+        </td>
+        <td style='color: red;'>
+            {{ob}} field.errors {{cb}}
+        </td>
+    <tr>
+{{os}} endfor {{cs}}
+</table>
+</div>
+<div class="postFooter">
+<div class="nav">
+<a href='{{os}}url {{m.Name}}Controller{{cs}}?op=edit&key={{m.Name}}.key{{cs}}'>Edit</a>
+<a href='{{os}}url {{m.Name}}Controller{{cs}}'>Home</a>
+</div>
+</div>

@@ -1,0 +1,5 @@
+{%autoescape off%}class {{m.Name}}Form(ModelForm):
+    class Meta():
+        model={{m.Name}}
+        #exclude
+##End {{m.Name}}{%endautoescape%}

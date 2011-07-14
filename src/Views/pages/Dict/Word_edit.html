@@ -49,5 +49,8 @@
 {% endblock %}
 
 {% block content %}
-{%include WordForm_edit %}
+<div class="post">
+    <div class="postHeader"><h1>Word: </h1></div>
+    <div class="postContent">{%include WordForm_edit %}</div>
+</div>
 {% endblock %}

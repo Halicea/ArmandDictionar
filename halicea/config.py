@@ -28,8 +28,11 @@ modelInheritsFrom = 'db.Model'
 controllerInheritsFrom = 'hrh'
 #default Form inherit
 formInheritsFrom = 'ModelForm'
-#urlTemplate = '/$Package/$Model/$Action'
-urlTemplate = '/$Package/$Model/?op=$Action'
+
+#TODO: make use of the url template in forming the urls in the handlerMap
+#urlTemplate = '/$Package/$Model/operation/$Action'
+#urlTemplate = '/$Package/$Model/?op=$Action'
+
 #Template Renderer Configuration
 TEMPLATE_RENDERER = renderers.Django
 #Template Configuration

@@ -47,7 +47,7 @@ class ArmanController(ArmansBaseController):
     def delete(self, *args):
         if self.params.key:
             Arman.get(self.params.key).delete()
-            self.redirect(self.get_url())
+            self.redirect(self.get_url()+'?op=index')
         else:
             self.status = "Not Allowed"
     @LogInRequired()

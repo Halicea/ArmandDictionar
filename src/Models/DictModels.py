@@ -70,7 +70,6 @@ class Dictionary(db.Model):
     def GetTranslations(self, word):
         return self.dictionary_words.limit('Value=', word).fetch(limit=100)
     def __str__(self):
-        #TODO: Change the method to represent something meaningful
         return self.Name+'('+self.Language1.Name+'-'+(self.Language2==None and 'None' or self.Language2.Name)+')'
 
 class DictionaryForm(ModelForm):

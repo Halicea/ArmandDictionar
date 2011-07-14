@@ -4,11 +4,17 @@
 {% endblock %}
 
 {% block content %}
-<h2>Cafta: </h2>
-<form method="POST" action="{%url ArmanSearchController%}">
-    {%include SearchForm%}
-    <input type="submit" value="Cafta">
-</form>
-<hr/>
-{%include ArmanForm_index %}
+<div class="post">
+    <div class="postHeader">
+        <h1>Cafta: </h1>
+    </div>
+    <div class="postContent">
+        <form method="POST" action="{%url ArmanSearchController%}">
+            {%include SearchForm%}
+            <input type="submit" value="Cafta">
+        </form>
+        <hr/>
+        {%include ArmanForm_index %}
+    </div>
+</div>
 {% endblock %}

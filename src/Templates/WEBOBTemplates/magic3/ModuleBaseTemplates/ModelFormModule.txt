@@ -1,0 +1,6 @@
+from lib.djangoFormImports import widgets, fields, extras
+from google.appengine.ext.db.djangoforms import ModelForm
+from {{modelsPath}}.{{m.Package}}{{MODEL_MODULE_SUFIX}} import *
+#{{os}}block imports{{cs}}
+#{{os}}endblock{{cs}}
+###############

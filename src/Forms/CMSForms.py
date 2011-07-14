@@ -1,0 +1,13 @@
+__author__ = 'KMihajlov'
+#{%block imports%}
+from google.appengine.ext.db.djangoforms import ModelForm
+from django.forms import Form, BaseForm, fields, widgets
+from django.forms.extras import widgets as extras
+from Models.CMSModels import *
+#{%endblock%}
+
+class CMSContentForm(Form):
+    def __init__(self, *args, **kwargs):
+        super(CMSContentForm, self).__init__(*args, **kwargs)
+    Title = fields.CharField(required=True)
+    Content = fields.CharField(widget=widgets.Textarea(), required=True)

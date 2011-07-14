@@ -1,5 +1,6 @@
 __author__ = 'Costa Halicea'
 from django.template.loader import BaseLoader
+from django.template import TemplateDoesNotExist
 from settings import VIEWS_DIR
 import os
 class HalLoaderException(Exception):
@@ -26,4 +27,4 @@ class HalLoader(BaseLoader):
                 if f == template_name:
                     warnings.warn('template '+template_name+' was found in '+root)
                     return open(os.path.join(root, f), 'r').read(), f
-        raise HalLoaderException('Template '+template_name+' was not found')
+        raise TemplateDoesNotExist('Template '+template_name+' was not found')

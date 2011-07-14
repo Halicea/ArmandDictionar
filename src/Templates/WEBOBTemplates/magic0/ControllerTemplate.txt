@@ -1,3 +1,4 @@
 {%autoescape off%}class {{m.Name}}Controller(hrh):
+    def SetOperations(self): pass
     {%for m in methods %}{{m}}
 {%endfor%}{%endautoescape%}

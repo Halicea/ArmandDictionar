@@ -5,7 +5,7 @@
             {{item}}
         </td>
         <td><a href='{%url ArmanController %}?key={{item.key}}'>Detail</a></td>
-        <td> <a href='{%url ArmanController %}?op=del&key={{item.key}}'>Delete</a></td>
+        <td> <a href='{%url ArmanController %}?op=delete&key={{item.key}}'>Delete</a></td>
     </tr>
 {% endfor %}
 </table>

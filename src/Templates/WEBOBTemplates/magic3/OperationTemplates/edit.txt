@@ -1,0 +1,12 @@
+
+    def edit(self, *args):
+        if self.params.key:
+            item = {{m.Name}}.get(self.params.key)
+            if item:
+                return {'op':'update', '{{m.Name}}Form': {{m.Name}}Form(instance=item)}
+            else:
+                self.status = '{{m.Name}} does not exists'
+                self.redirect({{m.Name}}Controller.get_url())
+        else:
+            self.status = 'Key not provided'
+            return {'op':'insert' ,'{{m.Name}}Form':{{m.Name}}Form()}

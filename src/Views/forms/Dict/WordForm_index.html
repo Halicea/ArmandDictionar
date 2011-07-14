@@ -1,4 +1,3 @@
-<h2>Word List: </h2>
 <table>
 {% for item in WordList %}
     <tr>
@@ -10,7 +9,3 @@
     </tr>
 {% endfor %}
 </table>
-
-{%ifnotequal count 0 %}<a href='{%url WordController %}?op=index&index={{index}}&&count=-{{count}}'>Previous</a>{%endifnotequal%}
-{%if WordList%}<a href='{%url WordController %}?op=index&index={{index}}&&count={{count}}'>Next</a> |{%endif%}
-<h3><a href='{%url WordController %}?op=edit'>New</a><h3>

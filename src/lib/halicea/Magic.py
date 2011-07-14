@@ -8,10 +8,10 @@ class MagicSet(object):
     @staticmethod
     def getModelClass(mvcItemInstance):
         moduleBase, nameBase = MagicSet.baseName(mvcItemInstance, splitParts=True)
-        name = nameBase+settings.MODEL_FORM_CLASS_SUFIX
-        module = moduleBase+settings.MODEL_MODULE_SUFIX
-        m = __import__(module)
-        return m.getattr(name)
+        name = nameBase+settings.MODEL_CLASS_SUFIX
+        module = os.path.basename(settings.MODELS_DIR)+'.'+moduleBase+settings.MODEL_MODULE_SUFIX
+        exec 'from %s import %s as nc'%(module, name)
+        return nc
     @staticmethod
     def getViewDir(mvcItemInstance):
         moduleBase, nameBase = MagicSet.baseName(mvcItemInstance, splitParts=True)
@@ -20,10 +20,10 @@ class MagicSet(object):
     @staticmethod
     def getFormClass(mvcItemInstance):
         moduleBase, nameBase = MagicSet.baseName(mvcItemInstance, splitParts=True)
-        moduleBase = moduleBase+settings.MODEL_FORM_MODULE_SUFIX
+        moduleBase = os.path.basename(settings.FORM_MODELS_DIR)+'.'+moduleBase+settings.MODEL_FORM_MODULE_SUFIX
         nameBase = nameBase+settings.MODEL_FORM_CLASS_SUFIX
         m = __import__(moduleBase)
-        return m.getattr(nameBase)
+        return getattr(m, nameBase)
     @staticmethod
     def baseName(mvcItemInstance, splitParts = False):
         modPart = mvcItemInstance.__class__.__module__

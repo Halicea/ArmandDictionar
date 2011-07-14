@@ -8,8 +8,8 @@
          {{r.Translation}}
         </td>
         {% if current_user.IsAdmin %}
-         <td><a class='detail' href='{%url WordController %}?op=shw&key={{r.key}}'>Прегледај/Измени</a></td>
-         <td> <a class='delete' href='{%url WordController %}?op=del&key={{r.key}}'>Избриши</a></td>
+         <td><a class='detail' href='{%url WordController %}?op=edit&key={{r.key}}'>Прегледај/Измени</a></td>
+         <td> <a class='delete' href='{%url WordController %}?op=delete&key={{r.key}}'>Избриши</a></td>
         {% endif %}
     </tr>
     {%endfor%}

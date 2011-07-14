@@ -11,17 +11,21 @@ from Models.BaseModels import RoleAssociation, RoleAssociationForm
 from Models.BaseModels import Role, RoleForm 
 from Models.BaseModels import Person
 from Models.BaseModels import Invitation
-from Models.BaseModels import WishList, WishListForm 
+from Models.BaseModels import WishList, WishListForm
+from Forms.BaseForms import LoginForm
 #{%endblock%}
 class LoginController( hrh ):
-    def SetOperations(self):
-        self.operations = {'default':{'method':self.login},
-                           'JanrainAuth':{'method':self.JanrainAuth}}
+    @Default('login')
+    @Handler('JanrainAuth','JanrainAuth')
+    def SetOperations(self):pass
+
+    @View(templateName='Login.html')
+    @ErrorSafe()
     def login(self, *args):
         if self.request.method=='GET':
-            self.login_get(*args)
+            return self.login_get(*args)
         else:
-            self.login_post(*args)
+            return self.login_post(*args)
     @ErrorSafe()
     def JanrainAuth(self, *args):
         token = self.params.token
@@ -85,32 +89,26 @@ class LoginController( hrh ):
             self.status = 'Not Valid Login'
             self.respond()
 
-    @ErrorSafe()
+    def login_post(self , *args):
+        lform  = LoginForm(data = self.request.params)
+        if lform.is_valid():
+            if(self.login_user_local(lform.cleaned_data['Email'], lform.cleaned_data['Password'])):
+                if lform.cleaned_data['RedirectUrl']:
+                    self.redirect( lform.cleaned_data['RedirectUrl'])
+                else:
+                    self.redirect( '/' )
+                return
+        self.status = 'Email Or Password are not correct!'
+        return {'LoginForm':lform}
+
     def login_get( self, *args ):
         if not self.User:
             if self.g('redirect_url'):
-                self.respond({'redirect_url':self.g('redirect_url')})
+                return {'LoginForm':LoginForm(initial={'RedirectUrl':self.params.redirect_url})}
             else:
-                self.respond()
+                return {'LoginForm':LoginForm()}
         else:
             self.redirect( '/' )
-            
-    @ErrorSafe()
-    def login_post(self , *args):
-        uname = self.request.get( 'Email' )
-        passwd = self.request.get( 'Password' )
-        if (uname and passwd):
-            if(self.login_user_local(uname, passwd)):
-                if self.request.get( 'redirect_url' ):
-                    self.redirect( self.request.get( 'redirect_url' ) )
-                else:
-                    self.redirect( '/' )
-            else:
-                self.status = 'Email Or Password are not correct!!'
-                self.respond()
-        else:
-            self.status = 'Email Or Password are not correct!'
-            self.respond()
 
 class LogoutController( hrh ):
     @LogInRequired(message = '')

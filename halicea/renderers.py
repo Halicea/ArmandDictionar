@@ -12,3 +12,4 @@ class Django(HalTemplate):
         self.template = template.Template(text)
     def render(self, dict):
         return self.template.render(template.Context(dict))
+

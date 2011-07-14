@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import os
 from os.path import join
 #from lib.halicea import defaultControllerMethods as dcm
@@ -43,15 +44,13 @@ FORM_VIEW_SUFFIX = 'Form'
 BLOCK_VIEW_SUFIX = ''
 BASE_MOBILE_VIEW_EXTENSION = '_mobile'
 #End MVC Sufixes
-
-
 #File Extensions
 CONTROLLER_EXTENSTION = '.py'
 MODEL_EXTENSTION = '.py'
 MODEL_FORM_EXTENSTION = '.py'
 VIEW_EXTENSTION = '.html'
 
-MagicLevel = 0
+MagicLevel = 3
 
 DEFAULT_OPERATIONS = {
                       'default':{'method':dcm.index, 'view':False},
@@ -66,5 +65,6 @@ OPENID_PROVIDERS = {'Google': 'Google.com/accounts/o8/id', 'Yahoo': 'Yahoo.com',
 #DJANGO APP SETTINGS SECTION
 TEMPLATE_DIRS = (VIEWS_DIR)
 ROOT_URLCONF ='handlerMap'
-TEMPLATE_LOADERS = ('lib.halicea.HalTemplateLoader.HalLoader',)
+TEMPLATE_LOADERS = ('lib.halicea.HalTemplateLoader.HalLoader','django.template.loaders.filesystem.Loader')
 #PASTE YOUR CONFIGURATION HERE
+COOKIE_KEY = '''2zÆœ;¾±þ”¡j:ÁõkçŸÐ÷8{»Ën¿A—jÎžQAQqõ"bøó÷*%†™ù¹b¦$vš¡¾4ÇŸ^ñ5¦'''
