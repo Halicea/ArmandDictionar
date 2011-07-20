@@ -68,7 +68,7 @@ class LoginController( hrh ):
                     person.PhotoUrl=photo,
                     person.put()
                 else:
-                    person = Person.CreateNew(uname=json['profile']['preferredUsername'],
+                    person = Person.CreateNew2(uname=json['profile']['preferredUsername'],
                                               name=name,
                                               surname=surname,
                                               email = email,
@@ -360,10 +360,10 @@ class InvitationController(hrh):
         if form.is_valid():
             email = form.cleaned_data['email']
             from google.appengine.api import mail
-            p=Person.CreateNew(uname=email, email=email,
+            p=Person.CreateNew2(uname=email, email=email,
                              name=email,surname=email,
                              password='blablabla', _autoSave=True)
-            inv =Invitation.CreateNew(invitefrom=self.User, personbinding=p, _isAutoInsert=True)
+            inv =Invitation.CreateNew2(invitefrom=self.User, personbinding=p, _isAutoInsert=True)
             mail.send_mail(sender='admin@halicea.com',to=p.Email,subject='Invitation for Bordj',
                            body="""Dear Mr/Ms,<br/>
     You have been invited to register on Bordj app from {%s}.<br/>

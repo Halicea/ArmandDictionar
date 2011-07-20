@@ -2,17 +2,20 @@ from google.appengine.ext import db
 from BaseModels import Person
 import datetime as dt
 from lib.halicea.decorators import property
+
 class CMSContent(db.Model):
     Title = db.StringProperty(required=True)
     HTMLContent = db.TextProperty(required=True)
+    Tags = db.StringListProperty()
     Creator = db.ReferenceProperty(Person, collection_name='creator_cms_pages')
     DateCreated = db.DateTimeProperty(auto_now_add=True)
     LastDateModified = db.DateTimeProperty(auto_now=True)
     @classmethod
-    def CreateNew(cls, title, content, creator, _isAutoInsert=False):
+    def CreateNew(cls, title, content, tags, creator, _isAutoInsert=False):
         result = cls(
                     Title=title,
                     HTMLContent=content,
+                    Tags=tags,
                     Creator=creator,
                    )
         if _isAutoInsert:
@@ -67,7 +70,7 @@ class CMSLink(db.Model):
     def GetLinksByDate(dateFrom, dateTo):
         return CMSLink.gql("WHERE LastDateModified > :ldf AND LastDateModified < :ldt ORDER BY LastDateModified ASC", ldf=dateFrom, ldt=dateTo).fetch(1000)
     @classmethod
-    def CreateNew(cls, addressName, name, parentLink, order, content, creator, _isAutoInsert=False):
+    def CreateNew2(cls, addressName, name, parentLink, order, content, creator, _isAutoInsert=False):
         if not parentLink:
             depth = 0
         else:
@@ -90,3 +93,22 @@ class Menu(db.Model):
     Name = db.StringProperty(required = True)
     Location = db.TextProperty(required = True)
     CssClass = db.StringProperty()
+class Comment(db.Model):
+    """TODO: Describe Comment"""
+    Text= db.TextProperty(required=True, )
+    Creator= db.ReferenceProperty(Person, collection_name='creator_comments', )
+    DateAdded= db.DateTimeProperty(auto_now_add=True, )
+    Content= db.ReferenceProperty(CMSContent, collection_name='content_comments', required=True, )
+    
+    @classmethod
+    def CreateNew(cls ,text,creator,content , _isAutoInsert=False):
+        result = cls(
+                     Text=text,
+                     Creator=creator,
+                     Content=content,)
+        if _isAutoInsert: result.put()
+        return result
+    def __str__(self):
+        #TODO: Change the method to represent something meaningful
+        return 'Change __str__ method' 
+## End Comment

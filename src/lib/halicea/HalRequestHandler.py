@@ -41,7 +41,11 @@ class HalRequestHandler( webapp.RequestHandler ):
         self.TemplateType = ''
         self.status = None
         self.isAjax=False
-        self.op = None
+        
+        if kwargs and kwargs.haskey('op'):
+            self.op =kwargs['op']
+        else:
+            self.op = None 
         self.method = 'GET'
         self.__templateIsSet__= False
         self.__template__ =""
@@ -200,7 +204,8 @@ class HalRequestHandler( webapp.RequestHandler ):
            now it routes in the methods by a given parameter named op
         """
         self.method = method
-        self.op = self.g('op')
+        if not self.op:
+            self.op = self.params.op
         outresult = 'No Result returned'
         if self.operations.has_key(self.op):
             if isinstance(self.operations[self.op]['method'], str):

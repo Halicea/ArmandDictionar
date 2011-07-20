@@ -2,6 +2,9 @@
 <!-- Komodo Project File - DO NOT EDIT -->
 <project id="f1936a8f-f7df-48f8-9cc1-9892c9de87cb" kpf_version="5" name="ArmanDict.komodoproject">
 <preference-set idref="f1936a8f-f7df-48f8-9cc1-9892c9de87cb">
+  <string relative="path" id="import_dirname"></string>
+  <string id="import_exclude_matches">*.*~;*.bak;*.tmp;CVS;.#*;*.pyo;*.pyc;.svn;_svn;.git;.hg;.bzr;*%*;tmp*.html;.DS_Store;*.swp;*.kpf;*.komodoproject;*.komodotools</string>
+  <string id="import_include_matches"></string>
   <string relative="path" id="pythonExtraPaths">src;D:/Kosta/DevApps/google_appengine;D:/Kosta/DevApps/google_appengine/lib;D:/Kosta/DevApps/google_appengine/lib/django_1_2;D:/Kosta/DevApps/google_appengine/lib/webob;D:/Kosta/DevApps/google_appengine/lib/yaml/lib;D:/Kosta/MyProjects/ArmandDict/halicea</string>
 </preference-set>
 </project>

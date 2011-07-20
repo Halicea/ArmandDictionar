@@ -23,7 +23,7 @@ class ArmanForm(ModelForm):
         addr = self.PersonalAddressForm.save(commit=False)
         addr.put()
         if not self.instance:
-            res = Arman.CreateNew(
+            res = Arman.CreateNew2(
                     mappedTo = mappedTo,
                     name = self.cleaned_data['Name'],
                     surname = self.cleaned_data['Surname'],

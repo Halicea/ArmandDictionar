@@ -347,7 +347,7 @@ class WordSugestionController(hrh):
         if self.params.Wordkey and self.params.Sugestion:
             word = Word.get(self.params.Wordkey)
             sugestion = self.params.Sugestion
-            sug = WordSugestion.CreateNew(word, sugestion, self.User, _isAutoInsert=True)
+            sug = WordSugestion.CreateNew2(word, sugestion, self.User, _isAutoInsert=True)
             return "Suggestion is saved. Thanks for helping!"
         else:
             return "Cannot Add the Suggestion!"

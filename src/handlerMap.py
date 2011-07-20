@@ -50,8 +50,12 @@ webapphandlers = [
 
 #{%block CMSControllers
 ('/cms/content', CMSControllers.CMSContentController),
+('/cms/content/(.*)', CMSControllers.CMSContentController),
 ('/cms/links', CMSControllers.CMSLinksController),
+('/cms/page/(.*)/comment', CMSControllers.CommentController.new_factory(**{'op':'save'})),
+('/cms/page/(.*)/comments', CMSControllers.CommentController.new_factory(**{'op':'index'})),
 ('/cms/page/(.*)', CMSControllers.CMSPageController),
+
 #{%endblock%}
 ('/(.*)', StaticControllers.NotExistsController),
 ]
