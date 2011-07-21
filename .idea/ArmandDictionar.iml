@@ -10,6 +10,15 @@
         <option name="gp" value="dfcbdfd8dfc7dfcbdfc4df9b" />
       </configuration>
     </facet>
+    <facet type="django" name="Django">
+      <configuration>
+        <option name="rootFolder" value="$MODULE_DIR$/src" />
+        <option name="templatesFolders" value="$MODULE_DIR$/src/Views" />
+        <option name="settingsModule" value="settings.py" />
+        <option name="manageScript" value="settings.py" />
+        <option name="djangoInJs" value="true" />
+      </configuration>
+    </facet>
   </component>
   <component name="NewModuleRootManager">
     <content url="file://$MODULE_DIR$">
