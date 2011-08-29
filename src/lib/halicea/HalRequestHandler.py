@@ -1,6 +1,7 @@
 from google.appengine.ext import webapp
 from google.appengine.ext import db
 from Models.BaseModels import Person
+
 #from lib.appengine_utilities import sessions
 from lib.gaesessions import get_current_session
 import lib.paths as paths
@@ -26,7 +27,7 @@ templateGroups = {'form':settings.FORM_VIEWS_DIR,
                   'base':settings.BASE_VIEWS_DIR,}
 
 class HalRequestHandler( webapp.RequestHandler ):
-    """Bas Request handler class for the Hal framework.
+    """Base Request handler class for the Hal framework.
         Note: standard items that are responded in the context are:
            - {{current_user}}
            - {{status}} - returning the self.status variable (also stored in session and useful for redirects)

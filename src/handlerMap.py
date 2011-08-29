@@ -9,7 +9,7 @@ from Controllers import CMSControllers
 webapphandlers = [
 #{%block ApplicationControllers %}
 #{% block DictControllers %}
-('/Search', DictControllers.SearchController),
+('/', DictControllers.SearchController),
 ('/dict/Word', DictControllers.WordController),
 ('/dict/Importer', DictControllers.ImporterController),
 ('/dict/Language', DictControllers.LanguageController),
