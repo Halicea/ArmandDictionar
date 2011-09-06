@@ -2,11 +2,11 @@
 import os
 from os.path import join
 #from lib.halicea import defaultControllerMethods as dcm
-from lib.halicea import dummyControllerMethods as dcm
 DEBUG = False
 TEMPLATE_DEBUG = True
 DEFAULT_CHARSET ='UTF-8'
 APPENGINE_PATH = '/home/costa/DevApps/google_appengine'
+from lib.halicea import dummyControllerMethods as dcm
 if os.name == 'nt':
     #APPENGINE_PATH = '/home/costa/DevApps/google_appengine'
     APPENGINE_PATH = 'C:\\devApps\\google_appengine'
@@ -17,7 +17,7 @@ PROJ_LOC = os.path.dirname(__file__)
 #MVC Directories
 MODELS_DIR = join(PROJ_LOC,'Models')
 VIEWS_DIR = join(PROJ_LOC,'Views')
-VIEWS_RELATIVE_DIR = ''
+VIEWS_RELATIVE_DIR = 'Views'
 FORM_MODELS_DIR = join(PROJ_LOC, 'Forms')
 CONTROLLERS_DIR = join(PROJ_LOC, 'Controllers')
 BASE_VIEWS_DIR = join(VIEWS_DIR, 'bases')
@@ -65,6 +65,6 @@ OPENID_PROVIDERS = {'Google': 'Google.com/accounts/o8/id', 'Yahoo': 'Yahoo.com',
 #DJANGO APP SETTINGS SECTION
 TEMPLATE_DIRS = (VIEWS_DIR)
 ROOT_URLCONF ='handlerMap'
-TEMPLATE_LOADERS = ('lib.halicea.HalTemplateLoader.HalLoader','django.template.loaders.filesystem.Loader')
+TEMPLATE_LOADERS = ('lib.halicea.HalTemplateLoader.HalLoader', 'django.template.loaders.filesystem.Loader', 'django.template.loaders.app_directories.Loader')
 #PASTE YOUR CONFIGURATION HERE
 COOKIE_KEY = '''2zÆœ;¾±þ”¡j:ÁõkçŸÐ÷8{»Ën¿A—jÎžQAQqõ"bøó÷*%†™ù¹b¦$vš¡¾4ÇŸ^ñ5¦'''

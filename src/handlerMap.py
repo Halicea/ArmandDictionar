@@ -42,13 +42,12 @@ webapphandlers = [
 ('/listing/Armans/Search', ArmanListingControllers.ArmanSearchController),
 #{%endblock%}
 
-
 #{%block ShellControllers%}
 ('/admin/Shell', ShellControllers.FrontPageController),
 ('/admin/stat.do', ShellControllers.StatementController),
 #{%endblock%}
 
-#{%block CMSControllers
+#{%block CMSControllers}
 ('/cms/content', CMSControllers.CMSContentController),
 ('/cms/content/(.*)', CMSControllers.CMSContentController),
 ('/cms/links', CMSControllers.CMSLinksController),
@@ -59,6 +58,4 @@ webapphandlers = [
 #{%endblock%}
 ('/(.*)', StaticControllers.NotExistsController),
 ]
-
-
 #{%endblock%}
