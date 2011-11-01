@@ -1,4 +1,5 @@
-from django.forms import widgets, fields, extras
+#from django.forms import widgets, fields, extras
+from lib.djangoFormImports import widgets, fields, extras
 from django.forms import Form, BaseForm
 from google.appengine.ext.db.djangoforms import ModelForm
 from Models.BaseModels import *

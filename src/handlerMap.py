@@ -5,6 +5,7 @@ from Controllers import DictControllers
 from Controllers import ShellControllers
 from Controllers import ArmanListingControllers
 from Controllers import CMSControllers
+from Controllers import testModule
 #{%endblock%}
 webapphandlers = [
 #{%block ApplicationControllers %}
@@ -54,7 +55,9 @@ webapphandlers = [
 ('/cms/page/(.*)/comment', CMSControllers.CommentController.new_factory(**{'op':'save'})),
 ('/cms/page/(.*)/comments', CMSControllers.CommentController.new_factory(**{'op':'index'})),
 ('/cms/page/(.*)', CMSControllers.CMSPageController),
-
+#{%endblock%}
+#{%block TestModuleControllers%)
+('/test/1', testModule.TestHandler),
 #{%endblock%}
 ('/(.*)', StaticControllers.NotExistsController),
 ]

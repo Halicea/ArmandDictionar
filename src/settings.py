@@ -1,15 +1,15 @@
 # -*- coding: utf-8 -*-
 import os
 from os.path import join
-#from lib.halicea import defaultControllerMethods as dcm
+#from lib.halicea import deCMSPageControllerfaultControllerMethods as dcm
 DEBUG = False
 TEMPLATE_DEBUG = True
 DEFAULT_CHARSET ='UTF-8'
 APPENGINE_PATH = '/home/costa/DevApps/google_appengine'
 from lib.halicea import dummyControllerMethods as dcm
 if os.name == 'nt':
-    #APPENGINE_PATH = '/home/costa/DevApps/google_appengine'
-    APPENGINE_PATH = 'C:\\devApps\\google_appengine'
+    APPENGINE_PATH = '/home/costa/DevApps/google_appengine'
+    #APPENGINE_PATH = 'C:\\devApps\\google_appengine'
 
 #we define the path relatively to our settings file
 PROJ_LOC = os.path.dirname(__file__)
