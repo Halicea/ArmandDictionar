@@ -310,6 +310,7 @@ class HalRequestHandler( webapp.RequestHandler ):
         result.update(paths.GetBasesDict())
         result.update(paths.GetBlocksDict())
         result.update(paths.GetFormsDict(path.join(settings.FORM_VIEWS_DIR, self.TemplateType))) ##end
+        result.update(paths.getViewsDict(self.TemplateDir,''))
         if mobile_agents.detect_mobile(self.request): #decide if the request is mobile
             self.mobile = True
             result['mobile']='mobile'

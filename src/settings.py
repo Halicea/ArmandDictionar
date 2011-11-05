@@ -65,6 +65,6 @@ OPENID_PROVIDERS = {'Google': 'Google.com/accounts/o8/id', 'Yahoo': 'Yahoo.com',
 #DJANGO APP SETTINGS SECTION
 TEMPLATE_DIRS = (VIEWS_DIR)
 ROOT_URLCONF ='handlerMap'
-TEMPLATE_LOADERS = ('lib.halicea.HalTemplateLoader.HalLoader', 'django.template.loaders.filesystem.Loader', 'django.template.loaders.app_directories.Loader')
+TEMPLATE_LOADERS = ('lib.halicea.HalTemplateLoader.HalLoader','django.template.loaders.filesystem.Loader', 'django.template.loaders.app_directories.Loader')
 #PASTE YOUR CONFIGURATION HERE
 COOKIE_KEY = '''2zÆœ;¾±þ”¡j:ÁõkçŸÐ÷8{»Ën¿A—jÎžQAQqõ"bøó÷*%†™ù¹b¦$vš¡¾4ÇŸ^ñ5¦'''

@@ -17,7 +17,7 @@ class HalLoader(BaseLoader):
         
     def load_template_source(self, template_name, template_dirs=None):
         import warnings
-        if template_name.find(os.sep)>0:
+        if os.sep in template_name:
             if os.path.exists(template_name):
                 return open(template_name, 'r').read(), template_name
             else:

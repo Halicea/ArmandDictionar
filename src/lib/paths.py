@@ -15,16 +15,16 @@ def GetTemplateDir(template_type):
     # @type template_type:str
     return p.join(settings.PAGE_VIEWS_DIR, template_type)
 
-def getViewsDict(dir, base=''):
+def getViewsDict(directory, base=''):
     result = {}
     #memcached for better performance
-    memResult = memcache.get('paths_ViewsDict_'+dir)
+    memResult = memcache.get('paths_ViewsDict_'+directory)
     if memResult is None:
-        if os.path.exists(dir) and os.path.isdir(dir):
-            for f in os.listdir(dir):
-                rf = os.path.join(dir, f)
+        if os.path.exists(directory) and os.path.isdir(directory):
+            for f in os.listdir(directory):
+                rf = os.path.join(directory, f)
                 if os.path.isfile(rf):
-                    result[f[:f.rindex('.')]] = os.path.abspath(rf)[base and len(base) or 0:]
+                    result[f[:f.rindex('.')]] = os.path.abspath(rf)#[base and len(base) or 0:]
         memcache.add(key='paths_ViewsDict', value=result)
         memResult = result
     return memResult
@@ -43,16 +43,16 @@ def GetFormsDict(dir):
     return result
 
 __blocksDict__={
-        "blLogin":          pjoin(settings.BLOCK_VIEWS_DIR[len(settings.VIEWS_RELATIVE_DIR):],'login_menu.inc.html'),
-        "blLanguages":      pjoin(settings.BLOCK_VIEWS_DIR[len(settings.VIEWS_RELATIVE_DIR):],'dict_Languages.inc.html'),
-        'blDictMenu':       pjoin(settings.BLOCK_VIEWS_DIR[len(settings.VIEWS_RELATIVE_DIR):],'menu.bl.inc.html'),
-        "mnTopMenu":        pjoin(settings.BLOCK_VIEWS_DIR[len(settings.VIEWS_RELATIVE_DIR):],'top_menu.inc.html'),
+        "blLogin":          pjoin(settings.BLOCK_VIEWS_DIR,'login_menu.inc.html'),
+        "blLanguages":      pjoin(settings.BLOCK_VIEWS_DIR,'dict_Languages.inc.html'),
+        'blDictMenu':       pjoin(settings.BLOCK_VIEWS_DIR,'menu.bl.inc.html'),
+        "mnTopMenu":        pjoin(settings.BLOCK_VIEWS_DIR,'top_menu.inc.html'),
         ### Menu Blocks
-        "blAdminMenu":      pjoin(settings.BLOCK_VIEWS_DIR[len(settings.VIEWS_RELATIVE_DIR):],"menu_links/admin.inc.html"),
-        "blLogedUserMenu":  pjoin(settings.BLOCK_VIEWS_DIR[len(settings.VIEWS_RELATIVE_DIR):],"menu_links/loged_user.inc.html"),
-        "blDefaultMenu":    pjoin(settings.BLOCK_VIEWS_DIR[len(settings.VIEWS_RELATIVE_DIR):],"menu_links/default.inc.html"),
-        'blMembersGadget':  pjoin(settings.BLOCK_VIEWS_DIR[len(settings.VIEWS_RELATIVE_DIR):],"google-ajax-api/members_gadget.html"),
-        'blTransactionVerification': pjoin(settings.VIEWS_DIR,"mail_templates/transaction_verification.html")[len(settings.VIEWS_RELATIVE_DIR):],
+        "blAdminMenu":      pjoin(settings.BLOCK_VIEWS_DIR,"menu_links/admin.inc.html"),
+        "blLogedUserMenu":  pjoin(settings.BLOCK_VIEWS_DIR,"menu_links/loged_user.inc.html"),
+        "blDefaultMenu":    pjoin(settings.BLOCK_VIEWS_DIR,"menu_links/default.inc.html"),
+        'blMembersGadget':  pjoin(settings.BLOCK_VIEWS_DIR,"google-ajax-api/members_gadget.html"),
+        'blTransactionVerification': pjoin(settings.VIEWS_DIR,"mail_templates/transaction_verification.html"),
         }
 
 __pluginsDict__={
