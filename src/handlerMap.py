@@ -6,6 +6,7 @@ from Controllers import ShellControllers
 from Controllers import ArmanListingControllers
 from Controllers import CMSControllers
 from Controllers import testModule
+from Controllers import BordjControllers
 #{%endblock%}
 webapphandlers = [
 #{%block ApplicationControllers %}
@@ -16,6 +17,9 @@ webapphandlers = [
 ('/dict/Language', DictControllers.LanguageController),
 ('/dict/Dictionary', DictControllers.DictionaryController),
 ('/dict/WordSugestion', DictControllers.WordSugestionController),
+#{%endblock%}
+#{% block BordjControllers %}
+('/Bordj', BordjControllers.DolgController),
 #{%endblock%}
 
 #{%block BaseControllers %}
