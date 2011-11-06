@@ -1,0 +1,16 @@
+{%extends base %}
+{%block content%}
+	<div class="post">
+       <div class="post">
+       <div class="postHeader"><h1>{{link.Content.Title}}</h1></div>
+       <div class="postContent">
+            {%autoescape off%}{{link.Content.HTMLContent}}{%endautoescape%}
+       </div>
+       <div class="postFooter">
+       		<div class="nav">
+       			Created by {{link.Content.Creator.Name}} {{link.Content.Creator.Surname}} on {{link.Content.DateAdded}}
+       		</div>
+       </div>
+       <fb:comments-count href=http://example.com/></fb:comments-count> awesome comments
+    </div>
+{%endblock %}

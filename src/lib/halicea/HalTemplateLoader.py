@@ -25,7 +25,7 @@ class HalLoader(BaseLoader):
         for root, dirs, files in os.walk(VIEWS_DIR):
             for f in files:
                 if f == template_name:
-                    warnings.warn('template '+template_name+' was found in '+root)
+                    #warnings.warn('template '+template_name+' was found in '+root)
                     return open(os.path.join(root, f), 'r').read(), f
         raise TemplateDoesNotExist('Template '+template_name+' was not found')
 

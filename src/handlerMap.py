@@ -5,19 +5,19 @@ from Controllers import DictControllers
 from Controllers import ShellControllers
 from Controllers import ArmanListingControllers
 from Controllers import CMSControllers
-from Controllers import testModule
 from Controllers import BordjControllers
 #{%endblock%}
 webapphandlers = [
 #{%block ApplicationControllers %}
 #{% block DictControllers %}
-('/', DictControllers.SearchController),
+('/dict', DictControllers.SearchController),
 ('/dict/Word', DictControllers.WordController),
 ('/dict/Importer', DictControllers.ImporterController),
 ('/dict/Language', DictControllers.LanguageController),
 ('/dict/Dictionary', DictControllers.DictionaryController),
 ('/dict/WordSugestion', DictControllers.WordSugestionController),
 #{%endblock%}
+
 #{% block BordjControllers %}
 ('/Bordj', BordjControllers.DolgController),
 #{%endblock%}
@@ -53,15 +53,13 @@ webapphandlers = [
 #{%endblock%}
 
 #{%block CMSControllers}
-('/cms/content', CMSControllers.CMSContentController),
+('/cms/content', CMSControllers.CMSContentController.new_factory(op='edit')),
 ('/cms/content/(.*)', CMSControllers.CMSContentController),
 ('/cms/links', CMSControllers.CMSLinksController),
-('/cms/page/(.*)/comment', CMSControllers.CommentController.new_factory(**{'op':'save'})),
-('/cms/page/(.*)/comments', CMSControllers.CommentController.new_factory(**{'op':'index'})),
-('/cms/page/(.*)', CMSControllers.CMSPageController),
-#{%endblock%}
-#{%block TestModuleControllers%)
-('/test/1', testModule.TestHandler),
+('/cms/page/(.*)/comment', CMSControllers.CommentController.new_factory(op='edit')),
+('/cms/page/(.*)/comments', CMSControllers.CommentController.new_factory(op='index')),
+('/cms/page/(.*)', CMSControllers.CMSPageController.new_factory(op='view')),
+('/', CMSControllers.CMSPageController.new_factory(op='index')),
 #{%endblock%}
 ('/(.*)', StaticControllers.NotExistsController),
 ]

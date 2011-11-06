@@ -11,7 +11,7 @@ class CMSContentForm(Form):
         super(CMSContentForm, self).__init__(*args, **kwargs)
     Title = fields.CharField(required=True)
     Content = fields.CharField(widget=widgets.Textarea(), required=True)
-    Tags = fields.CharField()
+    Tags = fields.CharField(required=False)
 class CommentForm(ModelForm):
     Content = fields.CharField(widget=widgets.HiddenInput)
     class Meta():

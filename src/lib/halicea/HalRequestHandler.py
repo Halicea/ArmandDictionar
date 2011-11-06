@@ -44,7 +44,7 @@ class HalRequestHandler( webapp.RequestHandler ):
         self.status = None
         self.isAjax=False
         
-        if kwargs and kwargs.haskey('op'):
+        if kwargs and kwargs.has_key('op'):
             self.op =kwargs['op']
         else:
             self.op = None 

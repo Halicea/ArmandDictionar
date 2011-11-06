@@ -47,8 +47,7 @@
             <h1>Add New:</h1>
         </div>
         <div class="postContent">
-            <form action="{%url CMSContentController%}" method="post">
-                <input type="hidden" name="op" value={%if op%}"{{op}}"{%else%}"insert"{%endif%}></input>
+            <form action="{%url CMSContentController%}?op=insert" method="post">
                 {{CMSContentForm.Title.label}}:{{CMSContentForm.Title.errors}}<br/>
                 {{CMSContentForm.Title}}<br/>
                 {{CMSContentForm.Content.label}}:<label style="color: red">{{CMSContentForm.Content.errors}}</label> <br/>

@@ -28,7 +28,7 @@ class MagicSet(object):
     def baseName(mvcItemInstance, splitParts = False):
         modPart = mvcItemInstance.__class__.__module__
         clsPart = mvcItemInstance.__class__.__name__
-
+        
         for t in [settings.CONTROLLER_MODULE_SUFIX,
                   settings.MODEL_MODULE_SUFIX,
                   settings.MODEL_FORM_MODULE_SUFIX]:

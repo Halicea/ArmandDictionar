@@ -19,7 +19,8 @@ $(document).ready(function() {
  -->
 {% endcomment %}
     <ul class="sf-menu">
-        <li><a href='{% url SearchController %}'>Dictsionar</a>
+    	<li><a href="/">Home</a></li>
+        <li><a href='{% url SearchController %}'>Dictionary</a>
         {% if current_user %}
             {% if current_user.IsAdmin %}
                 <ul>
@@ -30,6 +31,14 @@ $(document).ready(function() {
                 </ul>
             {% endif %}
         {% endif %}
+        {%if current_user%}
+        <li><a href='#'>CMS</a>
+        	<ul>
+        		<li><a href='/cms/links'>Links</a></li>
+        		<li><a href='/cms/content?op=edit'>New Content</a></li>
+        	</ul>
+        </li>
+        {%endif%}
         </li>
 	    <li><a href="{% url ArmanController%}">Register Arman</a></li>
         <li><a href="{% url AboutController %}">About</a></li>

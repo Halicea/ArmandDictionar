@@ -13,7 +13,11 @@ def cr(request, methos, *args, **kwargs):
     request.request.Url = '/'
     getattr(request, 'view')(request, *args, **kwargs)
 class CMSLinksController(hrh):
+    def __init__(self, *args, **kwargs):
+        super(CMSLinksController, self).__init__(*args, **kwargs)
+
     @Handler(method='save', operation='save')
+    @ExtraContext({'tags':cms.ContentTag.all().order('-Count').fetch(10, 0)})
     def SetOperations(self):pass
     @AdminOnly()
     @View(templateName='CMSLinks.html')
@@ -21,7 +25,7 @@ class CMSLinksController(hrh):
         limit = 100
         offset = 0 
         try:
-            offset = self.params.offset
+            offset = int(self.params.offset)
         except:
             pass
         
@@ -58,13 +62,13 @@ class CMSLinksController(hrh):
             self.redirect(self.get_url())
 
 class CMSContentController(hrh):
-    def __init__(self):
+    def __init__(self, *args, **kwargs):
         super(CMSContentController, self).__init__()
         self.ContentForm = CMSContentForm()
     @Handler(operation='view', method='view')
     def SetOperations(self):pass
 
-
+    
     def view(self, title, *args):
         cnt = cms.CMSContent.gql('WHERE Title = :t', t=title).fetch(1)
         if cnt:
@@ -95,12 +99,14 @@ class CMSContentController(hrh):
             except:
                 pass
             cms.CMSContent.CreateNew(title=data['Title'], content=data['Content'], tags=tags, creator=self.User, _isAutoInsert=True)
+            map(ContentTag.IncrementTag, tags)
+            #cms.
             self.status ="Content is saved"
         else:
             self.status ='Content is Invalid'
             self.extra_context['op']=self.params.key and 'update' or 'insert'
             self.ContentForm = form
-        return self.index()
+        self.redirect(self.get_url())
 
     def edit(self, *args):
         if self.params.key:
@@ -124,8 +130,11 @@ class CMSContentController(hrh):
             self.redirect(self.get_url())
 
 class CMSPageController(hrh):
+    def __init__(self,*args, **kwargs):
+        super(CMSPageController,self).__init__(*args, **kwargs)
     @ClearDefaults()
-    @Default('view')
+    @Default('index')
+    @Handler('view', 'view')
     def SetOperations(self):pass
     
     def view(self, pagepath):
@@ -135,11 +144,20 @@ class CMSPageController(hrh):
         else:
             self.status ="Not Valid Page"
             self.redirect(LoginController.get_url())
+    @View(templateName='CMSPage_index.html')
+    def index(self):
+        limit = int(self.params.limit or 20)
+        offset = int(self.params.offset or 0)
+        return {'links':cms.CMSLink.all().fetch(limit, offset)}
+
 #{%block imports%}
-from Models.CMSModels import Comment
+from Models.CMSModels import Comment, ContentTag
 from Forms.CMSForms import CommentForm
 #{%endblock%}
 class CommentController(hrh):
+    def __init__(self,*args, **kwargs):
+        super(CommentController).__init__(*args, **kwargs)
+
     @Default('save')
     def SetOperations(self): pass
     

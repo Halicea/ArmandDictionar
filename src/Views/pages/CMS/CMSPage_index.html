@@ -1,0 +1,29 @@
+{%extends base %}
+{%block content%}
+	{%for link in links%}
+	<div class="post">
+       <div class="postHeader"><h1>{{link.Content.Title}}</h1></div>
+       <div class="postContent">
+            {%autoescape off%}{{link.Content.HTMLContent}}{%endautoescape%}
+       </div>
+       <div class="postFooter">
+       		<div class="nav">
+       			Created by {{link.Content.Creator.Name}} {{link.Content.Creator.Surname}} on {{link.Content.DateCreated}}
+       		</div>
+       </div>
+       <div class="comments">
+       		<iframe src="http://www.facebook.com/plugins/like.php?href={{uri}}{{link.Url}}"
+	        scrolling="no" frameborder="0"
+	        style="border:none; width:450px; height:80px"></iframe>	
+       </div>
+       
+       
+    </div>
+    	<div class="fbComments">
+       		<iframe 
+       			src="http://www.facebook.com/plugins/comments.php?href={{uri}}{{link.Url}}"
+       			> </iframe>
+       </div>
+       
+    {%endfor%}
+{%endblock%}

@@ -40,7 +40,12 @@ class CMSLink(db.Model):
     LastDateModified =db.DateTimeProperty(auto_now=True)
     def GetChildren(self):
         return CMSLink.gql("WHERE Depth =:depth AND ParentLink =:pl", depth=self.Depth+1, pl=self).fetch(limit=1000)
-    
+    def Url(self):
+        result=self.AddressName
+        cur_ln = self.ParentLink
+        while cur_ln and len(cur_ln)>0:
+            result = cur_ln[0].AddressName+'/'+result
+        return result
     def GetTreeBelow(self):
         children = self.GetChildren()
         result = {}
@@ -93,6 +98,7 @@ class Menu(db.Model):
     Name = db.StringProperty(required = True)
     Location = db.TextProperty(required = True)
     CssClass = db.StringProperty()
+    
 class Comment(db.Model):
     """TODO: Describe Comment"""
     Text= db.TextProperty(required=True, )
@@ -112,3 +118,22 @@ class Comment(db.Model):
         #TODO: Change the method to represent something meaningful
         return 'Change __str__ method' 
 ## End Comment
+class ContentTag(db.Model):
+    TagName = db.StringProperty(required=True)
+    Count = db.IntegerProperty(default=0)
+    
+    @staticmethod
+    def IncrementTag(tagName):
+        tag = ContentTag.get_or_insert(tagName)
+        tag.Count+=1
+        tag.put()
+    @staticmethod
+    def DecrementTag(tagName):
+        tag = ContentTag.get(tagName)
+        if tag:
+            if tag.Count==1:
+                tag.delete()
+            else:
+                tag.Count-=1
+                tag.put()
+            
