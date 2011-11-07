@@ -13,7 +13,7 @@ COOKIE_KEY = '''2zÆœ;¾±þ”¡j:ÁõkçŸÐ÷8{»Ën¿A—jÎžQAQqõ"bøó�
 def webapp_add_wsgi_middleware(app):
     from google.appengine.ext.appstats import recording
     app = SessionMiddleware(app, cookie_key=COOKIE_KEY)
-    app = recording.appstats_wsgi_middleware(app)
+    #app = recording.appstats_wsgi_middleware(app)
     return app
 def runapp(application):
     run_wsgi_app(webapp_add_wsgi_middleware(application))

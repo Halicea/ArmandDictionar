@@ -5,8 +5,10 @@ from Controllers.BaseControllers import LoginController
 from lib.halicea.HalRequestHandler import HalRequestHandler as hrh
 from Forms.CMSForms import CMSContentForm
 from google.appengine.api import memcache
+from google.appengine.ext import db
 from lib import messages
 from django.utils import simplejson
+
 handlerType = "cms"
 from urlparse import urlparse
 def cr(request, methos, *args, **kwargs):
@@ -15,9 +17,8 @@ def cr(request, methos, *args, **kwargs):
 class CMSLinksController(hrh):
     def __init__(self, *args, **kwargs):
         super(CMSLinksController, self).__init__(*args, **kwargs)
-
+        self.extra_context={'tags':cms.ContentTag.all().order('-Count').fetch(10, 0)}
     @Handler(method='save', operation='save')
-    @ExtraContext({'tags':cms.ContentTag.all().order('-Count').fetch(10, 0)})
     def SetOperations(self):pass
     @AdminOnly()
     @View(templateName='CMSLinks.html')
@@ -42,7 +43,7 @@ class CMSLinksController(hrh):
         else:
             parent = None
         order= int(self.g('order'))
-        content=self.g('content')
+        content=self.params.content
         if content:
             content = cms.CMSContent.get(content)
         creator= self.User
@@ -95,18 +96,18 @@ class CMSContentController(hrh):
             data =form.clean()
             tags = []
             try:
-                tags = data['Tags'].split(',')
+                tags = [x.strip() for x in data['Tags'].split(',')]
             except:
                 pass
             cms.CMSContent.CreateNew(title=data['Title'], content=data['Content'], tags=tags, creator=self.User, _isAutoInsert=True)
-            map(ContentTag.IncrementTag, tags)
+            #map(ContentTag.IncrementTag, tags)
             #cms.
             self.status ="Content is saved"
         else:
             self.status ='Content is Invalid'
             self.extra_context['op']=self.params.key and 'update' or 'insert'
             self.ContentForm = form
-        self.redirect(self.get_url())
+        self.redirect('/')
 
     def edit(self, *args):
         if self.params.key:
@@ -145,10 +146,23 @@ class CMSPageController(hrh):
             self.status ="Not Valid Page"
             self.redirect(LoginController.get_url())
     @View(templateName='CMSPage_index.html')
-    def index(self):
+    def index(self, tag=None):
         limit = int(self.params.limit or 20)
         offset = int(self.params.offset or 0)
-        return {'links':cms.CMSLink.all().fetch(limit, offset)}
+        if not tag:
+            return {'links':cms.CMSLink.all().fetch(limit, offset)}
+        else:
+            #content_keys= db.Query('CMSContent', keys_only=True).filter('Tags =:tag', tag=tag)
+            contents=db.GqlQuery('SELECT * FROM CMSContent WHERE Tag =:tag', tag=tag)
+            arr = [x.Links for x in contents]
+            links = []
+            for x in arr:links+=x
+            links = db.get(links)
+            #apply(lambda x:links=links+x, contents)
+            #links = [x.content_cms_links.get() for x in contents]
+            #links = db.GqlQuery('SELECT * FROM CMSLink WHERE Content IN :1', content_keys)
+            #links = db.GqlQuery("Select * from Link Where Content.Tags =:tag", tag=tag)
+            return {'links':links}
 
 #{%block imports%}
 from Models.CMSModels import Comment, ContentTag

@@ -59,6 +59,7 @@ webapphandlers = [
 ('/cms/page/(.*)/comment', CMSControllers.CommentController.new_factory(op='edit')),
 ('/cms/page/(.*)/comments', CMSControllers.CommentController.new_factory(op='index')),
 ('/cms/page/(.*)', CMSControllers.CMSPageController.new_factory(op='view')),
+('/cms/tag/(.*)', CMSControllers.CMSPageController.new_factory(op='index')),
 ('/', CMSControllers.CMSPageController.new_factory(op='index')),
 #{%endblock%}
 ('/(.*)', StaticControllers.NotExistsController),

@@ -1,5 +1,6 @@
 <div>
+	<h3>Tags</h3>
 	{%for tag in tags%}
-	<p><a href="#">{{tag.TagName}}({{tag.Count})</a></p>
+	<p><a href="/cms/tag/{{tag.TagName}}">{{tag.TagName}}({{tag.Count}})</a></p>
 	{%endfor%}
 </div>

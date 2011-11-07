@@ -3,13 +3,16 @@ from BaseModels import Person
 import datetime as dt
 from lib.halicea.decorators import property
 
+
 class CMSContent(db.Model):
     Title = db.StringProperty(required=True)
     HTMLContent = db.TextProperty(required=True)
-    Tags = db.StringListProperty()
+    Tags = db.StringListProperty(default=[])
     Creator = db.ReferenceProperty(Person, collection_name='creator_cms_pages')
     DateCreated = db.DateTimeProperty(auto_now_add=True)
     LastDateModified = db.DateTimeProperty(auto_now=True)
+    Links = db.ListProperty(db.Key, default=[])
+    HasLinks = db.BooleanProperty(default=False)
     @classmethod
     def CreateNew(cls, title, content, tags, creator, _isAutoInsert=False):
         result = cls(
@@ -20,6 +23,14 @@ class CMSContent(db.Model):
                    )
         if _isAutoInsert:
             result.put()
+        return result
+    def delete(self, **kwargs):
+        map(ContentTag.DecrementTag, self.Tags)
+        db.Model.delete(self, **kwargs)
+    def put(self, **kwargs):
+        if not self.is_saved():
+            map(ContentTag.IncrementTag, self.Tags)
+        result=  db.Model.put(self, **kwargs)
         return result
 
 class ContentType:
@@ -52,7 +63,16 @@ class CMSLink(db.Model):
         for child in children:
             result[child] = child.GetTreeBelow()
         return result
-    
+    def delete(self):
+        self.Content.Links.remove(self.key())
+        self.Content.HasLinks = len(self.Content.Links)>0
+        self.Content.put()
+        super(CMSLink,self).remove()
+    def put(self):
+        super(CMSLink, self).put()
+        self.Content.Links.append(self.key())
+        self.Content.HasLinks=True
+        self.Content.put()
     @classmethod
     def GetLinkByPath(cls, path):
         items = [p for p in path.split('/') if p]
@@ -105,7 +125,6 @@ class Comment(db.Model):
     Creator= db.ReferenceProperty(Person, collection_name='creator_comments', )
     DateAdded= db.DateTimeProperty(auto_now_add=True, )
     Content= db.ReferenceProperty(CMSContent, collection_name='content_comments', required=True, )
-    
     @classmethod
     def CreateNew(cls ,text,creator,content , _isAutoInsert=False):
         result = cls(
@@ -121,10 +140,9 @@ class Comment(db.Model):
 class ContentTag(db.Model):
     TagName = db.StringProperty(required=True)
     Count = db.IntegerProperty(default=0)
-    
     @staticmethod
     def IncrementTag(tagName):
-        tag = ContentTag.get_or_insert(tagName)
+        tag = ContentTag.get_or_insert(tagName, TagName=tagName)
         tag.Count+=1
         tag.put()
     @staticmethod

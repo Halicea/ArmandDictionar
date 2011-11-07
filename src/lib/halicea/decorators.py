@@ -218,9 +218,9 @@ class ExtraContext(object):
     def __init__(self, context_dicts):
         """context_docts is an array of dictionaries or a single dictionary"""
         if isinstance(context_dicts, dict):
-            self.context_dicts = context_dicts
+            self.context_dicts = [context_dicts,]
         elif isinstance(context_dicts, list):
-            self.context_dicts = [context_dicts, ]
+            self.context_dicts = context_dicts
         else:
             raise Exception("Wrong Extra context input variable, Mut be either dict of list of dicts")
 
