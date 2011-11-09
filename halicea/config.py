@@ -20,7 +20,7 @@ sys.path.append(pjoin(APPENGINE_PATH, 'lib', 'yaml','lib' ))
 ###
 os.environ['DJANGO_SETTINGS_MODULE']  = 'settings'
 from halicea import renderers
-import settings as proj_settings
+import conf.settings as proj_settings
 
 #default model Inherit
 modelInheritsFrom = 'db.Model'

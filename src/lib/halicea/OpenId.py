@@ -1,5 +1,5 @@
 from google.appengine.api import users
-from settings import DEBUG, OPENID_PROVIDERS
+from conf.settings import DEBUG, OPENID_PROVIDERS
 class OpenIdProviderItem(object):
     def __init__(self, url, name, imageUrl):
         self.Url = url

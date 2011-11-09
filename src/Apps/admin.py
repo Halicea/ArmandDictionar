@@ -1,4 +1,4 @@
-import settings
+import conf.settings as settings
 from imports import *
 from google.appengine.ext import webapp
 application = webapp.WSGIApplication(webapphandlers, debug=settings.DEBUG)

@@ -8,17 +8,19 @@ from google.appengine.api import memcache
 from google.appengine.ext import db
 from lib import messages
 from django.utils import simplejson
+from Models.CMSModels import Comment, ContentTag
+from Forms.CMSForms import CommentForm
 
-handlerType = "cms"
-from urlparse import urlparse
-def cr(request, methos, *args, **kwargs):
-    request.request.Url = '/'
-    getattr(request, 'view')(request, *args, **kwargs)
-class CMSLinksController(hrh):
+class CMSBaseController(hrh):
+    def __init__(self, *args, **kwargs):
+        super(CMSBaseController, self).__init__(*args, **kwargs)
+        self.extra_context={'tags':cms.ContentTag.all().order('-Count').fetch(10, 0)}
+        
+class CMSLinksController(CMSBaseController):
     def __init__(self, *args, **kwargs):
         super(CMSLinksController, self).__init__(*args, **kwargs)
-        self.extra_context={'tags':cms.ContentTag.all().order('-Count').fetch(10, 0)}
     @Handler(method='save', operation='save')
+    @Handler('LinksTree')
     def SetOperations(self):pass
     @AdminOnly()
     @View(templateName='CMSLinks.html')
@@ -29,7 +31,6 @@ class CMSLinksController(hrh):
             offset = int(self.params.offset)
         except:
             pass
-        
         cmsLinks = cms.CMSLink.GetLinkTree()
         contents = cms.CMSContent.all().order('-DateCreated').fetch(limit=limit, offset=offset)
         return {'cmsLinks':cmsLinks, 'contents':contents}
@@ -47,8 +48,13 @@ class CMSLinksController(hrh):
         if content:
             content = cms.CMSContent.get(content)
         creator= self.User
-        cms.CMSLink.CreateNew2(addressName, name, parent, order, content, creator, _isAutoInsert=True)
-        return self.index()
+        if True: #TODO: validation
+            cms.CMSLink.CreateNew2(addressName, name, parent, order, content, creator, _isAutoInsert=True)
+        
+        if self.isAjax: 
+            return "Links Created"
+        else:
+            return self.index()
     @AdminOnly()
     def delete(self, *args):
         lnk=cms.CMSLink.get(self.params.key)
@@ -61,8 +67,9 @@ class CMSLinksController(hrh):
         else:
             self.status="Link is invalid";
             self.redirect(self.get_url())
-
-class CMSContentController(hrh):
+    def LinksTree(self):
+        return {'cmsLinks':cms.CMSLink.GetLinkTree()}
+class CMSContentController(CMSBaseController):
     def __init__(self, *args, **kwargs):
         super(CMSContentController, self).__init__()
         self.ContentForm = CMSContentForm()
@@ -107,7 +114,7 @@ class CMSContentController(hrh):
             self.status ='Content is Invalid'
             self.extra_context['op']=self.params.key and 'update' or 'insert'
             self.ContentForm = form
-        self.redirect('/')
+        self.redirect('/cms/links')
 
     def edit(self, *args):
         if self.params.key:
@@ -130,7 +137,7 @@ class CMSContentController(hrh):
         else:
             self.redirect(self.get_url())
 
-class CMSPageController(hrh):
+class CMSPageController(CMSBaseController):
     def __init__(self,*args, **kwargs):
         super(CMSPageController,self).__init__(*args, **kwargs)
     @ClearDefaults()
@@ -156,19 +163,12 @@ class CMSPageController(hrh):
             contents=db.GqlQuery('SELECT * FROM CMSContent WHERE Tag =:tag', tag=tag)
             arr = [x.Links for x in contents]
             links = []
-            for x in arr:links+=x
-            links = db.get(links)
-            #apply(lambda x:links=links+x, contents)
-            #links = [x.content_cms_links.get() for x in contents]
-            #links = db.GqlQuery('SELECT * FROM CMSLink WHERE Content IN :1', content_keys)
-            #links = db.GqlQuery("Select * from Link Where Content.Tags =:tag", tag=tag)
+            for x in arr:
+                links+=x
+            links = db.get(list(set(links)))
             return {'links':links}
 
-#{%block imports%}
-from Models.CMSModels import Comment, ContentTag
-from Forms.CMSForms import CommentForm
-#{%endblock%}
-class CommentController(hrh):
+class CommentController(CMSBaseController):
     def __init__(self,*args, **kwargs):
         super(CommentController).__init__(*args, **kwargs)
 

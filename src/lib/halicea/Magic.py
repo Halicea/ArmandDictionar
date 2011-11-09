@@ -1,4 +1,4 @@
-import settings
+import conf.settings as settings
 import os
 class MagicSet(object):
     @staticmethod

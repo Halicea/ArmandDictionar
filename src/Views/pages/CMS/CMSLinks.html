@@ -1,50 +1,73 @@
 {%extends base %}
+{%block styles%}
+{{block.super}}
+<link href="/styles/Style.css" rel="stylesheet" type="text/css" />
+{%endblock%}
+{%block scripts%}
+{{block.super}}
+<link rel="stylesheet" href="/jscripts/jquery.treeview/jquery.treeview.css" />
+<script src="/jscripts/jquery.cookie.js" type="text/javascript"></script>
+<script src="/jscripts/jquery.treeview/jquery.treeview.js" type="text/javascript"></script>
+<script type="text/javascript">
+		$(function() {
+			$("#tree").treeview({
+				collapsed: true,
+				animated: "medium",
+				control:"#sidetreecontrol",
+				persist: "location"
+			});
+			$('#frmNewLink').ajaxForm(function(data){
+				$('#divTree').slideUp('slow');
+				$.post("/cms/links?op=LinksTree", function(treedata){
+					$('#divStatus').html(data);
+					$('#divStatus').slideUp('fast');
+					$('#divTree').html(treedata);
+					$('#divTree').slideDown('fast');
+					$('#divStatus').fadeOut(5000);
+				});
+			});
+		})
+	</script>
+
+{%endblock%}
 {% block content %}
-	Add New:
-	<form action="" method="post">
+<div class="post">
+	<h2>New Link:</h2>
+	<form action="" method="post" id="frmNewLink">
 		<input type="hidden" name="op" value="save"></input>
-addressName, name, parent, order, content	<br></br>	
-		Address Name:<input type="text" name="addressName"></input><br></br>
-    	Name :<input type="text" name="name"></input><br></br>
-    	Parrent Link:
-    	<ul><li><input type="radio" name="parentLink" value="">Root
-	    	<ul>
-				{%for item in cmsLinks.items%}
-					<li><input type="radio" name="parentLink" value="{{item.0.key}}">  <a href="/cms/page/{{item.0.AddressName}}">{{item.0.Name}}</a>
-					<ul>
-					{% for item1 in item.1.items %}
-						<li>
-						<input type="radio" name="parentLink" value="{{item1.0.key}}">  <a href="/cms/page/{{item.0.AddressName}}/{{item1.0.AddressName}}">{{item1.0.Name}}</a>
-						<ul>
-						{% for item2 in item1.1.items %}
-							<li>
-							<input type="radio" name="parentLink" value="{{item2.0.key}}">  <a href="/cms/pages/{{item.0.AddressName}}/{{item1.0.AddressName}}/{{item2.0.AddressName}}">{{item2.0.Name}}</a>
-							<ul>
-							{% for item3 in item2.1.items %}
-								<li>
-								<input type="radio" name="parentLink" value="{{item3.0.key}}">  <a href="/cms/pages/{{item.0.AddressName}}/{{item1.0.AddressName}}/{{item2.0.AddressName}}/{{item3.0.AddressName}}">{{item3.0.Name}}</a>
-								</li>
+		<div style="width:100%;min-height:150px; display: block;">
+		<div style="float:left; text-align: right;">
+			<table>
+				<tr>
+					<td>Content:</td>
+					<td>
+						<select name="content">
+							{% for cont in  contents %}
+							<option value="{{cont.key}}">{{cont.Title}}</option>
 							{% endfor %}
-							</ul>
-							</li>
-						{% endfor %}
-						</ul>
-						</li>
-					{%endfor%}
-					</ul>
-					</li>
-				{%endfor%}
-			</ul>
-		</li>
-		</ul><br></br>
-    	Order: <select name="order"><option>1</option><option>2</option><option>3</option><option>4</option></select><br></br>
-    	
-    	Content: <select name="content">
-    				{% for cont in  contents %}
-    				<option value="{{cont.key}}">{{cont.Title}}</option>
-    				{% endfor %}
-    			</select>
-    			<br></br>
+						</select>
+					</td>
+				</tr>
+				<tr>
+					<td>Url Name:</td>
+					<td><input type="text" name="addressName"></input></td>
+				</tr>
+				<tr>
+					<td>Name</td>
+					<td><input type="text" name="name"></input></td>
+				</tr>
+				<tr>
+					<td>Display Order</td>
+					<td><select name="order"><option>1</option><option>2</option><option>3</option><option>4</option></select></td>
+				</tr>
+			</table>
+		</div>
+		<div id="divTree" style="float: left">
+	    	{%include LinksTree %}
+		</div>
+		<div style="clear: both;"></div>
+		</div>
     	<input type="submit" value="Save"></input>
 	</form>
+</div>
 {% endblock %}

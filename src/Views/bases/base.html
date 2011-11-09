@@ -58,8 +58,11 @@ $(function(){
 {% endblock %}
 {% block status %}
 	{% if status %}
-<div class="ui-state-error" style="text-align: center">
+<div id="divStatus" class="ui-state-error" style="text-align: center">
 	{{status}}
+</div>
+	{%else%}
+<div id="divStatus" class="ui-state-error" style="text-align: center; display: none;">
 </div>
     {% endif %}
 {% endblock %}

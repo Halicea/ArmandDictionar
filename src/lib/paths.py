@@ -6,7 +6,7 @@ Created on 04.1.2010
 import os
 import os.path as p
 from os.path import join as pjoin
-import settings
+import conf.settings as settings
 from google.appengine.api import memcache
 os.path.sep = '/'
 os.pathsep = '/'

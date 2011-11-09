@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-import settings
 from google.appengine.ext.db.djangoforms import ModelForm
 from google.appengine.ext import db
 from google.appengine.ext.db import polymodel

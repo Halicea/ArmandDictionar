@@ -1,6 +1,6 @@
 import os
 from os.path import join as pjoin
-import settings
+import conf.settings
 
 def LocateControllerModule(packageName):
     return pjoin(settings.CONTROLLERS_DIR, BasePathFromName(packageName)+settings.CONTROLLER_MODULE_SUFIX+'.py')

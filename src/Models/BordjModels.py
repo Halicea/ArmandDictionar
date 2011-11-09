@@ -1,4 +1,4 @@
-import settings
+
 from google.appengine.ext import db
 #{% block imports%}
 from BaseModels import Person

@@ -1,7 +1,7 @@
 __author__ = 'Costa Halicea'
 from django.template.loader import BaseLoader
 from django.template import TemplateDoesNotExist
-from settings import VIEWS_DIR
+from conf.settings import VIEWS_DIR
 import os
 class HalLoaderException(Exception):
     def __init__(self, message='Cannot find the template'):

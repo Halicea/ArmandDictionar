@@ -4,7 +4,7 @@ Created on 04.1.2010
 @author: KMihajlov
 '''
 #from lib import messages
-from settings import DEBUG
+from conf.settings import DEBUG
 from lib import messages
 from lib.halicea import ContentTypes as ct
 import traceback,logging
@@ -98,7 +98,10 @@ class Default(object):
 class Handler(object):
     def __init__(self, operation=None, method=None):
         self.operation = operation or 'default'
-        self.method = method
+        if method:
+            self.method = method
+        else:
+            self.method = operation
     def __call__(self, f):
         def new_f(request, *args, **kwargs):
             if self.operation:

@@ -1,4 +1,3 @@
-import settings
 from google.appengine.ext import db
 from Models.BaseModels import Person
 from lib.ArmanDict.MunicipalityList import MunicipalityList

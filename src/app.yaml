@@ -19,12 +19,17 @@ handlers:
 - url: /jscripts
   static_dir: StaticData/jscripts
   
-- url: /stats.*
-  script: $PYTHON_LIB/google/appengine/ext/appstats/ui.py
-  login: admin
-  
+- url: /favicon\.ico
+  static_files: StaticData/images/favicon.ico
+  upload: StaticData/images/favicon\.ico
+#Remote API
 - url: /remote_api
   script: $PYTHON_LIB/google/appengine/ext/remote_api/handler.py
+  login: admin  
+
+#App Stats  
+- url: /stats.*
+  script: Apps/appstats.py
   login: admin
 
 #Arman Listing 

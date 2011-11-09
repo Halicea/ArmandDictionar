@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-import settings
 from google.appengine.ext.db.djangoforms import ModelForm, ModelChoiceField
 from google.appengine.ext import db
 from datetime import date

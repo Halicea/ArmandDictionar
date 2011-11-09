@@ -6,7 +6,7 @@ from Models.BaseModels import Person
 from lib.gaesessions import get_current_session
 import lib.paths as paths
 import logging
-import settings
+import conf.settings as settings
 from lib.halicea.Magic import MagicSet
 from lib.halicea import  mobile_agents
 from os import path
@@ -54,7 +54,6 @@ class HalRequestHandler( webapp.RequestHandler ):
         self.extra_context ={}
     # Constructors
     def initialize( self, request, response ):
-        warnings.warn('Entered in Hal')
         """Initializes this request handler with the given Request and Response."""
         self.isAjax = ((request.headers.environ.get('HTTP_X_REQUESTED_WITH')=='XMLHttpRequest') or (request.headers.get('X-Requested-With')=='XMLHttpRequest'))
 #        logging.debug("Content Type is %s", str(request.headers.get('Content-Type')))
@@ -62,10 +61,12 @@ class HalRequestHandler( webapp.RequestHandler ):
         self.response = response
         if self.request.headers.environ.get('CONTENT_TYPE') == 'application/json':
             data = simplejson.loads(self.request.body)
-            self.params = HalRequestHandler.RequestParameters(data)
+            #TODO handle the parameters
+            self.params = HalRequestHandler.RequestParameters(request)
         elif self.request.headers.environ.get('CONTENT_TYPE') == 'application/xml':
             data = serializers.deserialize('xml', self.request.body)
-            self.params = HalRequestHandler.RequestParameters(data)
+            #TODO handle the parameters
+            self.params = HalRequestHandler.RequestParameters(request)
         else:
             self.params = HalRequestHandler.RequestParameters(self.request)
         #self.request = super(MyRequestHandler, self).request

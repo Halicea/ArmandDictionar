@@ -5,14 +5,14 @@ from os.path import join
 DEBUG = False
 TEMPLATE_DEBUG = True
 DEFAULT_CHARSET ='UTF-8'
-APPENGINE_PATH = '/home/costa/DevApps/google_appengine'
 from lib.halicea import dummyControllerMethods as dcm
+APPENGINE_PATH = '/home/costa/DevApps/google_appengine'
 if os.name == 'nt':
     APPENGINE_PATH = '/home/costa/DevApps/google_appengine'
     #APPENGINE_PATH = 'C:\\devApps\\google_appengine'
 
 #we define the path relatively to our settings file
-PROJ_LOC = os.path.dirname(__file__)
+PROJ_LOC = os.path.dirname(os.path.dirname(__file__))
 
 #MVC Directories
 MODELS_DIR = join(PROJ_LOC,'Models')
@@ -50,6 +50,8 @@ MODEL_EXTENSTION = '.py'
 MODEL_FORM_EXTENSTION = '.py'
 VIEW_EXTENSTION = '.html'
 
+template_debug=True
+show_errors = True
 MagicLevel = 3
 
 DEFAULT_OPERATIONS = {
@@ -61,10 +63,18 @@ DEFAULT_OPERATIONS = {
                       'update':{'method':dcm.save, 'view':False},
                       'delete':{'method':dcm.delete, 'view':False},
                      }
+
 OPENID_PROVIDERS = {'Google': 'Google.com/accounts/o8/id', 'Yahoo': 'Yahoo.com', 'MyOpenID': 'MyOpenID.com'}
 #DJANGO APP SETTINGS SECTION
 TEMPLATE_DIRS = (VIEWS_DIR)
 ROOT_URLCONF ='handlerMap'
 TEMPLATE_LOADERS = ('lib.halicea.HalTemplateLoader.HalLoader','django.template.loaders.filesystem.Loader', 'django.template.loaders.app_directories.Loader')
 #PASTE YOUR CONFIGURATION HERE
+USE_I18N = True
+#LANGUAGES = (
+#    # 'en', 'zh_TW' match the directories in conf/locale/*
+#    ('en', _('English')),
+#    ('mk_MK', _('Macedonian')),
+#    ('ro_RO', _('Romanian')),
+#    )
 COOKIE_KEY = '''2zÆœ;¾±þ”¡j:ÁõkçŸÐ÷8{»Ën¿A—jÎžQAQqõ"bøó÷*%†™ù¹b¦$vš¡¾4ÇŸ^ñ5¦'''

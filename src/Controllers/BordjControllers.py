@@ -1,7 +1,6 @@
 from lib.paths import getViewsDict
 from Models.BaseModels import Person
 from google.appengine.api import mail
-import settings
 from lib.halicea.HalRequestHandler import HalRequestHandler as hrh
 from lib.halicea.decorators import *
 import os

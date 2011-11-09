@@ -45,7 +45,7 @@ http://www.djangoproject.com/documentation/templates/
 import logging
 import md5
 import os
-import settings
+import conf.settings
 from google.appengine.api import lib_config
 from google.appengine.ext import webapp
 

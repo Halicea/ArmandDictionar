@@ -50,6 +50,7 @@ class ArmanController(ArmansBaseController):
             self.redirect(self.get_url()+'?op=index')
         else:
             self.status = "Not Allowed"
+
     @LogInRequired()
     @View(**{'templateName':"Arman.html"})
     def edit(self, *args):

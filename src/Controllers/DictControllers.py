@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 #{% block imports %}
-import settings
 import random
 from lib.halicea.HalRequestHandler import HalRequestHandler as hrh
 from lib.halicea.decorators import *

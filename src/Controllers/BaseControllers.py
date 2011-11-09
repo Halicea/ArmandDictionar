@@ -3,7 +3,6 @@ from django.utils import simplejson
 import urllib, os
 from Forms.BaseForms import InvitationForm
 from lib.halicea import ContentTypes as ct
-import settings
 #{%block imports%}
 from lib.halicea.HalRequestHandler import HalRequestHandler as hrh
 from lib.halicea.decorators import *
@@ -150,27 +149,18 @@ class AddUserController( hrh ):
 
 
 class RoleController(hrh):
-    def SetOperations(self):
-        self.operations = settings.DEFAULT_OPERATIONS
-        ##make new handlers and attach them
-        #self.operations.update({'xml':{'method':'xmlCV'}})
-        self.operations['default'] = {'method':'list'}
-    
-    def show(self):
+    def edit(self):
         self.SetTemplate(templateName='Role_shw.html')
         if self.params.key:
             item = Role.get(self.params.key)
             if item:
-                result = {'op':'upd', 'RoleForm': RoleForm(instance=item)}
-                self.respond(result)
+                return {'op':'upd', 'RoleForm': RoleForm(instance=item)}
             else:
                 self.status = 'Role does not exists'
                 self.redirect(RoleController.get_url())
         else:
             self.status = 'Key not provided'
-            self.respond({'op':'ins' ,'RoleForm':RoleForm()})
-
-
+            return {'op':'ins' ,'RoleForm':RoleForm()}
     def delete(self):
         if self.params.key:
             item = Role.get(self.params.key)
@@ -182,9 +172,7 @@ class RoleController(hrh):
         else:
             self.status = 'Key was not Provided!'
         self.redirect(RoleController.get_url())
-
-
-    def list(self):
+    def index(self):
         self.SetTemplate(templateName='Role_lst.html')
         results =None
         index = 0; count=1000
@@ -196,8 +184,7 @@ class RoleController(hrh):
         result = {'RoleList': Role.all().fetch(limit=count, offset=index)}
         result.update(locals())
         self.respond(result)
-
-    def insert(self):
+    def save(self):
         instance = None
         if self.params.key:
             instance = Role.get(self.params.key)
@@ -214,13 +201,7 @@ class RoleController(hrh):
             self.respond(result)
 
 class RoleAssociationController(hrh):
-    def SetOperations(self):
-        self.operations = settings.DEFAULT_OPERATIONS.copy()
-        ##make new handlers and attach them
-        #self.operations.update({'xml':{'method':'xmlCV'}})
-        self.operations['default'] = {'method':'list'}
-
-    def show(self, *args):   
+    def edit(self, *args):   
         self.SetTemplate(templateName='RoleAssociation_shw.html')
         if self.params.key:
             item = RoleAssociation.get(self.params.key)
@@ -233,7 +214,6 @@ class RoleAssociationController(hrh):
         else:
             self.status = 'Key not provided'
             self.respond({'op':'ins' ,'RoleAssociationForm':RoleAssociationForm()})
-
     def delete(self, *args):
         if self.params.key:
             item = RoleAssociation.get(self.params.key)
@@ -245,8 +225,7 @@ class RoleAssociationController(hrh):
         else:
             self.status = 'Key was not Provided!'
         self.redirect(RoleAssociationController.get_url())
-
-    def list(self, *args):
+    def index(self, *args):
         self.SetTemplate(templateName='RoleAssociation_lst.html')
         results =None
         index = 0; count=1000
@@ -258,8 +237,7 @@ class RoleAssociationController(hrh):
         result = {'RoleAssociationList': RoleAssociation.all().fetch(limit=count, offset=index)}
         result.update(locals())
         self.respond(result)
-
-    def insert(self, *args):
+    def save(self, *args):
         instance = None
         if self.params.key:
             instance = RoleAssociation.get(self.params.key)
@@ -276,13 +254,7 @@ class RoleAssociationController(hrh):
             self.respond(result)
 
 class WishListController(hrh):
-    def SetOperations(self):
-        self.operations = settings.DEFAULT_OPERATIONS
-        ##make new handlers and attach them
-        #self.operations.update({'xml':{'method':'xmlCV'}})
-        self.operations['default'] = {'method':'list'}
-    
-    def list(self):
+    def index(self):
         self.SetTemplate(templateName='WishList_lst.html')
         results =None
         index = 0; count=1000
@@ -294,9 +266,7 @@ class WishListController(hrh):
         result = {'WishListList': WishList.all().fetch(limit=count, offset=index)}
         result.update(locals())
         self.respond(result)
-
-
-    def show(self):
+    def edit(self):
         self.SetTemplate(templateName='WishList_shw.html')
         if self.params.key:
             item = WishList.get(self.params.key)
@@ -310,9 +280,7 @@ class WishListController(hrh):
             if self.method == 'POST':
                 self.status = 'Key not provided'
             self.respond({'op':'ins' ,'WishListForm':WishListForm()})
-
-
-    def insert(self):
+    def save(self):
         form = None
         if self.params.key:
             instance = WishList.get(self.params.key)
@@ -330,7 +298,6 @@ class WishListController(hrh):
             self.status = 'Form is not Valid'
             result = {'op':'upd', 'WishListForm': form}
             self.respond(result)
-
     def delete(self):
         if self.params.key:
             item = WishList.get(self.params.key)
