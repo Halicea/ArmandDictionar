@@ -7,7 +7,7 @@ from lib.halicea.decorators import property
 class CMSContent(db.Model):
     Title = db.StringProperty(required=True)
     HTMLContent = db.TextProperty(required=True)
-    Tags = db.StringListProperty(default=[])
+    Tags = db.ListProperty(str, default=[])
     Creator = db.ReferenceProperty(Person, collection_name='creator_cms_pages')
     DateCreated = db.DateTimeProperty(auto_now_add=True)
     LastDateModified = db.DateTimeProperty(auto_now=True)

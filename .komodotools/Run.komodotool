@@ -6,7 +6,7 @@
   "name": "Run", 
   "operateOnSelection": 0, 
   "value": [
-    "D:\\Kosta\\DevApps\\google_appengine\\dev_appserver.py %p\\src --datastore_path=%p\\db.rdbms --port=1234"
+    "python2.5 /home/costa/DevApps/google_appengine/dev_appserver.py %p/src --datastore_path=%p\\db.rdbms --port=1234"
   ], 
   "cwd": "%p", 
   "version": "1.0.7", 

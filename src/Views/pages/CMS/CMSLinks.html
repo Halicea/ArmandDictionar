@@ -11,18 +11,18 @@
 <script type="text/javascript">
 		$(function() {
 			$("#tree").treeview({
-				collapsed: true,
+				collapsed: false,
 				animated: "medium",
 				control:"#sidetreecontrol",
 				persist: "location"
 			});
 			$('#frmNewLink').ajaxForm(function(data){
-				$('#divTree').slideUp('slow');
+				$('#divTree').fadeOut('slow');
 				$.post("/cms/links?op=LinksTree", function(treedata){
 					$('#divStatus').html(data);
-					$('#divStatus').slideUp('fast');
+					$('#divStatus').fadeOut('fast');
 					$('#divTree').html(treedata);
-					$('#divTree').slideDown('fast');
+					$('#divTree').fadeIn('fast');
 					$('#divStatus').fadeOut(5000);
 				});
 			});

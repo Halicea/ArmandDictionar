@@ -10,6 +10,7 @@ from lib import messages
 from django.utils import simplejson
 from Models.CMSModels import Comment, ContentTag
 from Forms.CMSForms import CommentForm
+import logging
 
 class CMSBaseController(hrh):
     def __init__(self, *args, **kwargs):
@@ -154,17 +155,23 @@ class CMSPageController(CMSBaseController):
             self.redirect(LoginController.get_url())
     @View(templateName='CMSPage_index.html')
     def index(self, tag=None):
+
         limit = int(self.params.limit or 20)
         offset = int(self.params.offset or 0)
         if not tag:
             return {'links':cms.CMSLink.all().fetch(limit, offset)}
         else:
+            logging.info('In Index')
+            logging.info('tag is '+tag)
             #content_keys= db.Query('CMSContent', keys_only=True).filter('Tags =:tag', tag=tag)
-            contents=db.GqlQuery('SELECT * FROM CMSContent WHERE Tag =:tag', tag=tag)
+            contents=cms.CMSContent.gql("WHERE Tags =:t",t=tag).fetch(100)
+            logging.info(len(contents).__str__())
+            logging.info('contents')
             arr = [x.Links for x in contents]
             links = []
             for x in arr:
                 links+=x
+            logging.info('links are '+str(len(contents)))
             links = db.get(list(set(links)))
             return {'links':links}
 
