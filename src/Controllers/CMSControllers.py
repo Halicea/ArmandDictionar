@@ -161,17 +161,11 @@ class CMSPageController(CMSBaseController):
         if not tag:
             return {'links':cms.CMSLink.all().fetch(limit, offset)}
         else:
-            logging.info('In Index')
-            logging.info('tag is '+tag)
-            #content_keys= db.Query('CMSContent', keys_only=True).filter('Tags =:tag', tag=tag)
-            contents=cms.CMSContent.gql("WHERE Tags =:t",t=tag).fetch(100)
-            logging.info(len(contents).__str__())
-            logging.info('contents')
+            contents=cms.CMSContent.gql("WHERE Tags =:t",t=tag).fetch(limit=limit, offset=offset)
             arr = [x.Links for x in contents]
             links = []
             for x in arr:
                 links+=x
-            logging.info('links are '+str(len(contents)))
             links = db.get(list(set(links)))
             return {'links':links}
 
