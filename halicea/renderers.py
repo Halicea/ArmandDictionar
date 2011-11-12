@@ -1,4 +1,5 @@
 from django import template
+
 from django.template.loader import *
 class HalTemplate(object):
     def __init__(self, text):

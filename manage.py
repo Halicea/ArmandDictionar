@@ -28,7 +28,12 @@ commandsDict={'*':{ 'new':{'template':{}, 'real':{}}, 'project':{},
                     'mvcfh':{},
                     'del':{'package':{}, 'model':{}}, 
                     'deploy':{'--no_cookies':{},'--email=':{}}, 
-                    'run':{'--port=':{}, '--clear_datastore=':{}, '--datastore_path=':{}}
+                    'run':{'--port=':{}, '--clear_datastore=':{}, '--datastore_path=':{}},
+                    'pack':{'package':{}},
+                    'unpack':{'package':{}},
+                    'git':{'log':{},'init':{}, 'push':{'origin':{'master':{}}}, 'commit':{'-a':{}, '-am \"':{}}, 'add':{'.':{}} },
+                    'deploy':{},
+                    'exit':{}
                     }
                 }
 mvcStates = {'package':{},'class':{}, 'prop':{'ref':modelsStructure} }

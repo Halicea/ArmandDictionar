@@ -8,6 +8,7 @@
 <link rel="stylesheet" href="/jscripts/jquery.treeview/jquery.treeview.css" />
 <script src="/jscripts/jquery.cookie.js" type="text/javascript"></script>
 <script src="/jscripts/jquery.treeview/jquery.treeview.js" type="text/javascript"></script>
+<script src="/jscripts/jquery.synctranslit.min.js" type="text/javascript"></script>
 <script type="text/javascript">
 		$(function() {
 			$("#tree").treeview({
@@ -26,6 +27,14 @@
 					$('#divStatus').fadeOut(5000);
 				});
 			});
+			$('#selContent').change(function(){
+				var name = $(this).find("option:selected").text();
+				$("#addressName").val(name);
+				$('#addressName').syncTranslit({destination: 'addressName'});
+				$('#addressName').trigger('keyup');
+				$("#linkName").val(name);
+			});
+			$('#selContent').trigger('change');
 		})
 	</script>
 
@@ -41,7 +50,7 @@
 				<tr>
 					<td>Content:</td>
 					<td>
-						<select name="content">
+						<select name="content" id="selContent">
 							{% for cont in  contents %}
 							<option value="{{cont.key}}">{{cont.Title}}</option>
 							{% endfor %}
@@ -50,13 +59,13 @@
 				</tr>
 				<tr>
 					<td>Url Name:</td>
-					<td><input type="text" name="addressName"></input></td>
+					<td><input type="text" name="addressName" id="addressName"></input></td>
 				</tr>
 				<tr>
 					<td>Name</td>
-					<td><input type="text" name="name"></input></td>
+					<td><input type="text" name="name" id="linkName"></input></td>
 				</tr>
-				<tr>
+				<tr>addressName
 					<td>Display Order</td>
 					<td><select name="order"><option>1</option><option>2</option><option>3</option><option>4</option></select></td>
 				</tr>

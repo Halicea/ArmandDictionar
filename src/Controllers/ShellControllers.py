@@ -135,10 +135,10 @@ class FrontPageController(hrh):
             session_key = session.put()
         session_url = '/?session=%s' % session_key
         vars = { 'server_software': os.environ['SERVER_SOFTWARE'],
-                         'python_version': sys.version,
-                         'session': str(session_key),
-                         'user': users.get_current_user(),
-                         'login_url': users.create_login_url(session_url),
-                         'logout_url': users.create_logout_url(session_url),
-                         }
+                 'python_version': sys.version,
+                 'session': str(session_key),
+                 'user': users.get_current_user(),
+                 'login_url': users.create_login_url(session_url),
+                 'logout_url': users.create_logout_url(session_url),
+                 }
         self.respond(vars)

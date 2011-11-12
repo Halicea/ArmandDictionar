@@ -113,7 +113,7 @@ class Handler(object):
 
 # Decorators for Handler Methods
 class View(object):
-    def __init__(self, **template ):
+    def __init__(self, **template):
         self.template = template
     def __call__(self, f):
         def new_f(request, *args, **kwargs):

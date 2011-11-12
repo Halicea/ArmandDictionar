@@ -6,7 +6,7 @@
   "name": "RUN Console", 
   "operateOnSelection": 0, 
   "value": [
-    "/home/costa/DevApps/google_appengine\\dev_appserver.py %p\\src --port=1234"
+    "/home/costa/DevApps/google_appengine/dev_appserver.py %p\\src --port=1234"
   ], 
   "parseOutput": 1, 
   "version": "1.0.7", 

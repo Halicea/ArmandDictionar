@@ -70,11 +70,13 @@ class CMSLinksController(CMSBaseController):
             self.redirect(self.get_url())
     def LinksTree(self):
         return {'cmsLinks':cms.CMSLink.GetLinkTree()}
+
 class CMSContentController(CMSBaseController):
     def __init__(self, *args, **kwargs):
         super(CMSContentController, self).__init__()
         self.ContentForm = CMSContentForm()
     @Handler(operation='view', method='view')
+    @Handler('my_contents')
     def SetOperations(self):pass
 
     
@@ -95,7 +97,14 @@ class CMSContentController(CMSBaseController):
             pass
         contents = cms.CMSContent.all().order('-DateCreated').fetch(limit=limit, offset=offset)
         return {'contents':contents}
-
+    
+    @AdminOnly()
+    @View(templateName = "CMSContent.html")
+    def my_contents(self):
+        limit = self.params.limit or 20
+        offset = self.params.offset or 0
+        contents = cms.CMSContent.all().filter("Creator=", self.User).fetch(limit, offset)
+        return {'contents':contents}
     @AdminOnly()
     @Post()
     def save(self, *args):

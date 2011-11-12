@@ -32,7 +32,10 @@ class CMSContent(db.Model):
             map(ContentTag.IncrementTag, self.Tags)
         result=  db.Model.put(self, **kwargs)
         return result
-
+    def get_links(self):
+        if self.Links:
+            return db.get(self.Links)
+        return None
 class ContentType:
     CMSPage = 0
     StaticPage = 1
