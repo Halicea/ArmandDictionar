@@ -18,7 +18,7 @@ sys.path.append(pjoin(APPENGINE_PATH, 'lib', 'django_1_2' ))
 sys.path.append(pjoin(APPENGINE_PATH, 'lib', 'webob' ))
 sys.path.append(pjoin(APPENGINE_PATH, 'lib', 'yaml','lib' ))
 ###
-os.environ['DJANGO_SETTINGS_MODULE']  = 'settings'
+os.environ['DJANGO_SETTINGS_MODULE']  = 'conf.settings'
 from halicea import renderers
 import conf.settings as proj_settings
 

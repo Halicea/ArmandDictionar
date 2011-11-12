@@ -31,9 +31,9 @@ commandsDict={'*':{ 'new':{'template':{}, 'real':{}}, 'project':{},
                     'run':{'--port=':{}, '--clear_datastore=':{}, '--datastore_path=':{}},
                     'pack':{'package':{}},
                     'unpack':{'package':{}},
-                    'git':{'log':{},'init':{}, 'push':{'origin':{'master':{}}}, 'commit':{'-a':{}, '-am \"':{}}, 'add':{'.':{}} },
+                    'git':{'status':{}, 'log':{},'init':{}, 'push':{'origin':{'master':{}}}, 'commit':{'-a':{}, '-am \"':{}}, 'add':{'.':{}} },
                     'deploy':{},
-                    'exit':{}
+                    'exit':{},
                     }
                 }
 mvcStates = {'package':{},'class':{}, 'prop':{'ref':modelsStructure} }
@@ -122,8 +122,8 @@ def main(args):
                                     proj=config.PROJ_LOC,
                                     options = options)
             # print command
-            subprocess.Popen(command, shell=True, stdout=sys.stdout, stdin=sys.stdin)
-            webbrowser.open('http://localhost:8080')
+            subprocess.Popen(command, shell=True, stdout=sys.stdout, stdin=sys.stdin).wait()
+            #webbrowser.open('http://localhost:8080')
         elif args[0]=='pack' and len(args)>3:
             if args[1]=='package':
                 packager.pack(args[2], args[3])
@@ -138,19 +138,16 @@ def main(args):
                                   appcfg = pjoin(config.APPENGINE_PATH, 'appcfg.py'),
                                   proj = config.PROJ_LOC,
                                   options = options)
-            subprocess.Popen(command, Shell=True)
+            subprocess.Popen(command, shell=True).wait()
         elif args[0]=='console':
             pass
         elif args[0]=='git':
-            fi,fo,fe= os.popen3(' '.join(args))
-            for ln in fo.readlines():
-                print 'git:', ln.replace('\n', '')
-            for i in fe.readlines():
-                print "error:",i.replace('\n', '')
-#           for i in fi.readlines():
-#                print "input->",i, ':'
+            subprocess.Popen(' '.join(args), shell=True, stdout=sys.stdout, stdin=sys.stdin, stderr=sys.stderr).wait()
+        elif args[0]=='clear':
+            subprocess.Popen('clear', shell=True, stdout=sys.stdout, stdin=sys.stdin, stderr=sys.stderr).wait()
         else:
             print 'Not Valid Command [mvc, run, console]'
+            
         return
 if __name__ == '__main__':
     sysargs = sys.argv
@@ -162,7 +159,11 @@ if __name__ == '__main__':
             while True:
                 args =raw_input('hal>').split()
                 if not(len(args)==1 and args[0]=='exit'):
-                    main(args)
+                    try:
+                        main(args)
+                    except Exception,ex:
+                        print ex
+                        print sys.exc_info()
                 else:
                     print 'Halicea Command Console exited'
                     break;
