@@ -53,8 +53,8 @@ webapphandlers = [
 #{%endblock%}
 
 #{%block CMSControllers}
-('/cms/content/(.*)', CMSControllers.CMSContentController.new_factory(op='edit')),
 ('/cms/contents', CMSControllers.CMSContentController.new_factory(op='my_contents')),
+('/cms/content/(.*)', CMSControllers.CMSContentController),
 ('/cms/links', CMSControllers.CMSLinksController),
 ('/cms/page/(.*)/comment', CMSControllers.CommentController.new_factory(op='edit')),
 ('/cms/page/(.*)/comments', CMSControllers.CommentController.new_factory(op='index')),

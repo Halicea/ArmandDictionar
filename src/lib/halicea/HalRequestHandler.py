@@ -78,6 +78,41 @@ class HalRequestHandler( webapp.RequestHandler ):
         self.SetDefaultOperations()
         #make any customisations by overloading this method
         self.SetOperations()
+    @classmethod
+    def new_factory(cls, *args, **kwargs):
+        """Create new request handler factory.
+        
+        Use factory method to create reusable request handlers that just
+        require a few configuration parameters to construct.  Also useful
+        for injecting shared state between multiple request handler
+        instances without relying on global variables.  For example, to
+        create a set of post handlers that will do simple text transformations
+        you can write:
+        
+          class ChangeTextHandler(webapp.RequestHandler):
+        
+            def __init__(self, transform):
+              self.transform = transform
+        
+            def post(self):
+              response_text = self.transform(
+                  self.request.request.body_file.getvalue())
+              self.response.out.write(response_text)
+        
+          application = webapp.WSGIApplication(
+              [('/to_lower', ChangeTextHandler.new_factory(str.lower)),
+               ('/to_upper', ChangeTextHandler.new_factory(str.upper)),
+              ],
+              debug=True)
+        
+        Text POSTed to /to_lower will be lower cased.
+        Text POSTed to /to_upper will be upper cased.
+        """
+        def new_instance():
+            return cls(*args, **kwargs)
+        new_instance.__name__ = cls.__name__ #+ 'Factory'
+        setattr(new_instance, 'get_url', cls.get_url)
+        return new_instance
 
     class RequestParameters(object):
         def __init__(self, request):
@@ -207,8 +242,10 @@ class HalRequestHandler( webapp.RequestHandler ):
            now it routes in the methods by a given parameter named op
         """
         self.method = method
-        if not self.op:
-            self.op = self.params.op
+        #if there is explicitly setup opration then use that one
+        if self.params.op:
+            self.op= self.params.op
+             
         outresult = 'No Result returned'
         if self.operations.has_key(self.op):
             if isinstance(self.operations[self.op]['method'], str):

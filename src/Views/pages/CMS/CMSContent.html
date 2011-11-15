@@ -5,8 +5,7 @@
     <div class="post colapsible">
     	<input type="hidden" value="item.key" />
         <div class="contentHeader">
-        	{{item.key}}
-        	<h1><a href="{%url CMSContentController item.key %}">{{item.Title}}</a></h1>  		
+        	<h1><a href="/cms/content/{{item.key}}?op=view">{{item.Title}}</a></h1>  		
         </div>
         <div class="postContent">
         	{%autoescape off%}
@@ -16,10 +15,9 @@
         <div class="postFooter">
         	<label>Created on {{item.DateCreated|date:"M/d"}} by {{item.Creator}}</label>
         	<div class="nav">
-        		<a href="{%url CMSContentController item.key%}">Edit</a>
+        		<a href="/cms/content/{{item.key}}?op=edit">Edit</a>
         	</div>
         </div>
-
     </div>
     {% endfor %}
 {%endblock%}

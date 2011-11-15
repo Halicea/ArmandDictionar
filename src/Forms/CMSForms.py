@@ -12,6 +12,7 @@ class CMSContentForm(Form):
     Title = fields.CharField(required=True)
     Content = fields.CharField(widget=widgets.Textarea(), required=True)
     Tags = fields.CharField(required=False)
+    
 class CommentForm(ModelForm):
     Content = fields.CharField(widget=widgets.HiddenInput)
     class Meta():

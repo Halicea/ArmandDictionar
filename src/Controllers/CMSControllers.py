@@ -81,12 +81,12 @@ class CMSContentController(CMSBaseController):
     def SetOperations(self):pass
 
     
-    def view(self, title, *args):
-        cnt = cms.CMSContent.gql('WHERE Title = :t', t=title).fetch(1)
-        if cnt:
-            return {'content':cnt[0]}
-        else:
-            return cnt
+    def view(self, key, *args):
+        cnt = cms.CMSContent.get(key)
+        if cnt: return {'content':cnt}
+        self.status = "Content Not Found"
+        self.redirect('/cms/contents')
+        
 
     @View(templateName = 'CMSContent.html')
     def index(self, *args):
@@ -118,7 +118,20 @@ class CMSContentController(CMSBaseController):
                 tags = [x.strip() for x in data['Tags'].split(',')]
             except:
                 pass
-            cms.CMSContent.CreateNew(title=data['Title'], content=data['Content'], tags=tags, creator=self.User, _isAutoInsert=True)
+            if not self.params.key:
+                cms.CMSContent.CreateNew(title=data['Title'], content=data['Content'], tags=tags, creator=self.User, _isAutoInsert=True)
+            else:
+                content= cms.CMSContent.get(self.params.key)
+                content.HTMLContent = data["Content"]
+                extra_tags = [t for t in tags if t not in content.Tags]
+                tags_to_remove = [t for t in content.Tags if t not in tags]
+                content.Tags = tags
+                content.put()
+                for tag in extra_tags:
+                    cms.ContentTag.IncrementTag(tag)
+                for tag in tags_to_remove:
+                    cms.ContentTag.DecrementTag(tag)
+                    
             #map(ContentTag.IncrementTag, tags)
             #cms.
             self.status ="Content is saved"
@@ -128,12 +141,17 @@ class CMSContentController(CMSBaseController):
             self.ContentForm = form
         self.redirect('/cms/links')
 
-    def edit(self, *args):
-        if self.params.key:
-            cmsContent = cms.CMSContent.get(self.params.key)
-            self.ContentForm = CMSContentForm(instance=cmsContent)
-        self.extra_context['op']=self.params.key and 'update' or 'insert'
-        return {'CMSContentForm':self.ContentForm}
+    def edit(self, key=None,*args):
+        cmsContent =None
+        if key:
+            cmsContent = cms.CMSContent.get(key)
+            self.ContentForm = CMSContentForm(initial={'Title':cmsContent.Title, 
+                                                       'Content':cmsContent.HTMLContent, 
+                                                       'Tags':','.join([str(x) for x in cmsContent.Tags])})
+            
+            
+        self.extra_context['op']=key and 'update' or 'insert'
+        return {'content':cmsContent, 'CMSContentForm':self.ContentForm}
 
     @ErrorSafe(redirectUrl='/cms/content')
     def delete(self, *args):
@@ -197,7 +215,7 @@ class CommentController(CMSBaseController):
             simplejson.dumps({'status':self.status})
         else:
             self.redirect(CMSContentController.get_url(), permanent=True)
-
+    
     def delete(self,*args):
         if self.params.key:
             item = Comment.get(self.params.key)
