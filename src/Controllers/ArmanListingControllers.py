@@ -32,8 +32,8 @@ class ArmanSearchController(ArmansBaseController):
             self.SetTemplate("form", "ArmanListing", "ArmanForm_index.html")
         else:
             self.SetTemplate(templateName = "Arman_index.html")
-        ArmanList = Arman.search(name=self.params.name, surname=self.params.surname, 
-                            armanSurname=self.params.armanSurname, 
+        ArmanList = Arman.search(name=self.params.name, surname=self.params.surname,
+                            armanSurname=self.params.armanSurname,
                             city=self.params.city, street=self.params.street, limit=10, offset= self.params.offset or 0)
         return {"ArmanList":ArmanList}
 
@@ -100,12 +100,12 @@ class ArmanController(ArmansBaseController):
     @AdminOnly()
     def index(self, *args):
         return {'ArmanList':Arman.all().fetch(limit=100, offset=0)}
-        
+
 class AddressController(hrh):
     @ClearDefaults()
     @Default('getAddress')
     def SetOperations(self):pass
-    
+
     @Post()
     def getAddress(self, *args, **kwargs):
         if self.params.key:

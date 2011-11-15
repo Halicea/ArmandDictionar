@@ -12,6 +12,7 @@ from Models.CMSModels import Comment, ContentTag
 from Forms.CMSForms import CommentForm
 import logging
 
+
 class CMSBaseController(hrh):
     def __init__(self, *args, **kwargs):
         super(CMSBaseController, self).__init__(*args, **kwargs)
@@ -73,7 +74,7 @@ class CMSLinksController(CMSBaseController):
 
 class CMSContentController(CMSBaseController):
     def __init__(self, *args, **kwargs):
-        super(CMSContentController, self).__init__()
+        super(CMSContentController, self).__init__(*args, **kwargs)
         self.ContentForm = CMSContentForm()
     @Handler(operation='view', method='view')
     @Handler('my_contents')
@@ -98,13 +99,14 @@ class CMSContentController(CMSBaseController):
         contents = cms.CMSContent.all().order('-DateCreated').fetch(limit=limit, offset=offset)
         return {'contents':contents}
     
-    @AdminOnly()
+    @LogInRequired()
     @View(templateName = "CMSContent.html")
     def my_contents(self):
         limit = self.params.limit or 20
         offset = self.params.offset or 0
-        contents = cms.CMSContent.all().filter("Creator=", self.User).fetch(limit, offset)
+        contents = cms.CMSContent.all().filter("Creator =", self.User).fetch(limit, offset)
         return {'contents':contents}
+
     @AdminOnly()
     @Post()
     def save(self, *args):

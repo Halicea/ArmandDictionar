@@ -6,7 +6,6 @@ from Controllers import ShellControllers
 from Controllers import ArmanListingControllers
 from Controllers import CMSControllers
 from Controllers import BordjControllers
-from Controllers import testControllers
 #{%endblock%}
 webapphandlers = [
 #{%block ApplicationControllers %}
@@ -54,17 +53,14 @@ webapphandlers = [
 #{%endblock%}
 
 #{%block CMSControllers}
-('/cms/content', CMSControllers.CMSContentController.new_factory(op='edit')),
-('/cms/content/(.*)', CMSControllers.CMSContentController),
+('/cms/content/(.*)', CMSControllers.CMSContentController.new_factory(op='edit')),
+('/cms/contents', CMSControllers.CMSContentController.new_factory(op='my_contents')),
 ('/cms/links', CMSControllers.CMSLinksController),
 ('/cms/page/(.*)/comment', CMSControllers.CommentController.new_factory(op='edit')),
 ('/cms/page/(.*)/comments', CMSControllers.CommentController.new_factory(op='index')),
 ('/cms/page/(.*)', CMSControllers.CMSPageController.new_factory(op='view')),
 ('/cms/tag/(.*)', CMSControllers.CMSPageController.new_factory(op='index')),
 ('/', CMSControllers.CMSPageController.new_factory(op='index')),
-#{%block testControllers%}
-('/test/Animale', testControllers.AnimalController),
-#{%endblock%}
 #{%endblock%}
 
 ('/(.*)', StaticControllers.NotExistsController),

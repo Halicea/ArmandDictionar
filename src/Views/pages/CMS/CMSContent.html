@@ -1,22 +1,12 @@
 {%extends base %}
-{%block scripts%}
-{{block.super}}
-<script type="text/javascript">
-	$(function(){
-		$('.hrefComment').click(function(){
-			var k = $(this).attr('id');
-			$('#div'+k).toggle();
-			return false;
-		});
-	});
-</script>
-{% endblock %}
+
 {%block content %}
 	{% for item in contents%}
     <div class="post colapsible">
     	<input type="hidden" value="item.key" />
         <div class="contentHeader">
-        	<h1><a href="{%url CMSContentController%}/{{item.Title}}?op=view">{{item.Title}}</a></h1>  		
+        	{{item.key}}
+        	<h1><a href="{%url CMSContentController item.key %}">{{item.Title}}</a></h1>  		
         </div>
         <div class="postContent">
         	{%autoescape off%}
@@ -26,19 +16,10 @@
         <div class="postFooter">
         	<label>Created on {{item.DateCreated|date:"M/d"}} by {{item.Creator}}</label>
         	<div class="nav">
-        		<a href="#" class="hrefComment" id="{{item.key}}">Comment</a>
+        		<a href="{%url CMSContentController item.key%}">Edit</a>
         	</div>
         </div>
-        
-        <div class="postComment" id="div{{item.key}}" style="display:none;">
-    		<form method="post" action="{%url CommentController item.key%}">
-    			<textarea name="Comment" id="id_Comment" class="comment" style="width:100%"></textarea><br/>
-    			<input type="submit" value="Submit" class="smallBtn"/>
-    		</form>
-    	</div> 
-    	{% comment %} 
-    	{%endcomment%}
+
     </div>
     {% endfor %}
-    
 {%endblock%}

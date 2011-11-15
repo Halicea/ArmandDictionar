@@ -24,12 +24,12 @@
 					$('#divStatus').fadeOut('fast');
 					$('#divTree').html(treedata);
 					$('#divTree').fadeIn('fast');
-					$('#divStatus').fadeOut(5000);
-				});
+                    $('#divStatus').fadeOut(5000);
+                });
 			});
 			$('#selContent').change(function(){
 				var name = $(this).find("option:selected").text();
-				$("#addressName").val(name);
+                //$("#addressName").val(name);
 				$('#addressName').syncTranslit({destination: 'addressName'});
 				$('#addressName').trigger('keyup');
 				$("#linkName").val(name);
@@ -41,8 +41,11 @@
 {%endblock%}
 {% block content %}
 <div class="post">
-	<h2>New Link:</h2>
-	<form action="" method="post" id="frmNewLink">
+    <h2>New Link:
+    <input type="BUTTON" class="smallBtn" value="Add New Content" onclick="newContentDialog(); return false;"/>
+    <input type="BUTTON" class="smallBtn"  value="Show Menu" onclick="showMenu(); return false;"/>
+   </h2> 
+    <form action="" method="post" id="frmNewLink">
 		<input type="hidden" name="op" value="save"></input>
 		<div style="width:100%;min-height:150px; display: block;">
 		<div style="float:left; text-align: right;">
@@ -65,7 +68,7 @@
 					<td>Name</td>
 					<td><input type="text" name="name" id="linkName"></input></td>
 				</tr>
-				<tr>addressName
+				<tr>
 					<td>Display Order</td>
 					<td><select name="order"><option>1</option><option>2</option><option>3</option><option>4</option></select></td>
 				</tr>
@@ -74,7 +77,10 @@
 		<div id="divTree" style="float: left">
 	    	{%include LinksTree %}
 		</div>
-		<div style="clear: both;"></div>
+        <div id="divMenus">
+            {%comment%}include MenuTree{%endcomment%}
+        </div>
+        <div style="clear: both;"></div>
 		</div>
     	<input type="submit" value="Save"></input>
 	</form>
