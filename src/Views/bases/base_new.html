@@ -41,11 +41,8 @@
 					{%endblock%}
                 </div>
                 <div id="search" style="position: absolute; left: 400px; top: 40px;">
-                    <input id="Text1" type="text" style="width: 200px; vertical-align: middle; border: 1px solid Gray;
-                        background-color: White; height: 18px" />
-                    <a class="btn" style="vertical-align: middle; margin-left: -5px;" id="A1">Search
-                    </a>
-                    <img src="/images/logo_google.png" style="vertical-align: bottom;" alt="" />
+                	{%block customSearch%}
+                	{%endblock%}
                 </div>
                 <div id="login">
 					{% block login_menu %}

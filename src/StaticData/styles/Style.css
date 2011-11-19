@@ -328,6 +328,15 @@ input[type=submit]{
     font-weight: bold;
     color: #383B3F;
 }
+input[type=button].gsc-search-button,
+input[type=submit].gsc-search-button,
+input[type=button].btnSmall,
+input[type=submit].btnSmall{
+    width:80px;
+    height: 35px;
+    padding: 5px;
+    font-size: 11px;
+}
 input[type=text],
 input[type=password],
 select{

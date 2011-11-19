@@ -52,7 +52,21 @@ $(function(){
 {% block top_menu %}
 	{% include mnTopMenu %}
 {% endblock %}
-
+{%block customSearch%}
+<div id="cse-search-form" style="width: 400px;"></div>
+<script src="//www.google.com/jsapi" type="text/javascript"></script>
+<script type="text/javascript"> 
+  google.load('search', '1', {language : 'en', style : google.loader.themes.MINIMALIST});
+  google.setOnLoadCallback(function() {
+    var customSearchControl = new google.search.CustomSearchControl('001337412032679299434:f26p5alhfc4');
+    customSearchControl.setResultSetSize(google.search.Search.FILTERED_CSE_RESULTSET);
+    var options = new google.search.DrawOptions();
+    options.setAutoComplete(true);
+    options.enableSearchboxOnly("http://");
+    customSearchControl.draw('cse-search-form', options);
+  }, true);
+</script>
+{%endblock%}
 {% block login_menu %}
 	{% include blLogin %}
 {% endblock %}
