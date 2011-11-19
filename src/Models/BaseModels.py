@@ -4,7 +4,7 @@ from google.appengine.ext import db
 from google.appengine.ext.db import polymodel
 import datetime as dt
 ###########
-
+import os
 class Person(polymodel.PolyModel):
     '''A Person with UserName, Name, Surname Phone Email e.t.c'''
     UserName = db.StringProperty(required=True)
