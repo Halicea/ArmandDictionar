@@ -1,5 +1,0 @@
-import settings
-from google.appengine.ext import db
-#{{os}} block imports{{cs}}
-#{{os}}endblock{{cs}}
-################

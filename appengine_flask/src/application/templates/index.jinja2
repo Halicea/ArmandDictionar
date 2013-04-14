@@ -1,0 +1,35 @@
+{% extends "bootstrap_base.jinja2" %}
+{% block extended_scripts %}
+    <script type="text/javascript">
+        $(function(){
+            $('#searchForm').ajaxForm({target: '#results', beforeSubmit:showSearchLoader});
+            var btns = ['lang_mkd', 'lang_rmn'];
+            var input = document.getElementById('lang-val');
+            for(var i = 0; i < btns.length; i++) {
+                document.getElementById(btns[i]).addEventListener('click', function() {
+                    input.value = this.value;
+                });
+            }
+        });
+        function showSearchLoader(){
+            $('#results').visible=true;
+            $('#results').empty().html("<img src='/static/img/ajax-loader.gif' />");
+        }
+    </script>
+{% endblock %}
+{% block content %}
+    <form action="search" id="searchForm">
+        <input type="hidden" id="lang-val" name="from_lang" value="mkd"/>
+        <div class="input-append">
+            <input type="text" placeholder="Барај" name="Search"/>
+            <input type="submit" id="btnSearch" class="btn btn-primary" value="Барај">
+        </div>
+        <div class="btn-group input-append" id="langs" data-toggle="buttons-radio" style="margin-top: 0px;">
+            <button id="lang_mkd" type="button" class="btn btn-primary active" value="mkd">Македонски</button>
+            <button id="lang_rmn" type="button" class="btn btn-primary" value="rmn">Armaneashti</button>
+        </div>
+
+    </form>
+    <div id="results" style="margin-left: auto;margin-right: auto">
+    </div>
+{% endblock %}

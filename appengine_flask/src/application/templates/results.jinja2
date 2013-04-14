@@ -1,0 +1,34 @@
+{% if rows %}
+<table class="table table-striped">
+<thead>
+    <tr>
+        <th></th>
+        <th>Превод</th>
+        <th>Тип</th>
+    </tr>
+</thead>
+
+{%for row in rows%}
+<tr>
+    <td >
+        <input type="hidden" value="{{ row[1]|e }}">
+        <b>{{ row[0]|e }}</b>
+    </td>
+    <td>
+        {{ row[2]|e }}
+    </td>
+    <td >
+        <i>
+        {% if row[3] != 'None' %}
+            {{ row[3]|e }}
+        {% else %}
+            N/A
+        {% endif %}
+        </i>
+    </td>
+</tr>
+{%endfor%}
+</table>
+{% else %}
+    <h4>Нема резултати</h4>
+{% endif %}

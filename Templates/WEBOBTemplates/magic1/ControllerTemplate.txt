@@ -1,2 +1,0 @@
-{%autoescape off%}class {{m.Name}}Controller(GenericControler):
-    pass{%endautoescape%}
