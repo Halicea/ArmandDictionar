@@ -1,0 +1,26 @@
+{% extends "bootstrap_base.jinja2" %}
+{% block content %}
+    <h1>Прeдлози за влашки зборови</h1>
+    <p class="text-info">
+        Сите предлози и секоја дебата треба да се фокусирани на пронаоѓање,додавање и изменување на влашки зборови, се со цел збогатување на нашиот речник и споделување на знаењето на оние кои повеќе знаат. 
+        Сите недолични коментари ,или отстапувања од темата ќе бидат избришани.
+    </p>
+    <p class="text-info">
+        Под секој предлог на збор се наоѓаат две копчиња <b>Vote Up(За)</b> и <b>Vote Down(Против)</b>. Со помош на вашите гласови и дискусии ќе се одлучи кој збор е соодветен а кој не.
+    </p>
+    <p class="text-info">
+        Предлог за збор може да остави секој корисник на речникот. Секако доколку некој збор не постои во речникот, може да се праша овде и веројатно ќе се одговори од корисниците кои повеќе го знаат влашкиот јазик.
+    </p>
+    <div id="disqus_thread"></div>
+    <script type="text/javascript">
+        /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+        var disqus_shortname = 'armandictionary'; // required: replace example with your forum shortname
+        var disqus_title = 'Збогатување и осовременување на влашкиот речник';
+        /* * * DON'T EDIT BELOW THIS LINE * * */
+        (function() {
+            var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+            dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        })();
+    </script>
+{% endblock %}

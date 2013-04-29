@@ -2,7 +2,17 @@
 {% block extended_scripts %}
     <script type="text/javascript">
         $(function(){
-            $('#searchForm').ajaxForm({target: '#results', beforeSubmit:showSearchLoader});
+            $('#searchForm').ajaxForm({
+                target: '#results', 
+                beforeSubmit:showSearchLoader,
+                success:function(res){
+                    if(_gaq){
+                        var lang = $('#lang-val').val();
+                        var term = $('#searchInp').val();
+                        _gaq.push(['_trackEvent', 'search', lang, term]);
+                    }
+                }
+                });
             var btns = ['lang_mkd', 'lang_rmn'];
             var input = document.getElementById('lang-val');
             for(var i = 0; i < btns.length; i++) {
@@ -21,15 +31,20 @@
     <form action="search" id="searchForm">
         <input type="hidden" id="lang-val" name="from_lang" value="mkd"/>
         <div class="input-append">
-            <input type="text" placeholder="Барај" name="Search"/>
+            <input type="text" placeholder="Барај" name="Search" id="searchInp" />
             <input type="submit" id="btnSearch" class="btn btn-primary" value="Барај">
         </div>
         <div class="btn-group input-append" id="langs" data-toggle="buttons-radio" style="margin-top: 0px;">
             <button id="lang_mkd" type="button" class="btn btn-primary active" value="mkd">Македонски</button>
             <button id="lang_rmn" type="button" class="btn btn-primary" value="rmn">Armaneashti</button>
         </div>
-
+        <div>
+            <label class="text-info" style="font-size:smaller">За оптимално пребарување на Македонски користете македонска поддршка</label>
+        </div>
     </form>
     <div id="results" style="margin-left: auto;margin-right: auto">
+    </div>
+    <div class="well">
+        <a class="btn btn-danger" href="/discuss">Предложи нов збор или измена на збор</a>
     </div>
 {% endblock %}

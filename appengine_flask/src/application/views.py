@@ -34,29 +34,41 @@ def get_connection():
   # return rdbms.connect(instance=LOCAL_INSTANCE,database=DATABASE_NAME, user=USER_NAME, password=PASSWORD, charset="utf8")
 
 def index():
-  return render_template("index.jinja2")
+  return render_template("index.jinja2", active='index')
 
 def search():
-  conn = get_connection()
-  cursor = conn.cursor()
+  results = []
   key = "mkd"
   if request.args.get("from_lang"):
     key_n = request.args.get("from_lang")
     if key_n in match_col:
       key =key_n
+
   s_pat= request.args.get("Search")
-  q_long=u"SELECT * FROM word WHERE MATCH(%s) AGAINST ('%s')"%(match_col[key], s_pat)
-  q_short = u"SELECT * FROM word where windex like '%(search)s %%' or windex like '%% %(search)s ' or windex like '%% %(search)s'"%{"search":s_pat}
-  if len(s_pat)>3:
-    cursor.execute(q_long)
-  else:
-    cursor.execute(q_short)
-  rows = cursor.fetchall()
-  conn.close()
-  return render_template("results.jinja2", rows=rows)
+  words = s_pat.split(' ')
+  if len(words)>5:
+    words = words[:5]
+
+  for word in words:
+    conn = get_connection()
+    cursor = conn.cursor()
+    q_long=u"SELECT * FROM word WHERE MATCH(%s) AGAINST ('%s')"%(match_col[key], word)
+    q_short = u"SELECT * FROM word where windex like '%(search)s %%' or windex like '%% %(search)s ' or windex like '%% %(search)s'"%{"search":word}
+    if len(word)>3:
+      cursor.execute(q_long)
+    else:
+      cursor.execute(q_short)
+    results.append([x for x in cursor.fetchall()])
+    conn.close()
+  return render_template("results.jinja2", results=results)
+def discuss():
+  return render_template('discuss.jinja2', active='discuss')
 
 def skratenici():
   return render_template("skratenici.html")
 
 def predgovor():
   return render_template("predgovor")
+
+def policy():
+  return render_template("policy.jinja2")

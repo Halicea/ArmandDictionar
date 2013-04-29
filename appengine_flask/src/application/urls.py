@@ -9,9 +9,12 @@ from application import app
 from application import views
 
 app.add_url_rule('/', view_func=views.index, methods=['GET','POST'])
+app.add_url_rule('/policy', view_func=views.policy, methods=['GET'])
+app.add_url_rule('/tabed', view_func=views.index, methods=['GET','POST'])
 app.add_url_rule('/search', view_func=views.search,methods=['GET','POST'])
 app.add_url_rule('/skratenici', view_func=views.skratenici,methods=['GET'])
 app.add_url_rule('/predgovor', view_func=views.predgovor,methods=['GET'])
+app.add_url_rule('/discuss', view_func=views.discuss,methods=['GET'])
 
 ## Error handlers
 # Handle 404 errors
